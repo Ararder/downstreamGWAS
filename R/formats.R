@@ -1,35 +1,56 @@
-sumstat <- "~/arvhar/update_gwas_sumstats/sumstats/accumbens/tidyGWAS_hivestyle/"
+get_system_paths <- function() {
+  yaml::read_yaml("~/shared/gwas_sumstats/filepaths.yml")
+}
 
-dir <- "~/arvhar/update_gwas_sumstats/sumstats/accumbens"
 
-setup_paths <- function(dir) {
+#' Create the folder structure and filepaths for downstreamGWAS directory
+#'
+#' @param dir filepath to folder
+#'
+#' @return a list of filepaths
+#' @export
+#'
+#' @examples \dontrun{
+#'  tidyGWAS_paths("gwas/height2022")
+#' }
+tidyGWAS_paths <- function(dir) {
 
-    base <- dir
+  base <- dir
   name <- fs::path_dir(dir)
-
-
-
+  sbayesrc <- fs::path(dir, "analysis/sbayesrc")
 
   # ldsc --------------------------------------------------------------------
-
-  ldsc <- list(
-    ldsc_start = "ldsc_temp.csv"
-    ldsc_munged = name
-
-  )
-
-
-
-
-  list(
+  ldsc = fs::path(dir, "analysis/ldsc")
+  clumping = fs::path(dir, "analysis/clumping")
+  out <- list(
+    system_paths = get_system_paths(),
     base = dir,
     name = fs::path_file(dir),
     hivestyle = fs::path(dir, "tidyGWAS_hivestyle"),
     analysis  = fs::path(dir, "analysis"),
-    ldsc = fs::path(dir, "analysis/ldsc"),
+
+    ldsc = ldsc,
+    ldsc_temp = fs::path(ldsc, "temp.csv.gz"),
+    ldsc_munged = fs::path(ldsc, "ldsc"),
+    ldsc_h2 = fs::path(ldsc, "ldsc_h2"),
+
     magma = fs::path(dir, "analysis/magma"),
-    clumping = fs::path(dir, "analysis/clumping")
+    sbayesrc = sbayesrc,
+    ma_file = fs::path(sbayesrc, "sumstats.ma"),
+    imp_ma_file = fs::path(sbayesrc, "imp_sumstats.ma"),
+    clumping = clumping,
+    clump_temp = fs::path(clumping, "temp.tsv")
+
   )
+
+  # -------------------------------------------------------------------------
+
+
+  fs::dir_create(out$ldsc)
+  fs::dir_create(out$magma)
+  fs::dir_create(out$clumping)
+
+  out
 }
 
 
@@ -63,12 +84,8 @@ parse_input_format <- function(sumstat) {
   df
 }
 
-to_ldsc <- function(paths, system_paths) {
-  hm3 <- arrow::read_tsv_arrow(system_paths$ldsc$hm3)
-  dset <- arrow::open_dataset(paths$hivestyle)
-  dplyr::filter(dset, RSID %in% hm3) |>
-    dplyr::collect() |>
-    arrow::write_csv_arrow()
 
-
+to_csv <- function(filepath, out) {
+  arrow::open_dataset(filepath) |>
+    arrow::write_csv_arrow(out)
 }

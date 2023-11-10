@@ -24,8 +24,9 @@ to_ldsc <- function(dir) {
     stop("Both B and Z is missing from sumstats. Cannot create LDSC format")
   }
 
-  dplyr::filter(dset, RSID %in% hm3$SNP) |>
-    dplyr::collect() |>
+
+  dplyr::collect(dset)
+    dplyr::filter(dset, RSID %in% hm3$SNP) |>
     dplyr::select(dplyr::any_of(c("RSID", "EffectAllele", "OtherAllele", effect,"SE", "P", "N"))) |>
     data.table::fwrite(paths$ldsc_temp, sep = "\t")
 
@@ -111,7 +112,16 @@ parse_ldsc_h2 <- function(path) {
 
 
 
+ldsc_rg <- function(gwas1, gwas2, system_paths=Sys.getenv("downstreamGWAS_paths"), name="ldsc_rg") {
+  glue::glue(
+    "{system_paths$ldsc$ldsc.py} ",
+    "--rg {gwas1},{gwas2} ",
+    "--ref-ld-chr {system_paths$ldsc$eur$wld} ",
+    "--w-ld-chr {system_paths$ldsc$eur$wld} ",
+    "--out {name} "
+  )
 
+}
 
 
 

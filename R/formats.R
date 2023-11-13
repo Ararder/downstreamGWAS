@@ -1,5 +1,5 @@
 get_system_paths <- function() {
-  yaml::read_yaml("~/shared/gwas_sumstats/filepaths.yml")
+  yaml::read_yaml(Sys.getenv("sys_paths"))
 }
 
 

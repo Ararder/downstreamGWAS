@@ -35,7 +35,7 @@ run_clumping <- function(parent_folder) {
 
   # create bedtools merge command
 
-  bedtools_merge <- glue::glue("{call_bedtools(paths$clumping)} merge -d 50000 -i clumps.bed -c 4,5,6 -o sum,collapse,collapse > genome_wide_sig_loci.bed")
+  bedtools_merge <- glue::glue("{call_bedtools(paths$clumping)} merge -d 50000 -i clumps.bed -c 4,5,6 -o sum,collapse,collapse > /home/genome_wide_sig_loci.bed")
 
   # clean up tmp files
   remove_temp_file <- glue::glue("rm {paths$clump_temp}")

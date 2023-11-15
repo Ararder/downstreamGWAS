@@ -18,6 +18,8 @@ Imports:
     yaml,
     utils,
     readr,
+    magrittr,
+    tidyr
 Suggests: 
     testthat (>= 3.0.0),
     withr

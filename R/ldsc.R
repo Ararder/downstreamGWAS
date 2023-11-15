@@ -112,20 +112,97 @@ parse_ldsc_h2 <- function(path) {
 
 
 
-ldsc_rg <- function(gwas1, gwas2, system_paths=Sys.getenv("downstreamGWAS_paths"), name="ldsc_rg") {
-  glue::glue(
-    "{system_paths$ldsc$ldsc.py} ",
-    "--rg {gwas1},{gwas2} ",
-    "--ref-ld-chr {system_paths$ldsc$eur$wld} ",
-    "--w-ld-chr {system_paths$ldsc$eur$wld} ",
+#' Estimate genetic correlation between two GWAS using LDSC
+#'
+#' @param parent_folder filepath to tidyGWAS output
+#' @param parent_folder2 filepath to tidyGWAS output
+#' @param outdir Folder to save logfile in
+#' @param workdir temporary working folder
+#'
+#' @return code to run in slurm
+#' @export
+#'
+#' @examples \dontrun{
+#' ldsc_rg("my_sumstats/tidygwas/height2022", "my_sumstats/tidygwas/height2022", "~/)
+#' }
+ldsc_rg <- function(parent_folder, parent_folder2, outdir, workdir=tempdir()) {
+  f1 <- tidyGWAS_paths(parent_folder)
+  f2 <- tidyGWAS_paths(parent_folder2)
+
+  create_dir <- glue::glue("mkdir -p {workdir}")
+  p1 <- paste0(f1$ldsc_munged, ".sumstats")
+  p2 <- paste0(f2$ldsc_munged, ".sumstats")
+  new_1 <- glue::glue("{f1$name}.sumstats")
+  new_2 <- glue::glue("{f2$name}.sumstats")
+
+
+  move_files <- glue::glue("cp {p1} {workdir}/{new_1} && cp {p2} {workdir}/{new_2}")
+  name <- paste0(f1$name, "_X_", f2$name)
+  main_code <- glue::glue(
+    "{ldsc_call(workdir)}/ldsc.py ",
+    "--rg {new_1},{new_2} ",
+    "--ref-ld-chr /src/{system_paths$ldsc$eur_wld} ",
+    "--w-ld-chr /src/{system_paths$ldsc$eur_wld} ",
     "--out {name} "
   )
+
+  save <- glue::glue("cp {workdir}/{name}.log {outdir}/{name}.log")
+  c(get_dependencies(), create_dir, move_files, main_code, save)
 
 }
 
 
+#' Read in the output of LDSC --rg
+#'
+#' @param path path to LDSC rg output file
+#'
+#' @return a tibble
+#' @export
+#'
+#' @examples \dontrun{
+#' parse_ldsc_rg("path/to/ldsc_rg.results")
+#' }
+#'
+parse_ldsc_rg <- function(path){
+  strings <- readLines(path)
+
+  if(length(strings) != 65) {
+    return(dplyr::tibble(pheno1 = NA_character_, pheno2 = NA_character_, rg=NA_real_, rg_se=NA_real_, p = NA_real_))
+  }
 
 
+  pheno1 <- fs::path_file(path) %>%
+    stringr::str_remove(".log") %>%
+    stringr::str_split("__") %>% .[[1]] %>%
+    .[1]
+
+  pheno2 <- fs::path_file(path) %>%
+    stringr::str_remove(".log") %>%
+    stringr::str_split("__") %>% .[[1]] %>%
+    .[2]
+
+  names <- strings[61] %>%
+    stringr::str_split(" ") %>%
+    .[[1]] %>%
+    .[. != ""] %>%
+    .[-c(1:2)]
+
+  vals <- strings[62] %>%
+    stringr::str_split(" ") %>%
+    .[[1]] %>%
+    .[. != ""] %>%
+    .[-c(1:2)] %>%
+    as.numeric()
+
+  dplyr::tibble(names, vals) %>%
+    tidyr::pivot_wider(names_from = names, values_from = vals)  %>%
+    dplyr::mutate(
+      pheno1 = pheno1,
+      pheno2 = pheno2
+    ) %>%
+    dplyr::select(pheno1, pheno2, dplyr::everything())
+
+}
 
 
 

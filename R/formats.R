@@ -1,3 +1,11 @@
+#' Read downstreamGWAS filepaths from yaml file
+#'
+#' @return a nested list of filepaths
+#' @export
+#'
+#' @examples \dontrun{
+#' get_system_paths()
+#' }
 get_system_paths <- function() {
   yaml::read_yaml(Sys.getenv("sys_paths"), readLines.warn = FALSE)
 }

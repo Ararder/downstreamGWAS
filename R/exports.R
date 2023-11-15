@@ -33,3 +33,28 @@ to_ldsc <- function(parent_folder) {
 
 
 }
+
+
+#' Convert tidyGWAS hivestyle partitioning to compatible format for plink clumping
+#'
+#' @param parent_folder filepath to tidyGWAS folder
+#'
+#' @return writes a file to disk
+#' @export
+#'
+#' @examples \dontrun{
+#' paths <- tidyGWAS_paths("/my_sumstat/cleaned/")
+#' to_plink_clumping(paths)
+#' }
+to_plink_clumping <- function(parent_folder) {
+
+  paths <- tidyGWAS_paths(parent_folder)
+  dset <- arrow::open_dataset(paths$hivestyle)
+  fs::dir_create(paths$clumping)
+
+  dplyr::select(dset, RSID, P) |>
+    dplyr::collect() |>
+    readr::write_tsv(paths$clump_temp)
+
+}
+

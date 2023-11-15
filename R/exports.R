@@ -1,3 +1,13 @@
+#' Export tidyGWAS format to LDSC format
+#'
+#' @param parent_folder filepath to tidyGWAS folder
+#'
+#' @return NULL
+#' @export
+#'
+#' @examples \dontrun{
+#' to_ldsc("my_sumstats/tidygwas/height2022")
+#' }
 to_ldsc <- function(parent_folder) {
 
 

@@ -3,3 +3,4 @@
 export(parse_ldsc_h2)
 export(run_ldsc)
 export(tidyGWAS_paths)
+export(to_ldsc)

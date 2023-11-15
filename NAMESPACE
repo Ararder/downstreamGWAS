@@ -2,6 +2,7 @@
 
 export(get_system_paths)
 export(parse_ldsc_h2)
+export(ranges_to_bed)
 export(run_clumping)
 export(run_ldsc)
 export(tidyGWAS_paths)

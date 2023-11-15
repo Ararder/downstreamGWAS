@@ -108,6 +108,17 @@ clump_plink <- function(paths, p1 = "5e-08", p2 = "5e-06", r2 = 0.1, kb = 3000, 
 }
 
 
+#' Convert clumped.ranges output from Plink to bed format
+#'
+#' @param infile *.clumped.ranges file
+#' @param out filename of bed file that is created
+#'
+#' @return a bedfile
+#' @export
+#'
+#' @examples \dontrun{
+#' ranges_to_bed("/my_sumstat/cleaned/clumps.clumped.ranges", "/my_sumstat/cleaned/clumps.bed")
+#' }
 ranges_to_bed <- function(infile, out){
 
   dplyr::tibble(utils::read.table(infile,header=TRUE )) |>

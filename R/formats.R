@@ -1,5 +1,5 @@
 get_system_paths <- function() {
-  yaml::read_yaml(Sys.getenv("sys_paths"))
+  yaml::read_yaml(Sys.getenv("sys_paths"), readLines.warn = FALSE)
 }
 
 
@@ -67,25 +67,13 @@ write_existing_columns <- function(paths) {
 
 }
 
-parse_input_format <- function(sumstat) {
+parse_tidyGWAS <- function(parent_folder) {
 
-  # tidyGWAS hivestyle
-  if(fs::is_dir(sumstat) & fs::path_file(sumstat) == "tidyGWAS_hivestyle") {
+  #fs::path(parent_folder, "cleaned_GRCh38.csv")
+  fs::path(parent_folder, "tidyGWAS_hivestyle")
 
-    df <- arrow::open_dataset(sumstat) |>
-      colnames() |>
-      dplyr::collect()
 
-  } else if(fs::path_ext(sumstat) == "parquet" & fs::is_file(sumstat)){
-    df <- arrow::read_parquet(sumstat)
-
-  }
-
-  df
 }
 
 
-to_csv <- function(filepath, out) {
-  arrow::open_dataset(filepath) |>
-    arrow::write_csv_arrow(out)
-}
+

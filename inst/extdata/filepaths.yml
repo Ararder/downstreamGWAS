@@ -1,22 +1,20 @@
 topmed:
   ld:
-    snv: "/nas/depts/007/sullilab/shared/arvhar/snp_level_annotatations/ld_ref_topmed/ld_single_nucleotide_variants/"
-    sv: "/nas/depts/007/sullilab/shared/arvhar/snp_level_annotatations/ld_ref_topmed/ld_structural_variants/"
-    sv_info: "/nas/depts/007/sullilab/shared/arvhar/snp_level_annotatations/ld_ref_topmed/SV_info.parquet"
+    snv: "snp_level_annotatations/ld_ref_topmed/ld_single_nucleotide_variants/"
+    sv: "snp_level_annotatations/ld_ref_topmed/ld_structural_variants/"
+    sv_info: "snp_level_annotatations/ld_ref_topmed/SV_info.parquet"
   allele_freq:
     global: "/nas/depts/007/sullilab/shared/arvhar/snp_level_annotatations/topmed_af"
 
 ldsc:
-  munge_sumstats.py: "module unload python && module load ldsc && munge_sumstats.py"
-  ldsc.py: "module unload python && module load ldsc && ldsc.py"
-  hm3: "/nas/depts/007/sullilab/shared/bin/ldsc/eur_w_ld_chr_updated/w_hm3.snplist"
-  eur:
-    wld: "/nas/depts/007/sullilab/shared/bin/ldsc/eur_w_ld_chr_updated/"
+  container: "ldsc.sif"
+  hm3: "ldsc/eur_w_ld_chr/w_hm3.snplist"
+  eur_wld: "ldsc/eur_w_ld_chr/"
 sldsc:
   eur:
-    base_ldscore: "/nas/depts/007/sullilab/shared/partitioned_LDSC/1000G_EUR_Phase3_baseline/baseline."
-    weights: "/nas/depts/007/sullilab/shared/partitioned_LDSC/1000G_Phase3_weights_hm3_no_MHC/weights.hm3_noMHC."
-    freq: "/nas/depts/007/sullilab/shared/partitioned_LDSC/1000G_Phase3_frq/1000G.EUR.QC."
+    base_ldscore: "sldsc_ref/1000G_EUR_Phase3_baseline/baseline."
+    weights: "sldsc_ref/1000G_Phase3_weights_hm3_no_MHC/weights.hm3_noMHC."
+    freq: "sldsc_ref/1000G_Phase3_frq/1000G.EUR.QC."
 
 plink:
   gene_ref: "/nas/depts/007/sullilab/shared/gwas_sumstats/reference/glist-hg38.tsv"

@@ -11,14 +11,12 @@ Encoding: UTF-8
 LazyData: true
 Imports: 
     arrow,
-    data.table,
     dplyr,
     fs,
     glue,
-    SBayesRC,
     stringr,
-    utils,
-    yaml
+    yaml,
+    readr,
 Suggests: 
     testthat (>= 3.0.0),
     withr

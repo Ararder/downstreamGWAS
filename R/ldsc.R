@@ -1,65 +1,65 @@
-utils::globalVariables(c("RSID"))
-
-#' Convert parquet hivestyle data to csv for LD-score regression
-#'
-#' @param dir filepath to the directory parent directory of tidyGWAS_hivestyle
-#'
-#' @return commandline code
-#' @export
-#'
-#' @examples \dontrun{
-#' code <- to_ldsc("files/sumstats/height2022")
-#' }
-
-to_ldsc <- function(dir) {
-  paths <- tidyGWAS_paths(dir)
-  hm3 <- arrow::read_tsv_arrow(paths$system_paths$ldsc$hm3)
-  dset <- arrow::open_dataset(paths$hivestyle)
-
-  if("B" %in% dset$schema$names)  {
-    effect <- "B"
-  } else if("Z" %in% dset$schema$names) {
-    effect <- "Z"
-  } else {
-    stop("Both B and Z is missing from sumstats. Cannot create LDSC format")
-  }
+utils::globalVariables(c("RSID","."))
 
 
-  dplyr::collect(dset)
-    dplyr::filter(dset, RSID %in% hm3$SNP) |>
-    dplyr::select(dplyr::any_of(c("RSID", "EffectAllele", "OtherAllele", effect,"SE", "P", "N"))) |>
-    data.table::fwrite(paths$ldsc_temp, sep = "\t")
 
+ldsc_call <- function(workdir) {
+
+  paths <- get_system_paths()
+
+
+  ldsc_path <- fs::path(paths$containers, paths$ldsc$container)
+  singularity_start <- singularity_mount(workdir)
+
+  glue::glue("{singularity_start} {ldsc_path} python /tools/ldsc")
 
 }
 
 
-run_ldsc <- function(paths) {
-  paths <- tidyGWAS_paths(paths)
+
+
+#' Run munge LDSC and LDSC -h2 from tidyGWAS
+#'
+#' @param parent_folder Folder to sumstats cleaned with tidyGWAS. see [tidyGWAS::tidyGWAS()] output_folder
+#'
+#' @return a path to slurm script
+#' @export
+#'
+#' @examples \dontrun{
+#' script_location <- run_ldsc("my_sumstats/tidygwas/height2022")
+#' }
+run_ldsc <- function(parent_folder) {
+  dep <- get_dependencies()
+  paths <- tidyGWAS_paths(parent_folder)
 
   prepare_sumstats <- glue::glue("R -e 'downstreamGWAS::to_ldsc(commandArgs(trailingOnly = TRUE)[1])'")|>
     paste0(" --args ", paths$base)
-  job1 <- glue::glue(
-    "{paths$system_paths$ldsc$munge_sumstats.py} ",
-    "--sumstats {paths$ldsc_temp} ",
-    "--out {paths$ldsc_munged} ",
+
+
+  munge <- glue::glue(
+    "{ldsc_call(paths$ldsc)}/munge_sumstats.py ",
+    "--sumstats {fs::path_file(paths$ldsc_temp)} ",
+    "--out {fs::path_file(paths$ldsc_munged)} ",
     "--snp RSID ",
     "--a1 EffectAllele ",
     "--a2 OtherAllele ",
-    "--merge-alleles {paths$system_paths$ldsc$hm3} ",
-    "--chunksize 500000 "
-
-  )
-  job2 <- glue::glue(
-    "{paths$system_paths$ldsc$ldsc.py} ",
-    "--h2 {paths$ldsc_munged}.sumstats.gz ",
-    "--ref-ld-chr {paths$system_paths$ldsc$eur$wld} ",
-    "--w-ld-chr {paths$system_paths$ldsc$eur$wld} ",
-    "--out {paths$ldsc_h2}"
-
+    "--merge-alleles /src/{paths$system_paths$ldsc$hm3} ",
+    "--chunksize 500000 && rm temp.tsv && mv ldsc.sumstats.gz ldsc.sumstats"
   )
 
-  c(prepare_sumstats, job1, glue::glue("rm {paths$ldsc_temp}"), job2)
+
+  cleanup  <- glue::glue("rm {paths$ldsc_temp} && mv {paths$ldsc}/ldsc.sumstats.gz {paths$ldsc}/ldsc.sumstats")
+
+  h2 <- glue::glue(
+    "{ldsc_call(paths$ldsc)}/ldsc.py ",
+    "--h2 ldsc.sumstats ",
+    "--ref-ld-chr /src/{paths$system_paths$ldsc$eur_wld} ",
+    "--w-ld-chr /src/{paths$system_paths$ldsc$eur_wld} ",
+    "--out {fs::path_file(paths$ldsc_h2)}"
+
+  )
+
+  writeLines(c(dep, prepare_sumstats, munge, cleanup, h2), fs::path(paths$ldsc, "run_ldsc.sh"))
+  fs::path(paths$ldsc, "run_ldsc.sh")
 
 
 }
@@ -88,23 +88,23 @@ parse_ldsc_h2 <- function(path) {
 
   obs_h2 <- as.numeric(stringr::str_extract(df[26], "\\d{1}\\.\\d{1,5}"))
 
-  obs_se <- stringr::str_extract(df[26], "\\(\\d{1}\\.\\d{1,5}") %>%
-    stringr::str_remove(., "\\(") %>%
+  obs_se <- stringr::str_extract(df[26], "\\(\\d{1}\\.\\d{1,5}") |>
+    stringr::str_remove(., "\\(") |>
     as.numeric()
 
-  lambda <- stringr::str_extract(df[27], " \\d{1}\\.\\d{1,5}") %>%
+  lambda <- stringr::str_extract(df[27], " \\d{1}\\.\\d{1,5}") |>
     as.numeric()
 
-  mean_chi2 <- stringr::str_extract(df[28], " \\d{1}\\.\\d{1,5}") %>%
+  mean_chi2 <- stringr::str_extract(df[28], " \\d{1}\\.\\d{1,5}") |>
     as.numeric()
 
-  intercept <- stringr::str_extract(df[29], " \\d{1}\\.\\d{1,5}") %>%
+  intercept <- stringr::str_extract(df[29], " \\d{1}\\.\\d{1,5}") |>
     as.numeric()
 
-  intercept_se <- stringr::str_extract(df[29], "\\(\\d{1}\\.\\d{1,5}") %>%
-    stringr::str_remove(., "\\(") %>%
+  intercept_se <- stringr::str_extract(df[29], "\\(\\d{1}\\.\\d{1,5}") |>
+    stringr::str_remove(., "\\(") |>
     as.numeric()
-  ratio <- stringr::str_extract(df[30], " \\d{1}\\.\\d{1,5}") %>%
+  ratio <- stringr::str_extract(df[30], " \\d{1}\\.\\d{1,5}") |>
     as.numeric()
 
   dplyr::tibble(dataset_name, obs_h2, obs_se, lambda, mean_chi2, intercept, intercept_se, ratio)

@@ -147,63 +147,11 @@ ldsc_rg <- function(parent_folder, parent_folder2, outdir, workdir=tempdir()) {
     "--out {name} "
   )
 
-  save <- glue::glue("cp {workdir}/{name}.log {outdir}/{name}.log")
-  c(get_dependencies(), create_dir, move_files, main_code, save)
-
 }
 
 
-#' Read in the output of LDSC --rg
-#'
-#' @param path path to LDSC rg output file
-#'
-#' @return a tibble
-#' @export
-#'
-#' @examples \dontrun{
-#' parse_ldsc_rg("path/to/ldsc_rg.results")
-#' }
-#'
-parse_ldsc_rg <- function(path){
-  strings <- readLines(path)
-
-  if(length(strings) != 65) {
-    return(dplyr::tibble(pheno1 = NA_character_, pheno2 = NA_character_, rg=NA_real_, rg_se=NA_real_, p = NA_real_))
-  }
 
 
-  pheno1 <- fs::path_file(path) %>%
-    stringr::str_remove(".log") %>%
-    stringr::str_split("__") %>% .[[1]] %>%
-    .[1]
-
-  pheno2 <- fs::path_file(path) %>%
-    stringr::str_remove(".log") %>%
-    stringr::str_split("__") %>% .[[1]] %>%
-    .[2]
-
-  names <- strings[61] %>%
-    stringr::str_split(" ") %>%
-    .[[1]] %>%
-    .[. != ""] %>%
-    .[-c(1:2)]
-
-  vals <- strings[62] %>%
-    stringr::str_split(" ") %>%
-    .[[1]] %>%
-    .[. != ""] %>%
-    .[-c(1:2)] %>%
-    as.numeric()
-
-  dplyr::tibble(names, vals) %>%
-    tidyr::pivot_wider(names_from = names, values_from = vals)  %>%
-    dplyr::mutate(
-      pheno1 = pheno1,
-      pheno2 = pheno2
-    ) %>%
-    dplyr::select(pheno1, pheno2, dplyr::everything())
-
-}
 
 
 
@@ -273,40 +221,63 @@ parse_ldsc_rg <- function(path){
 #
 # }
 #
-# ldsc_partitioned <- function(
-#     ld1,
-#     outname,
-#     sumstats,
-#     outdir,
-#     base_ldscore,
-#     weights,
-#     freq
-# )
-# {
-#
-#   if(!missing(ld1)) {
-#     glue::glue(
-#       "ldsc.py ",
-#       "--h2 {sumstats} ",
-#       "--ref-ld-chr {base_ldscore},{ld1}/baseline. ",
-#       "--w-ld-chr {weights} ",
-#       "--overlap-annot ",
-#       "--frqfile-chr {freq} ",
-#       "--print-coefficients ",
-#       "--out {outdir}/{outname}"
-#     )
-#
-#   } else {
-#     glue::glue(
-#       "ldsc.py ",
-#       "--h2 {sumstats} ",
-#       "--ref-ld-chr {base_ldscore} ",
-#       "--w-ld-chr {weights} ",
-#       "--overlap-annot ",
-#       "--frqfile-chr {freq} ",
-#       "--print-coefficients ",
-#       "--out {outdir}/{outname}"
-#     )
-#   }
-#
-# }
+ldsc_partitioned <- function(
+    parent_folder,
+    ldscore = c("superclusters", "clusters")
+){
+  paths <- tidyGWAS_paths(parent_folder)
+  ldscore <- rlang::arg_match(ldscore)
+  ref <- paths$system_paths$reference
+  ldscores_path <- paths$system_paths$sldsc$cell_types[[ldscore]]
+
+  to_run <- fs::path("/src/", withr::with_dir(ref,fs::dir_ls(ldscores_path))[1], "baseline.")
+
+  base_ldscore <- paste0("/src","/",ldscore, "/")
+  base <- fs::path("/src/", paths$system_paths$sldsc$eur$base_ldscore)
+  weights <- fs::path("/src/", paths$system_paths$sldsc$eur$weights)
+  freq <-  fs::path("/src/", paths$system_paths$sldsc$eur$freq)
+
+  
+  outfile <- glue::glue("sldsc/{ldscore}/", fs::path_file(fs::path_dir(to_run)))
+  fs::dir_create(fs::path_dir(outfile), recurse = TRUE)
+
+
+  stratified_ldsc(
+    ldsc_exe = glue::glue("{ldsc_call(paths$ldsc)}/ldsc.py "),
+    sumstats = "ldsc.sumstats",
+    annot_ldscore = to_run,
+    baseline_ldscore = base,
+    weights = weights,
+    freq = freq,
+    out = "testing"
+  )
+
+
+  c(get_dependencies(), job)
+
+}
+writeLines(job, "~/test_pldsc.sh")
+
+
+
+stratified_ldsc <- function(
+  ldsc_exe,
+  sumstats,
+  annot_ldscore,
+  baseline_ldscore,
+  weights,
+  freq,
+  out
+
+) {
+      glue::glue(
+        "{ldsc_exe}",
+        "--h2 {sumstats} ",
+        "--ref-ld-chr {annot_ldscore},{baseline_ldscore} ",
+        "--w-ld-chr {weights} ",
+        "--overlap-annot ",
+        "--frqfile-chr {freq} ",
+        "--print-coefficients ",
+        "--out {out}"
+    )
+}

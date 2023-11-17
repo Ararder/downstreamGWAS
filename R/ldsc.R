@@ -128,6 +128,7 @@ parse_ldsc_h2 <- function(path) {
 ldsc_rg <- function(parent_folder, parent_folder2, outdir, workdir=tempdir()) {
   f1 <- tidyGWAS_paths(parent_folder)
   f2 <- tidyGWAS_paths(parent_folder2)
+  system_paths <- get_system_paths()
 
   create_dir <- glue::glue("mkdir -p {workdir}")
   p1 <- paste0(f1$ldsc_munged, ".sumstats")

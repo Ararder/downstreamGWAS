@@ -3,7 +3,7 @@
 # -------------------------------------------------------------------------
 get_dependencies <- function() {
   # update later: for now only gives dependencies on Dardel
-  glue::glue("ml PDC/22.06 singularity/3.10.4-cpeGNU-22.06 R/4.2.2-cpeGNU-22.06")
+  get_system_paths()[["container_dependency"]]
 }
 
 singularity_mount <- function(workdir) {

@@ -123,7 +123,7 @@ parse_ldsc_h2 <- function(path) {
 #' @export
 #'
 #' @examples \dontrun{
-#' ldsc_rg("my_sumstats/tidygwas/height2022", "my_sumstats/tidygwas/height2022", "~/)
+#' ldsc_rg("my_sumstats/tidygwas/height2022", "my_sumstats/tidygwas/height2022", "~/")
 #' }
 ldsc_rg <- function(parent_folder, parent_folder2, outdir, workdir=tempdir()) {
   f1 <- tidyGWAS_paths(parent_folder)

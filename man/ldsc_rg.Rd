@@ -21,3 +21,8 @@ code to run in slurm
 \description{
 Estimate genetic correlation between two GWAS using LDSC
 }
+\examples{
+\dontrun{
+ldsc_rg("my_sumstats/tidygwas/height2022", "my_sumstats/tidygwas/height2022", "~/")
+}
+}

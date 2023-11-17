@@ -75,13 +75,17 @@ write_existing_columns <- function(paths) {
 
 }
 
-parse_tidyGWAS <- function(parent_folder) {
-
-  #fs::path(parent_folder, "cleaned_GRCh38.csv")
-  fs::path(parent_folder, "tidyGWAS_hivestyle")
-
-
-}
+# parse_tidyGWAS <- function(parent_folder) {
+#
+#   if(fs::dir_exists(fs::path(parent_folder, "tidyGWAS_hivestyle"))) {
+#     return
+#   }
+#
+#   #fs::path(parent_folder, "cleaned_GRCh38.csv")
+#   fs::path(parent_folder, "tidyGWAS_hivestyle")
+#
+#
+# }
 
 
 

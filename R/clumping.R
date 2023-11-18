@@ -89,7 +89,7 @@ call_bedtools <- function(workdir) {
   singularity_start <- singularity_mount(workdir)
 
   # return command
-  glue::glue("{singularity_start}{bed_path} bedtools")
+  glue::glue("{singularity_start}{bed_path}")
 
 }
 

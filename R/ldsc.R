@@ -256,7 +256,7 @@ ldsc_partitioned <- function(
   c(get_dependencies(), job)
 
 }
-writeLines(job, "~/test_pldsc.sh")
+
 
 
 

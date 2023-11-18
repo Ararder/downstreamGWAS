@@ -33,10 +33,9 @@ run_clumping <- function(parent_folder, write_script = c("no", "yes")) {
   format_to_bed <- glue::glue("R -e 'downstreamGWAS::ranges_to_bed(commandArgs(trailingOnly = TRUE)[1],commandArgs(trailingOnly=TRUE)[2])'") |>
     paste0(" --args", " ", fs::path(paths$clumping, "clumps.clumped.ranges"), " ", fs::path(paths$clumping, "clumps.bed"))
 
-  # create bedtools merge command
-
-  bedtools_merge <- glue::glue("{call_bedtools(paths$clumping)} merge -d 50000 -i clumps.bed -c 4,5,6 -o sum,collapse,collapse > /home/genome_wide_sig_loci.bed")
-
+  # create bedtools merge command to merge loci that close to each other
+  bedtools_merge <- glue::glue("{call_bedtools(paths$clumping)} sh -c \"bedtools merge -d 50000 -i clumps.bed -c 4,5,6 -o sum,collapse,collapse > genome_wide_sig_loci.bed\"")
+  
   # clean up tmp files
   remove_temp_file <- glue::glue("rm {paths$clump_temp}")
 

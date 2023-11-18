@@ -12,12 +12,12 @@ utils::globalVariables(c("POS", "tmp", "chr", "start", "end", "N", "P", "SNP"))
 #' @examples \dontrun{
 #' run_clumping("/my_sumstat/cleaned/")
 #' }
-run_clumping <- function(parent_folder) {
+run_clumping <- function(parent_folder, write_script = c("no", "yes")) {
 
   # get paths & make sure output folder exists
   paths <- tidyGWAS_paths(parent_folder)
   fs::dir_create(paths$clumping)
-
+  write_script = rlang::arg_match(write_script)
 
   # -------------------------------------------------------------------------
 
@@ -45,13 +45,18 @@ run_clumping <- function(parent_folder) {
 
   # write merge parts and write script to disk
   job <- c(get_dependencies(), format_tidyGWAS, plink_code, format_to_bed, bedtools_merge, remove_temp_file)
-  writeLines(job, script_path)
 
 
   # return path to script ---------------------------------------------------
 
+  if(write_script == "yes") {
+    writeLines(job, script_path)
+    system(glue::glue("chmod +x {script_path}"))
+    return(script_path)
+  } else if(write_script == "no") {
+    return(job)
+  }
 
-  script_path
 
 }
 

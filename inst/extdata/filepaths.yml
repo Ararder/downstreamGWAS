@@ -1,10 +1,7 @@
-topmed:
-  ld:
-    snv: "snp_level_annotatations/ld_ref_topmed/ld_single_nucleotide_variants/"
-    sv: "snp_level_annotatations/ld_ref_topmed/ld_structural_variants/"
-    sv_info: "snp_level_annotatations/ld_ref_topmed/SV_info.parquet"
-  allele_freq:
-    global: "/nas/depts/007/sullilab/shared/arvhar/snp_level_annotatations/topmed_af"
+containers: ""
+container_dependency: ""
+reference: ""
+sumstats_folder: ""
 
 ldsc:
   container: "ldsc.sif"
@@ -15,35 +12,14 @@ sldsc:
     base_ldscore: "sldsc_ref/1000G_EUR_Phase3_baseline/baseline."
     weights: "sldsc_ref/1000G_Phase3_weights_hm3_no_MHC/weights.hm3_noMHC."
     freq: "sldsc_ref/1000G_Phase3_frq/1000G.EUR.QC."
-
+  cell_types:
+    superclusters: "siletti2023/superclusters"
+    clusters: "siletti2023/clusters"
 plink:
-  gene_ref: "/nas/depts/007/sullilab/shared/gwas_sumstats/reference/glist-hg38.tsv"
-  genome_ref: "/nas/depts/007/sullilab/shared/deep_1000kg/old/EUR/EUR_rsID"
-gctb:
-  exe: "/nas/depts/007/sullilab/shared/gctb/gctb"
-  ldmatrix: "/nas/depts/007/sullilab/shared/gctb/band_ukb_10k_hm3/ukb10k.mldm"
-  rc_ldmatrix: "/nas/depts/007/sullilab/shared/gctb/ukbEUR_Imputed"
-  annot_file: "/nas/depts/007/sullilab/shared/arvhar/sbayesrc_PGS/annot_baseline2.2.txt"
-magma:
-  gene_loc: "/nas/depts/007/sullilab/shared/gwas_sumstats/reference/magma_gene_ref_grch38.tsv"
-  genome_ref: "/nas/depts/007/sullilab/shared/deep_1000kg/plink/EUR/EUR_rsID"
+  container: "genetics_latest.sif"
+  gene_ref: "1000G_merged/glist-hg37.tsv"
+  genome_ref: "1000G_merged/1000G_merged"
 
-scrna:
-  siletti2022:
-    ld_scores:
-      superclusters: "/nas/depts/007/sullilab/shared/scRNA_data/siletti2022/ldscores/superclusters"
-      clusters: "/nas/depts/007/sullilab/shared/scRNA_data/siletti2022/ldscores/clusters"
-    magma_genesets:
-      superclusters: "/nas/depts/007/sullilab/shared/scRNA_data/siletti2022/magma_genesets/superclusters.txt"
-      clusters: "/nas/depts/007/sullilab/shared/scRNA_data/siletti2022/magma_genesets/clusters.txt"
-  GTEX_v8:
-    ld_scores:
-      tissues: "/nas/depts/007/sullilab/shared/scRNA_data/GTEx_v8/ldscores/tissues"
-  zeisel2018:
-    ld_scores:
-      level4: "/nas/depts/007/sullilab/shared/scRNA_data/zeisel2018/ldscores/level4"
-      level5: "/nas/depts/007/sullilab/shared/scRNA_data/zeisel2018/ldscores/level5"
-    magma_genesets:
-      level4: "/nas/depts/007/sullilab/shared/scRNA_data/zeisel2018/magma_genesets/level4.txt"
-
-
+mixer:
+  container: "mixer.sif"
+  ref_files: "mixer/"

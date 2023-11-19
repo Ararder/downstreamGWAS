@@ -4,7 +4,7 @@
 \alias{run_clumping}
 \title{Construct genetic loci from GWAS}
 \usage{
-run_clumping(parent_folder)
+run_clumping(parent_folder, write_script = c("no", "yes"))
 }
 \arguments{
 \item{parent_folder}{Folder to sumstats cleaned with tidyGWAS. see [tidyGWAS::tidyGWAS()] output_folder}

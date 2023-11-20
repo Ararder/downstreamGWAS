@@ -1,4 +1,4 @@
-setup_filepaths_yml <- function(dir) {
+setup <- function(dir) {
   yml <- yaml::read_yaml(fs::path(fs::path_package("downstreamGWAS"), "extdata/filepaths.yml"))
   outpath <- fs::path(dir, ".filepaths.yml")
   yaml::write_yaml(yml, outpath)

@@ -13,7 +13,13 @@ singularity_mount <- function(workdir) {
   glue::glue("singularity exec --home {workdir}:/home --bind {ref}:/src ")
 }
 
-singularity_call <- function(command, sif, workdir) {
+singularity_call <- function(cmd, sif, workdir) {
   glue::glue(singularity_mount(workdir), " {paths$system_paths$containers}/{sif} {command}")
+}
+
+singularity_call2 <- function(cmd, workdir, program) {
+  paths <- get_system_paths()
+  glue::glue(singularity_mount(workdir), "{paths$containers}/{paths[[program]]$container} {cmd}")
+
 }
 

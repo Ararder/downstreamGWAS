@@ -5,7 +5,7 @@ utils::globalVariables(c("POS", "tmp", "chr", "start", "end", "N", "P", "SNP"))
 #' Construct genetic loci from GWAS
 #'
 #' @inheritParams run_ldsc
-#'
+#' @param write_script should a .sh file be written to the workdir with the code?
 #' @return a filepath to a clumping script
 #' @export
 #'
@@ -17,7 +17,7 @@ run_clumping <- function(parent_folder, write_script = c("no", "yes")) {
   # get paths & make sure output folder exists
   paths <- tidyGWAS_paths(parent_folder)
   fs::dir_create(paths$clumping)
-  write_script = rlang::arg_match(write_script)
+  write_script <- rlang::arg_match(write_script)
 
   # -------------------------------------------------------------------------
 
@@ -35,7 +35,7 @@ run_clumping <- function(parent_folder, write_script = c("no", "yes")) {
 
   # create bedtools merge command to merge loci that close to each other
   bedtools_merge <- glue::glue("{call_bedtools(paths$clumping)} sh -c \"bedtools merge -d 50000 -i clumps.bed -c 4,5,6 -o sum,collapse,collapse > genome_wide_sig_loci.bed\"")
-  
+
   # clean up tmp files
   remove_temp_file <- glue::glue("rm {paths$clump_temp}")
 

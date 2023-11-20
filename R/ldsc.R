@@ -1,4 +1,4 @@
-utils::globalVariables(c("RSID","."))
+utils::globalVariables(c("RSID",".", "job"))
 
 
 
@@ -237,7 +237,7 @@ ldsc_partitioned <- function(
   weights <- fs::path("/src/", paths$system_paths$sldsc$eur$weights)
   freq <-  fs::path("/src/", paths$system_paths$sldsc$eur$freq)
 
-  
+
   outfile <- glue::glue("sldsc/{ldscore}/", fs::path_file(fs::path_dir(to_run)))
   fs::dir_create(fs::path_dir(outfile), recurse = TRUE)
 

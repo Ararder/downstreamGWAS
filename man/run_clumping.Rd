@@ -8,6 +8,8 @@ run_clumping(parent_folder, write_script = c("no", "yes"))
 }
 \arguments{
 \item{parent_folder}{Folder to sumstats cleaned with tidyGWAS. see [tidyGWAS::tidyGWAS()] output_folder}
+
+\item{write_script}{should a .sh file be written to the workdir with the code?}
 }
 \value{
 a filepath to a clumping script

@@ -1,3 +1,13 @@
+#' Setup required filepaths for downstreamGWAS
+#'
+#' @param dir in what directory should the config file be stored?
+#'
+#' @return NULL
+#' @export
+#'
+#' @examples \dontrun{
+#' setup("my_dsg/folder/)
+#' }
 setup <- function(dir) {
   yml <- yaml::read_yaml(fs::path(fs::path_package("downstreamGWAS"), "extdata/filepaths.yml"))
   outpath <- fs::path(dir, ".filepaths.yml")
@@ -25,7 +35,15 @@ setup <- function(dir) {
 
 }
 
-check_yml_setup <- function() {
+#' Check if [setup()] worked correctly
+#'
+#' @return NULL
+#' @export
+#'
+#' @examples \dontrun{
+#' check_setup
+#' }
+check_setup <- function() {
   var <- Sys.getenv("DSG_PATHS")
   if(var == "") {
     cli::cli_alert_danger("Could not find {.var DSG_PATHS} in .Renviron file")

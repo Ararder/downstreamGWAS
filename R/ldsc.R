@@ -43,7 +43,7 @@ run_ldsc <- function(parent_folder) {
     "--a1 EffectAllele ",
     "--a2 OtherAllele ",
     "--merge-alleles /src/{paths$system_paths$ldsc$hm3} ",
-    "--chunksize 500000 && rm temp.tsv"
+    "--chunksize 500000 && rm {fs::path_file(paths$ldsc_temp)}"
   )
 
 

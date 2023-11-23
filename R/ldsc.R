@@ -43,22 +43,21 @@ run_ldsc <- function(parent_folder) {
     "--a1 EffectAllele ",
     "--a2 OtherAllele ",
     "--merge-alleles /src/{paths$system_paths$ldsc$hm3} ",
-    "--chunksize 500000 && rm temp.tsv && mv ldsc.sumstats.gz ldsc.sumstats"
+    "--chunksize 500000 && rm temp.tsv"
   )
 
 
-  cleanup  <- glue::glue("rm {paths$ldsc_temp} && mv {paths$ldsc}/ldsc.sumstats.gz {paths$ldsc}/ldsc.sumstats")
 
   h2 <- glue::glue(
     "{ldsc_call(paths$ldsc)}/ldsc.py ",
-    "--h2 ldsc.sumstats ",
+    "--h2 ldsc.sumstats.gz ",
     "--ref-ld-chr /src/{paths$system_paths$ldsc$eur_wld} ",
     "--w-ld-chr /src/{paths$system_paths$ldsc$eur_wld} ",
     "--out {fs::path_file(paths$ldsc_h2)}"
 
   )
 
-  writeLines(c(dep, prepare_sumstats, munge, cleanup, h2), fs::path(paths$ldsc, "run_ldsc.sh"))
+  writeLines(c(dep, prepare_sumstats, munge, h2), fs::path(paths$ldsc, "run_ldsc.sh"))
   fs::path(paths$ldsc, "run_ldsc.sh")
 
 

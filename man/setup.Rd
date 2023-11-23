@@ -12,3 +12,8 @@ setup(dir)
 \description{
 Setup required filepaths for downstreamGWAS
 }
+\examples{
+\dontrun{
+setup("my_dsg/folder/")
+}
+}

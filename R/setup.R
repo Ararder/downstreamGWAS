@@ -6,7 +6,7 @@
 #' @export
 #'
 #' @examples \dontrun{
-#' setup("my_dsg/folder/)
+#' setup("my_dsg/folder/")
 #' }
 setup <- function(dir) {
   yml <- yaml::read_yaml(fs::path(fs::path_package("downstreamGWAS"), "extdata/filepaths.yml"))

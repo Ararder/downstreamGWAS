@@ -11,7 +11,7 @@ utils::globalVariables(c("CaseN", "ControlN"))
 #' }
 to_ldsc <- function(parent_folder, sample_size = c("Effective", "N")) {
 
-  rlang::arg_match(sample_size)
+  sample_size <- rlang::arg_match(sample_size)
   paths <- tidyGWAS_paths(parent_folder)
   hm3_path <- fs::path(paths$system_paths$reference, paths$system_paths$ldsc$hm3)
   hm3 <- arrow::read_tsv_arrow(hm3_path)

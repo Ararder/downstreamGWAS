@@ -1,16 +1,17 @@
+utils::globalVariables(c("CaseN", "ControlN"))
 #' Export tidyGWAS format to LDSC format
 #'
 #' @param parent_folder filepath to tidyGWAS folder
-#'
+#' @param sample_size Should an attempt be made to calculate effective N and use that as N?
 #' @return NULL
 #' @export
 #'
 #' @examples \dontrun{
 #' to_ldsc("my_sumstats/tidygwas/height2022")
 #' }
-to_ldsc <- function(parent_folder) {
+to_ldsc <- function(parent_folder, sample_size = c("Effective", "N")) {
 
-
+  rlang::arg_match(sample_size)
   paths <- tidyGWAS_paths(parent_folder)
   hm3_path <- fs::path(paths$system_paths$reference, paths$system_paths$ldsc$hm3)
   hm3 <- arrow::read_tsv_arrow(hm3_path)
@@ -25,10 +26,26 @@ to_ldsc <- function(parent_folder) {
   }
 
 
-  dset |>
-    dplyr::select(dplyr::any_of(c("RSID", "EffectAllele", "OtherAllele", effect,"SE", "P", "N"))) |>
+  df <- dset |>
+    dplyr::select(dplyr::any_of(c("RSID", "EffectAllele", "OtherAllele", effect,"SE", "P", "N", "CaseN", "ControlN"))) |>
     dplyr::filter(RSID %in% hm3$SNP) |>
-    dplyr::collect() |>
+    dplyr::collect()
+
+  # use Effective N as N?
+  has_ncas <- all(c("CaseN", "ControlN") %in% dset$schema$names)
+
+  if(!has_ncas & sample_size == "Effective") {
+    cli::cli_alert_danger("Tried to calculate effective sample, but the required columns are missing: CaseN or ControlN")
+  }
+
+  if(sample_size == "Effective" & has_ncas) {
+    cli::cli_alert_success("OBS: Using Effective N as N!")
+    df <- dplyr::mutate(df, N = effective_n(CaseN, ControlN))
+  }
+
+  # write out
+  df |>
+    dplyr::select(dplyr::any_of(c("RSID", "EffectAllele", "OtherAllele", effect,"SE", "P", "N"))) |>
     readr::write_tsv(paths$ldsc_temp)
 
 

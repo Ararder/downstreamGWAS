@@ -20,7 +20,8 @@ Imports:
     readr,
     magrittr,
     tidyr,
-    cli
+    cli,
+    rlang
 Suggests: 
     testthat (>= 3.0.0),
     withr

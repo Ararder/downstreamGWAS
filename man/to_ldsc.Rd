@@ -4,10 +4,12 @@
 \alias{to_ldsc}
 \title{Export tidyGWAS format to LDSC format}
 \usage{
-to_ldsc(parent_folder)
+to_ldsc(parent_folder, sample_size = c("Effective", "N"))
 }
 \arguments{
 \item{parent_folder}{filepath to tidyGWAS folder}
+
+\item{sample_size}{Should an attempt be made to calculate effective N and use that as N?}
 }
 \description{
 Export tidyGWAS format to LDSC format

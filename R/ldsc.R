@@ -146,6 +146,7 @@ ldsc_rg <- function(parent_folder, parent_folder2, outdir, workdir=tempdir()) {
     "--w-ld-chr /src/{system_paths$ldsc$eur_wld} ",
     "--out {name} "
   )
+  c(move_files, "\n", main_code)
 
 }
 

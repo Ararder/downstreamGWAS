@@ -88,7 +88,7 @@ parse_ldsc_h2 <- function(path) {
   obs_h2 <- as.numeric(stringr::str_extract(df[26], "\\d{1}\\.\\d{1,5}"))
 
   obs_se <- stringr::str_extract(df[26], "\\(\\d{1}\\.\\d{1,5}") |>
-    stringr::str_remove( "\\(" ) |>
+    stringr::str_remove(string = _, pattern = "\\(") |>
     as.numeric()
 
   lambda <- stringr::str_extract(df[27], " \\d{1}\\.\\d{1,5}") |>
@@ -97,11 +97,11 @@ parse_ldsc_h2 <- function(path) {
   mean_chi2 <- stringr::str_extract(df[28], " \\d{1}\\.\\d{1,5}") |>
     as.numeric()
 
-  intercept <- stringr::str_extract(df[29], " \\d{1}\\.\\d{1,5}") |>
+  intercept <- stringr::str_extract(string = df[29], pattern = " \\d{1}\\.\\d{1,5}") |>
     as.numeric()
 
-  intercept_se <- stringr::str_extract(df[29], "\\(\\d{1}\\.\\d{1,5}") |>
-    stringr::str_remove(., "\\(") |>
+  intercept_se <- stringr::str_extract(string = df[29],pattern =  "\\(\\d{1}\\.\\d{1,5}") |>
+    stringr::str_remove(string = _, pattern =  "\\(") |>
     as.numeric()
   ratio <- stringr::str_extract(df[30], " \\d{1}\\.\\d{1,5}") |>
     as.numeric()

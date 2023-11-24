@@ -88,7 +88,7 @@ parse_ldsc_h2 <- function(path) {
   obs_h2 <- as.numeric(stringr::str_extract(df[26], "\\d{1}\\.\\d{1,5}"))
 
   obs_se <- stringr::str_extract(df[26], "\\(\\d{1}\\.\\d{1,5}") |>
-    stringr::str_remove(., "\\(") |>
+    stringr::str_remove( "\\(" ) |>
     as.numeric()
 
   lambda <- stringr::str_extract(df[27], " \\d{1}\\.\\d{1,5}") |>

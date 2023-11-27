@@ -165,10 +165,12 @@ ldsc_rg <- function(parent_folder, parent_folder2, outdir, workdir=tempdir()) {
 #' @inheritParams run_ldsc
 #' @param ldscore which cell-type atlas to use. Has to match an entry in the reference file
 #'
-#' @return
+#' @return NULL
 #' @export
 #'
-#' @examples
+#' @examples \dontrun{
+#' run_sldsc("path_to_tidyGWAS")
+#' }
 run_sldsc <- function(parent_folder, ldscore = c("superclusters", "clusters"), write_script = c("no", "yes")) {
 
   # parse input args

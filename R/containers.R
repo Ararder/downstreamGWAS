@@ -10,7 +10,7 @@ singularity_mount <- function(workdir) {
   paths <- get_system_paths()
   ref  <- paths$reference
 
-  glue::glue("singularity exec --home {workdir}:/home --bind {ref}:/src ")
+  glue::glue("singularity exec --bind {workdir}:/mnt --bind {ref}:/src ")
 }
 
 singularity_call <- function(cmd, sif, workdir) {

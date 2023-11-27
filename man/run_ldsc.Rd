@@ -4,10 +4,12 @@
 \alias{run_ldsc}
 \title{Run munge LDSC and LDSC -h2 from tidyGWAS}
 \usage{
-run_ldsc(parent_folder)
+run_ldsc(parent_folder, write_script = c("no", "yes"))
 }
 \arguments{
 \item{parent_folder}{Folder to sumstats cleaned with tidyGWAS. see [tidyGWAS::tidyGWAS()] output_folder}
+
+\item{write_script}{Should the code be written to a bash script?}
 }
 \value{
 a path to slurm script

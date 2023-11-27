@@ -34,7 +34,7 @@ run_clumping <- function(parent_folder, write_script = c("no", "yes")) {
     paste0(" --args", " ", fs::path(paths$clumping, "clumps.clumped.ranges"), " ", fs::path(paths$clumping, "clumps.bed"))
 
   # create bedtools merge command to merge loci that close to each other
-  bedtools_merge <- glue::glue("{call_bedtools(paths$clumping)} sh -c \"bedtools merge -d 50000 -i clumps.bed -c 4,5,6 -o sum,collapse,collapse > genome_wide_sig_loci.bed\"")
+  bedtools_merge <- glue::glue("{call_bedtools(paths$clumping)} sh -c \"bedtools merge -d 50000 -i /mnt/clumps.bed -c 4,5,6 -o sum,collapse,collapse > /mnt/genome_wide_sig_loci.bed\"")
 
   # clean up tmp files
   remove_temp_file <- glue::glue("rm {paths$clump_temp}")
@@ -72,7 +72,7 @@ call_plink <- function(workdir) {
   singularity_start <- singularity_mount(workdir)
 
   # return command
-  glue::glue("{singularity_start} {plink_path} plink")
+  glue::glue("{singularity_start}{plink_path} plink")
 
 }
 
@@ -98,8 +98,8 @@ clump_plink <- function(paths, p1 = "5e-08", p2 = "5e-06", r2 = 0.1, kb = 3000, 
 
   glue::glue(
     "{call_plink(paths$clumping)} --bfile /src/{paths$system_paths$plink$genome_ref} ",
-    "--clump {fs::path_file(paths$clump_temp)} ",
-    "--out clumps ",
+    "--clump /mnt/{fs::path_file(paths$clump_temp)} ",
+    "--out /mnt/clumps ",
     "--clump-p1 {p1} ",
     "--clump-p2 {p2} ",
     "--clump-r2 {r2} ",

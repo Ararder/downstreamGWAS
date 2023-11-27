@@ -85,7 +85,7 @@ call_bedtools <- function(workdir) {
   # -------------------------------------------------------------------------
 
   # construct full path to container, and mount directories
-  bed_path <- fs::path(paths$containers, "genomics.sif")
+  bed_path <- fs::path(paths$containers, paths$plink$container)
   singularity_start <- singularity_mount(workdir)
 
   # return command

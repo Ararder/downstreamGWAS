@@ -160,6 +160,15 @@ ldsc_rg <- function(parent_folder, parent_folder2, outdir, workdir=tempdir()) {
 
 
 
+#' run Stratified LDscore regression on tidyGWAS formatted sumstats
+#'
+#' @inheritParams run_ldsc
+#' @param ldscore which cell-type atlas to use. Has to match an entry in the reference file
+#'
+#' @return
+#' @export
+#'
+#' @examples
 run_sldsc <- function(parent_folder, ldscore = c("superclusters", "clusters"), write_script = c("no", "yes")) {
 
   # parse input args

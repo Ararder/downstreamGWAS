@@ -1,22 +1,122 @@
-#' utils::globalVariables(c("multi_allelic", "EffectAllele", "OtherAllele","EAF", "B", "SE", "se", "p"))
+
+call_gctb <- function(workdir) {
+
+  paths <- get_system_paths()
+  gctb <- fs::path(paths$containers, paths$gctb$container)
+  singularity_start <- singularity_mount(workdir)
+
+  glue::glue("{singularity_start}{gctb} gctb")
+}
+
+#' Capture code to run sbayesRC
 #'
-#' #' Transform tidyGWAS to COJO .ma format
-#' #'
-#' #' @param paths crated by `tidyGWAS_paths()`
-#' #'
-#' #' @return a list of filepaths
-#' #' @export
-#' #'
-#' #' @examples \dontrun{
-#' #'   tidyGWAS_paths("/home/arvhar/tidyGWAS_cleaned/height2022")
-#' #' }
-#' #'
-#' to_ma <- function(paths) {
-#'   LDdir <- paths$system_paths$gctb$rc_ldmatrix
+#' @param paths a list of filepaths, see [sbayesrc()] for which filepaths are required
+#' @param thread number of threads to use
 #'
-#'   workdir <- fs::dir_create(paths$sbayesrc)
+#' @return a character vector
+#' @export
 #'
+#' @examples \dontrun{
+#' wrapper_sbayesrc()
+#' }
+wrapper_sbayesrc <- function(paths, thread=4) {
+  workdir <- paths$sbayesr
+  ldm <- glue::glue("/src/{paths$system_paths$gctb$ldm}")
+  ma_file <- glue::glue("/mnt/{fs::path_file(paths$ma_file)}")
+  imp_file <- glue::glue("/mnt/{fs::path_file(paths$imp_ma_file)}")
+  annot <- glue::glue("/src/{paths$system_paths$gctb$annot}")
+  out <- "/mnt/sbrc"
+  sbayesrc(
+    workdir = workdir,
+    ldm = ldm,
+    ma_file = ma_file,
+    imp_file = imp_file,
+    annot = annot,
+    out = out,
+    thread = thread
+  )
+
+}
+
+#' Capture code to run sbayesRC
 #'
+#' @param workdir work directory
+#' @param ldm filepath to ldm folder
+#' @param ma_file filepath to.am file
+#' @param imp_file filepath to imputed .ma file
+#' @param annot filepath to the annotation file
+#' @param out filepath prefix to outfiles
+#' @param thread number of threads
+#'
+#' @return a character vector
+#' @export
+#'
+#' @examples \dontrun{
+#' sbayesrc()
+#' }
+sbayesrc <- function(workdir, ldm, ma_file, imp_file, annot, out, thread=4) {
+
+  impute <- glue::glue(
+   "{call_gctb(workdir)} ",
+   "--ldm-eigen {ldm} ",
+   "--gwas-summary {ma_file} ",
+   "--impute-summary ",
+   "--out {imp_file} ",
+   "--thread {thread}"
+   )
+
+  # for rescale
+
+  rescale <- glue::glue(
+   "{call_gctb(workdir)} ",
+   "--ldm-eigen {ldm} ",
+   "--gwas-summary {imp_file} ",
+   "--sbayes RC ",
+   "--annot {annot} ",
+   "--out {out} ",
+   "--thread {thread}"
+  )
+
+  c(impute, "\n", rescale)
+
+
+}
+
+
+#' Run sbayerc with tidyGWAS structure
+#'
+#' @inheritParams run_ldsc
+#' @inheritDotParams sbayesrc workdir ldm ma_file imp_file annot out thread
+#' @param ...
+#'
+#' @return a filepath or character vector
+#' @export
+#'
+#' @examples \dontrun{
+#' run_sbayesrc()
+#' }
+run_sbayesrc <- function(parent_folder, write_script = c("no","yes"), ...) {
+  paths <- tidyGWAS_paths(parent_folder)
+  header <- slurm_header(...)
+  code <- wrapper_sbayesrc(paths)
+
+  if(write_script == "yes") {
+
+    p <- fs::path(paths$sbayesrc, "sbayesrc.sh")
+    writeLines(c(header, code), p)
+    return(p)
+
+  } else {
+    return(code)
+
+  }
+
+
+}
+
+
+
+
 #'
 #'   first <- arrow::open_dataset(paths$hivestyle) |>
 #'     dplyr::filter(!multi_allelic) |>
@@ -35,73 +135,3 @@
 #'
 #'   dplyr::bind_rows(first, second) |>
 #'     arrow::write_csv_arrow(paths$ma_file)
-#'
-#'
-#'   SBayesRC::tidy(
-#'     mafile = paths$ma_file,
-#'     LDdir = LDdir,
-#'     output = paths$ma_file
-#'   )
-#'
-#'
-#' }
-#'
-#'
-#' create_imputation_sbayesrc <- function(paths, threads = 16) {
-#'   gctb <- paths$system_paths$gctb$exe
-#'   ldm <- paths$system_paths$gctb$rc_ldmatrix
-#'   out <- paths$imp_ma_file
-#'   glue::glue("{gctb} --ldm-eigen {ldm} --gwas-summary {paths$ma_file} --impute-summary --out {out} --thread {threads}")
-#' }
-#'
-#' create_rescaling_sbayesr <- function(paths, threads = 16) {
-#'   gctb <- paths$system_paths$gctb$exe
-#'   ldm <- paths$system_paths$gctb$rc_ldmatrix
-#'   ma <-  paths$imp_ma_file
-#'   annot <- paths$system_paths$gctb$annot_file
-#'   out <- fs::path(paths$sbayesrc, "sumstats_sbrc")
-#'   glue::glue("{gctb} --ldm-eigen {ldm} --gwas-summary {ma} --sbayes RC --annot {annot} --out {out} --thread {threads}")
-#'
-#' }
-#'
-#'
-#'
-#' #' Create a slurmjob for SbayesRC
-#' #'
-#' #' @param path filepath to tidyGWAS_hivestyle folder
-#' #'
-#' #' @return a slurm script
-#' #' @export
-#' #'
-#' #' @examples \dontrun{
-#' #' run_sbayesrc("path/to/tidyGWAS_hivestyle")
-#' #' }
-#' run_sbayesrc <- function(path) {
-#'   paths <- tidyGWAS_paths(path)
-#'   fs::dir_create(paths$sbayesrc)
-#'   out_slurm <- fs::path(fs::path_real(paths$sbayesrc), "slurm-%j.out")
-#'
-#'   slurm_header <- c(
-#'     "#!/bin/bash",
-#'   "#SBATCH --mem=100gb",
-#'   "#SBATCH --time=72:00:00",
-#'   "#SBATCH --cpus-per-task=16",
-#'   glue::glue("#SBATCH --output={out_slurm}")
-#'   )
-#'
-#'
-#'   job <- glue::glue("Rscript -e 'downstreamGWAS::to_ma(downstreamGWAS::tidyGWAS_paths(commandArgs(trailingOnly=TRUE)[2]))'",) |>
-#'     paste0(" --args ", path)
-#'
-#'   impute_job <- create_imputation_sbayesrc(paths)
-#'   rescaling_job <- create_rescaling_sbayesr(paths)
-#'
-#'
-#'   slurm_out <- fs::path(paths$sbayesrc, glue::glue("{paths$name}_sbayesrc.sh"))
-#'   writeLines(c(slurm_header, "\n", job, impute_job, rescaling_job), slurm_out)
-#'   slurm_out
-#'
-#' }
-
-
-

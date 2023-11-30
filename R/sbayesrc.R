@@ -98,7 +98,7 @@ sbayesrc <- function(workdir, ldm, ma_file, imp_file, annot, out, thread=4) {
 run_sbayesrc <- function(parent_folder, write_script = c("no","yes"), ...) {
   paths <- tidyGWAS_paths(parent_folder)
   header <- slurm_header(...)
-  code <- wrapper_sbayesrc(paths)
+  code <- c(get_dependencies(), wrapper_sbayesrc(paths))
 
   if(write_script == "yes") {
 
@@ -116,22 +116,3 @@ run_sbayesrc <- function(parent_folder, write_script = c("no","yes"), ...) {
 
 
 
-
-#'
-#'   first <- arrow::open_dataset(paths$hivestyle) |>
-#'     dplyr::filter(!multi_allelic) |>
-#'     dplyr::select(SNP = RSID, A1 = EffectAllele, A2 = OtherAllele, freq=EAF, b=B, se=SE, p=P, N) |>
-#'     dplyr::collect()
-#'
-#'
-#'   second <- arrow::open_dataset(paths$hivestyle) |>
-#'     dplyr::filter(multi_allelic) |>
-#'     dplyr::select(SNP = RSID, A1 = EffectAllele, A2 = OtherAllele, freq=EAF, b=B, se=SE, p=P, N) |>
-#'     dplyr::collect() |>
-#'     dplyr::group_by(SNP) |>
-#'     dplyr::slice_min(se, n = 1) |>
-#'     dplyr::slice_max(N, n = 1) |>
-#'     dplyr::slice_min(p, n = 1)
-#'
-#'   dplyr::bind_rows(first, second) |>
-#'     arrow::write_csv_arrow(paths$ma_file)

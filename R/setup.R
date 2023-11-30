@@ -12,6 +12,7 @@ setup <- function(dir) {
   yml <- yaml::read_yaml(fs::path(fs::path_package("downstreamGWAS"), "extdata/filepaths.yml"))
   outpath <- fs::path(dir, ".filepaths.yml")
   yaml::write_yaml(yml, outpath)
+  if(!fs::file_exists('~/.Renviron')) fs::file_create("~/.Renviron")
   cli::cli_bullets(
     c(
     "{.strong downstreamGWAS requires you to specify filepaths in the file we just created: }",

@@ -1,4 +1,5 @@
-utils::globalVariables(c("CaseN", "ControlN"))
+utils::globalVariables(c("CaseN", "ControlN", "multi_allelic", "EffectAllele","OtherAllele",
+                         "EAF", "B", "SE", "se", "p"))
 #' Export tidyGWAS format to LDSC format
 #'
 #' @param parent_folder filepath to tidyGWAS folder
@@ -75,3 +76,37 @@ to_plink_clumping <- function(parent_folder) {
 
 }
 
+#' Convert tidyGWAS to COJO .ma format
+#'
+#' @param parent_folder filepath to tidyGWAS folder
+#' @param out output for .ma file default is the tidyGWAS folder structure
+#'
+#' @return NULL
+#' @export
+#'
+#' @examples \dontrun{
+#' to_ma("/path/tidyGWAS_sumstats/a_sumstat")
+#' }
+to_ma <- function(parent_folder, out) {
+
+  paths <- tidyGWAS_paths(parent_folder)
+  if(missing(out)) out <- paths$ma_file
+
+  first <- arrow::open_dataset(paths$hivestyle) |>
+    dplyr::filter(!multi_allelic) |>
+    dplyr::select(SNP = RSID, A1 = EffectAllele, A2 = OtherAllele, freq=EAF, b=B, se=SE, p=P, N) |>
+    dplyr::collect()
+
+
+  second <- arrow::open_dataset(paths$hivestyle) |>
+    dplyr::filter(multi_allelic) |>
+    dplyr::select(SNP = RSID, A1 = EffectAllele, A2 = OtherAllele, freq=EAF, b=B, se=SE, p=P, N) |>
+    dplyr::collect() |>
+    dplyr::group_by(SNP) |>
+    dplyr::slice_min(se, n = 1) |>
+    dplyr::slice_max(N, n = 1) |>
+    dplyr::slice_min(p, n = 1)
+
+  dplyr::bind_rows(first, second) |>
+    readr::write_tsv(paths$ma_file)
+}

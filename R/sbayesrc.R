@@ -23,14 +23,12 @@ wrapper_sbayesrc <- function(paths, thread=4) {
   workdir <- paths$sbayesr
   ldm <- glue::glue("/src/{paths$system_paths$gctb$ldm}")
   ma_file <- glue::glue("/mnt/{fs::path_file(paths$ma_file)}")
-  imp_file <- glue::glue("/mnt/{fs::path_file(paths$imp_ma_file)}")
   annot <- glue::glue("/src/{paths$system_paths$gctb$annot}")
   out <- "/mnt/sbrc"
   sbayesrc(
     workdir = workdir,
     ldm = ldm,
     ma_file = ma_file,
-    imp_file = imp_file,
     annot = annot,
     out = out,
     thread = thread
@@ -43,7 +41,6 @@ wrapper_sbayesrc <- function(paths, thread=4) {
 #' @param workdir work directory
 #' @param ldm filepath to ldm folder
 #' @param ma_file filepath to.am file
-#' @param imp_file filepath to imputed .ma file
 #' @param annot filepath to the annotation file
 #' @param out filepath prefix to outfiles
 #' @param thread number of threads
@@ -54,19 +51,19 @@ wrapper_sbayesrc <- function(paths, thread=4) {
 #' @examples \dontrun{
 #' sbayesrc()
 #' }
-sbayesrc <- function(workdir, ldm, ma_file, imp_file, annot, out, thread=4) {
+sbayesrc <- function(workdir, ldm, ma_file, annot, out, thread=4) {
 
   impute <- glue::glue(
    "{call_gctb(workdir)} ",
    "--ldm-eigen {ldm} ",
    "--gwas-summary {ma_file} ",
    "--impute-summary ",
-   "--out {imp_file} ",
+   "--out {fs::path_ext_remove(ma_file)} ",
    "--thread {thread}"
    )
 
   # for rescale
-
+  imp_file <- paste0(fs::path_ext_remove(ma_file), ".imputed.ma")
   rescale <- glue::glue(
    "{call_gctb(workdir)} ",
    "--ldm-eigen {ldm} ",
@@ -86,7 +83,7 @@ sbayesrc <- function(workdir, ldm, ma_file, imp_file, annot, out, thread=4) {
 #' Run sbayerc with tidyGWAS structure
 #'
 #' @inheritParams run_ldsc
-#' @inheritDotParams sbayesrc workdir ldm ma_file imp_file annot out thread
+#' @inheritDotParams sbayesrc workdir ldm ma_file annot out thread
 #' @param ...
 #'
 #' @return a filepath or character vector

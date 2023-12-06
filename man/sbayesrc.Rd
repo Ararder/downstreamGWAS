@@ -4,7 +4,7 @@
 \alias{sbayesrc}
 \title{Capture code to run sbayesRC}
 \usage{
-sbayesrc(workdir, ldm, ma_file, imp_file, annot, out, thread = 4)
+sbayesrc(workdir, ldm, ma_file, annot, out, thread = 4)
 }
 \arguments{
 \item{workdir}{work directory}
@@ -12,8 +12,6 @@ sbayesrc(workdir, ldm, ma_file, imp_file, annot, out, thread = 4)
 \item{ldm}{filepath to ldm folder}
 
 \item{ma_file}{filepath to.am file}
-
-\item{imp_file}{filepath to imputed .ma file}
 
 \item{annot}{filepath to the annotation file}
 

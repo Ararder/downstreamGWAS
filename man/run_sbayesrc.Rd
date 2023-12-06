@@ -17,7 +17,6 @@ run_sbayesrc(parent_folder, write_script = c("no", "yes"), ...)
     \item{\code{workdir}}{work directory}
     \item{\code{ldm}}{filepath to ldm folder}
     \item{\code{ma_file}}{filepath to.am file}
-    \item{\code{imp_file}}{filepath to imputed .ma file}
     \item{\code{annot}}{filepath to the annotation file}
     \item{\code{out}}{filepath prefix to outfiles}
     \item{\code{thread}}{number of threads}

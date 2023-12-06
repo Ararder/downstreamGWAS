@@ -134,7 +134,7 @@ tidyGWAS_paths <- function(dir) {
     magma = fs::path(dir, "analysis/magma"),
     sbayesrc = sbayesrc,
     ma_file = fs::path(sbayesrc, "sumstats.ma"),
-    imp_ma_file = fs::path(sbayesrc, "imp_sumstats.ma"),
+    imp_ma_file = fs::path(sbayesrc, "sumstats.imputed.ma"),
     clumping = clumping,
     clump_temp = fs::path(clumping, "temp.tsv")
 

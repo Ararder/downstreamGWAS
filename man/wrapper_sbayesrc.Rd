@@ -4,12 +4,14 @@
 \alias{wrapper_sbayesrc}
 \title{Capture code to run sbayesRC}
 \usage{
-wrapper_sbayesrc(paths, thread = 4)
+wrapper_sbayesrc(paths, thread_imp = 4, thread_rc = 8)
 }
 \arguments{
 \item{paths}{a list of filepaths, see [sbayesrc()] for which filepaths are required}
 
-\item{thread}{number of threads to use}
+\item{thread_imp}{number of threads to for the imputation step}
+
+\item{thread_rc}{number of threads for the rescaling step}
 }
 \value{
 a character vector

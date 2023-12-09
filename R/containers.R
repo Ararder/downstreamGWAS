@@ -1,4 +1,21 @@
 
+call_container <- function(root,program, workdir) {
+
+  paths <- get_system_paths()
+  container <- fs::path(paths$containers, paths[[program]]$container)
+
+  ref  <- paths$reference
+  binds <- glue::glue("--bind {workdir}:/mnt --bind {ref}:/src ")
+  glue::glue("bind_mnt='--bind {workdir}:/mnt")
+  glue::glue("bind_src ='--bind {ref}:/src'")
+
+  singularity_start <- glue::glue(
+    "singularity exec --cleanenv "
+  )
+
+  glue::glue("{singularity_start}{binds}{container} {root}")
+}
+
 # keeping track of containers
 # -------------------------------------------------------------------------
 get_dependencies <- function() {

@@ -91,6 +91,8 @@ to_ma <- function(parent_folder, out) {
 
   paths <- tidyGWAS_paths(parent_folder)
   if(missing(out)) out <- paths$ma_file
+  fs::dir_create(fs::path_dir(out))
+
 
   first <- arrow::open_dataset(paths$hivestyle) |>
     dplyr::filter(!multi_allelic) |>

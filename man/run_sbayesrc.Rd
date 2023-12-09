@@ -4,23 +4,32 @@
 \alias{run_sbayesrc}
 \title{Run sbayerc with tidyGWAS structure}
 \usage{
-run_sbayesrc(parent_folder, write_script = c("no", "yes"), ...)
+run_sbayesrc(
+  parent_folder,
+  ...,
+  write_script = c("no", "yes"),
+  thread_rc = 8,
+  thread_imp = 4
+)
 }
 \arguments{
 \item{parent_folder}{Folder to sumstats cleaned with tidyGWAS. see [tidyGWAS::tidyGWAS()] output_folder}
 
-\item{write_script}{Should the code be written to a bash script?}
-
 \item{...}{
   Arguments passed on to \code{\link[=sbayesrc]{sbayesrc}}
   \describe{
-    \item{\code{workdir}}{work directory}
-    \item{\code{ldm}}{filepath to ldm folder}
-    \item{\code{ma_file}}{filepath to.am file}
-    \item{\code{annot}}{filepath to the annotation file}
-    \item{\code{out}}{filepath prefix to outfiles}
-    \item{\code{thread}}{number of threads}
+    \item{\code{workdir}}{where will the files be written to?}
+    \item{\code{ldm}}{path to ldmatrix}
+    \item{\code{ma_file}}{path to ma file}
+    \item{\code{annot}}{path to annotation file}
+    \item{\code{out}}{output folder}
   }}
+
+\item{write_script}{Should the code be written to a bash script?}
+
+\item{thread_rc}{threads for rescaling}
+
+\item{thread_imp}{threads for imputing}
 }
 \value{
 a filepath or character vector

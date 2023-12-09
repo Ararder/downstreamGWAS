@@ -2,31 +2,33 @@
 % Please edit documentation in R/sbayesrc.R
 \name{sbayesrc}
 \alias{sbayesrc}
-\title{Capture code to run sbayesRC}
+\title{Run SbayesRC from R with containers}
 \usage{
-sbayesrc(workdir, ldm, ma_file, annot, out, thread = 4)
+sbayesrc(workdir, ldm, ma_file, annot, out, thread_imp = 4, thread_rc = 4)
 }
 \arguments{
-\item{workdir}{work directory}
+\item{workdir}{where will the files be written to?}
 
-\item{ldm}{filepath to ldm folder}
+\item{ldm}{path to ldmatrix}
 
-\item{ma_file}{filepath to.am file}
+\item{ma_file}{path to ma file}
 
-\item{annot}{filepath to the annotation file}
+\item{annot}{path to annotation file}
 
-\item{out}{filepath prefix to outfiles}
+\item{out}{output folder}
 
-\item{thread}{number of threads}
+\item{thread_imp}{how many threads for imputation?}
+
+\item{thread_rc}{how many threads for rescaling?}
 }
 \value{
-a character vector
+character vector
 }
 \description{
-Capture code to run sbayesRC
+Run SbayesRC from R with containers
 }
 \examples{
 \dontrun{
-sbayesrc()
+sbayesrc(tempdir(), "path_to_ldm", "sumstats.ma", "annot.txt", out = tempdir())
 }
 }

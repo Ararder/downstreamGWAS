@@ -1,89 +1,9 @@
-
-call_gctb <- function(workdir) {
-
-  paths <- get_system_paths()
-  gctb <- fs::path(paths$containers, paths$gctb$container)
-  singularity_start <- singularity_mount(workdir)
-
-  glue::glue("{singularity_start}{gctb} gctb")
-}
-
-#' Capture code to run sbayesRC
-#'
-#' @param paths a list of filepaths, see [sbayesrc()] for which filepaths are required
-#' @param thread number of threads to use
-#'
-#' @return a character vector
-#' @export
-#'
-#' @examples \dontrun{
-#' wrapper_sbayesrc()
-#' }
-wrapper_sbayesrc <- function(paths, thread=4) {
-  workdir <- paths$sbayesr
-  ldm <- glue::glue("/src/{paths$system_paths$gctb$ldm}")
-  ma_file <- glue::glue("/mnt/{fs::path_file(paths$ma_file)}")
-  annot <- glue::glue("/src/{paths$system_paths$gctb$annot}")
-  out <- "/mnt/sbrc"
-  sbayesrc(
-    workdir = workdir,
-    ldm = ldm,
-    ma_file = ma_file,
-    annot = annot,
-    out = out,
-    thread = thread
-  )
-
-}
-
-#' Capture code to run sbayesRC
-#'
-#' @param workdir work directory
-#' @param ldm filepath to ldm folder
-#' @param ma_file filepath to.am file
-#' @param annot filepath to the annotation file
-#' @param out filepath prefix to outfiles
-#' @param thread number of threads
-#'
-#' @return a character vector
-#' @export
-#'
-#' @examples \dontrun{
-#' sbayesrc()
-#' }
-sbayesrc <- function(workdir, ldm, ma_file, annot, out, thread=4) {
-
-  impute <- glue::glue(
-   "{call_gctb(workdir)} ",
-   "--ldm-eigen {ldm} ",
-   "--gwas-summary {ma_file} ",
-   "--impute-summary ",
-   "--out {fs::path_ext_remove(ma_file)} ",
-   "--thread {thread}"
-   )
-
-  # for rescale
-  imp_file <- paste0(fs::path_ext_remove(ma_file), ".imputed.ma")
-  rescale <- glue::glue(
-   "{call_gctb(workdir)} ",
-   "--ldm-eigen {ldm} ",
-   "--gwas-summary {imp_file} ",
-   "--sbayes RC ",
-   "--annot {annot} ",
-   "--out {out} ",
-   "--thread {thread}"
-  )
-
-  c(impute, "\n", rescale)
-
-
-}
-
-
 #' Run sbayerc with tidyGWAS structure
 #'
 #' @inheritParams run_ldsc
-#' @inheritDotParams sbayesrc workdir ldm ma_file annot out thread
+#' @inheritDotParams sbayesrc workdir ldm ma_file annot out
+#' @param thread_rc threads for rescaling
+#' @param thread_imp threads for imputing
 #' @param ...
 #'
 #' @return a filepath or character vector
@@ -92,10 +12,14 @@ sbayesrc <- function(workdir, ldm, ma_file, annot, out, thread=4) {
 #' @examples \dontrun{
 #' run_sbayesrc()
 #' }
-run_sbayesrc <- function(parent_folder, write_script = c("no","yes"), ...) {
+run_sbayesrc <- function(parent_folder, ..., write_script = c("no","yes"), thread_rc = 8, thread_imp = 4) {
   paths <- tidyGWAS_paths(parent_folder)
-  header <- slurm_header(...)
-  code <- c(get_dependencies(), wrapper_sbayesrc(paths))
+  header <- slurm_header(..., output = fs::path_expand(fs::path(paths$sbayesrc, "slurm-%j.out")))
+
+
+  munge <- glue::glue("R -e \"downstreamGWAS::to_ma('{parent_folder}')\"")
+
+  code <- c(get_dependencies(), munge, wrapper_sbayesrc(paths = paths, thread_rc = thread_rc, thread_imp = thread_imp))
 
   if(write_script == "yes") {
 
@@ -110,6 +34,87 @@ run_sbayesrc <- function(parent_folder, write_script = c("no","yes"), ...) {
 
 
 }
+
+
+#' Capture code to run sbayesRC
+#'
+#' @param paths a list of filepaths, see [sbayesrc()] for which filepaths are required
+#' @param thread_imp number of threads to for the imputation step
+#' @param thread_rc number of threads for the rescaling step
+#'
+#' @return a character vector
+#' @export
+#'
+#' @examples \dontrun{
+#' wrapper_sbayesrc()
+#' }
+wrapper_sbayesrc <- function(paths, thread_imp = 4, thread_rc=8) {
+  workdir <- paths$sbayesr
+  ldm <- glue::glue("/src/{paths$system_paths$sbayesrc$ldm}")
+  ma_file <- glue::glue("/mnt/{fs::path_file(paths$ma_file)}")
+  annot <- glue::glue("/src/{paths$system_paths$sbayesrc$annot}")
+  out <- "/mnt/sbrc"
+  sbayesrc(
+    workdir = workdir,
+    ldm = ldm,
+    ma_file = ma_file,
+    annot = annot,
+    out = out,
+    thread_imp = thread_imp,
+    thread_rc = thread_rc
+  )
+
+}
+
+
+#' Run SbayesRC from R with containers
+#'
+#' @param workdir where will the files be written to?
+#' @param ldm path to ldmatrix
+#' @param ma_file path to ma file
+#' @param annot path to annotation file
+#' @param out output folder
+#' @param thread_imp how many threads for imputation?
+#' @param thread_rc how many threads for rescaling?
+#'
+#' @return character vector
+#' @export
+#'
+#' @examples \dontrun{
+#' sbayesrc(tempdir(), "path_to_ldm", "sumstats.ma", "annot.txt", out = tempdir())
+#' }
+sbayesrc <- function(workdir, ldm, ma_file, annot,out, thread_imp = 4, thread_rc = 4) {
+
+  tidy <- glue::glue("SBayesRC::tidy('{ma_file}',LDdir='{ldm}',output='{ma_file}')")
+  impute <-  glue::glue("SBayesRC::impute('{ma_file}',LDdir='{ldm}',output='{ma_file}')")
+  rescale <-  glue::glue("SBayesRC::sbayesrc('{ma_file}',LDdir='{ldm}',outPrefix='{out}', annot='{annot}')")
+
+  container <- call_container(
+    "R -e \"Sys.setenv('OMP_NUM_THREADS' = {thread_imp})\" -e ",
+    "sbayesrc",
+    workdir
+    )
+
+  container_rescale <- call_container(
+    "R -e \"Sys.setenv('OMP_NUM_THREADS' = {thread_rc})\" -e ",
+    "sbayesrc",
+    workdir
+  )
+  job <- c(
+    # first we tidy
+    glue::glue(container, "\"{tidy}\""),
+    # then we impute
+    glue::glue(container, "\"{impute}\""),
+    # then we rescale,
+    glue::glue(container_rescale, "\"{rescale}\"")
+
+  )
+
+  job
+}
+
+
+
 
 
 

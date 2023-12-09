@@ -9,30 +9,22 @@
 #' setup("my_dsg/folder/")
 #' }
 setup <- function(dir) {
+
+  # read in dummy yaml from package
   yml <- yaml::read_yaml(fs::path(fs::path_package("downstreamGWAS"), "extdata/filepaths.yml"))
-  outpath <- fs::path(dir, ".filepaths.yml")
+
+  # Save the config file in $HOME/.config
+  outpath <- fs::path(Sys.getenv("HOME"), ".config/downstreamGWAS/config.yml")
+
+  # make sure directory exists
+  fs::dir_create(fs::path_dir(outpath), recurse = TRUE)
   yaml::write_yaml(yml, outpath)
-  if(!fs::file_exists('~/.Renviron')) fs::file_create("~/.Renviron")
-  cli::cli_bullets(
-    c(
-    "{.strong downstreamGWAS requires you to specify filepaths in the file we just created: }",
-    "{.path {outpath}}",
-    "1. {.var containers}: 'filepath/to/folders/where/containers_exist'",
-    "2. {.var reference}: 'filepath/to/folders/with/refence_data'",
-    "Optionally, you can specify third directory to enables some shortcuts for working with available sumstats.",
-    "3. {.var sumstats_folder}: 'filepath/to/sumstats/cleaned_with_tidygwas/'",
-    "Lastly, if you are using a HPC that uses a module system, you need to explain how apptainer/singularity is loaded.
-    By default, downstreamGWAS attempts to load singularity/apptainer with ml singularity apptainer, but this might not always work"
-    )
-  )
-
-  cli::cli_alert_success("Wrote yml template to {.path {outpath}}")
-  cli::cli_inform("Open {.path {outpath}} and set the filepaths to containers and reference")
-  cli::cli_alert_info("Added {.code DSG_PATHS=\"{fs::path_real(outpath)}\"} to {.path {fs::path_real('~/.Renviron')}}")
-  cmd <- glue::glue("echo DSG_PATHS=\"{fs::path_real(outpath)}\" >> {fs::path_real('~/.Renviron')}")
-  system(cmd)
-
-
+  cli::cli_alert_success("Wrote the downstreamGWAS config file to {.file {outpath}}")
+  cli::cli_alert("downstreamGWAS needs to know three things to get started: ")
+  cli::cli_alert("1) the folder with the singularity containers")
+  cli::cli_alert("2) the folder with the reference data")
+  cli::cli_alert("3) if any code needs to called before running singularity. On many HPCs, you often need to run ml singularity, or something similar")
+  cli::cli_alert_info("Please edit {.file {outpath}} and provide the filepaths for containers and reference, and code to make singularity available")
 
 }
 
@@ -96,7 +88,8 @@ sif_script <- function() {
 #' get_system_paths()
 #' }
 get_system_paths <- function() {
-  yaml::read_yaml(Sys.getenv("DSG_PATHS"), readLines.warn = FALSE)
+  config <- fs::path(Sys.getenv("HOME"), ".config/downstreamGWAS/config.yml")
+  yaml::read_yaml(config, readLines.warn = FALSE)
 }
 
 
@@ -111,6 +104,12 @@ get_system_paths <- function() {
 #'  tidyGWAS_paths("gwas/height2022")
 #' }
 tidyGWAS_paths <- function(dir) {
+  stopifnot("Can only accept vector of length one" = length(dir) == 1)
+  split <- fs::path_split(dir)[[1]]
+
+  if(length(split) == 1) {
+    dir <- fs::path(get_system_paths()[["sumstats_folder"]], dir)
+  }
 
   base <- dir
   name <- fs::path_dir(dir)
@@ -151,18 +150,6 @@ tidyGWAS_paths <- function(dir) {
 }
 
 
-write_existing_columns <- function(paths) {
-  #
-  outfile <- fs::path(fs::path_dir(paths$hivestyle), "existing_columns.txt")
-
-  # connnect to dataframe and get column names
-  dset <- arrow::open_dataset(paths$hivestyle)
-
-  # save them to existing_columns.txt
-  writeLines(dset$schema$names, outfile)
-
-
-}
 
 # parse_tidyGWAS <- function(parent_folder) {
 #

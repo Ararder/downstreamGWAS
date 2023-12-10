@@ -15,20 +15,26 @@
 run_sbayesrc <- function(parent_folder, ..., write_script = c("no","yes"), thread_rc = 8, thread_imp = 4) {
   paths <- tidyGWAS_paths(parent_folder)
   header <- slurm_header(..., output = fs::path_expand(fs::path(paths$sbayesrc, "slurm-%j.out")))
-
+  fs::dir_create(paths$sbayesrc)
 
   munge <- glue::glue("R -e \"downstreamGWAS::to_ma('{parent_folder}')\"")
 
   code <- c(get_dependencies(), munge, wrapper_sbayesrc(paths = paths, thread_rc = thread_rc, thread_imp = thread_imp))
+  cleanup <- glue::glue("rm {paths$sbayesrc}/*.rds")
+  ma_files <- glue::glue("rm {paths$sbayesrc}/sumstats.ma*")
+  tune_txt <- glue::glue("rm {paths$sbayesrc}/sbrc_tune_inter.txt*")
+  gzip_file <- glue::glue("gzip {paths$sbayesrc}/sbrc.txt")
 
+  cleanup <- c(cleanup, ma_files, tune_txt, gzip_file)
+  all_code <- c(header, code, cleanup)
   if(write_script == "yes") {
 
     p <- fs::path(paths$sbayesrc, "sbayesrc.sh")
-    writeLines(c(header, code), p)
+    writeLines(all_code, p)
     return(p)
 
   } else {
-    return(code)
+    return(all_code)
 
   }
 

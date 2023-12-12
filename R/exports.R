@@ -94,21 +94,10 @@ to_ma <- function(parent_folder, out) {
   fs::dir_create(fs::path_dir(out))
 
 
-  first <- arrow::open_dataset(paths$hivestyle) |>
+  arrow::open_dataset(paths$hivestyle) |>
     dplyr::filter(!multi_allelic) |>
     dplyr::select(SNP = RSID, A1 = EffectAllele, A2 = OtherAllele, freq=EAF, b=B, se=SE, p=P, N) |>
-    dplyr::collect()
-
-
-  second <- arrow::open_dataset(paths$hivestyle) |>
-    dplyr::filter(multi_allelic) |>
-    dplyr::select(SNP = RSID, A1 = EffectAllele, A2 = OtherAllele, freq=EAF, b=B, se=SE, p=P, N) |>
     dplyr::collect() |>
-    dplyr::group_by(SNP) |>
-    dplyr::slice_min(se, n = 1) |>
-    dplyr::slice_max(N, n = 1) |>
-    dplyr::slice_min(p, n = 1)
-
-  dplyr::bind_rows(first, second) |>
     readr::write_tsv(paths$ma_file)
+
 }

@@ -9,7 +9,7 @@ to_ma(parent_folder, out)
 \arguments{
 \item{parent_folder}{filepath to tidyGWAS folder}
 
-\item{out}{output for .ma file default is the tidyGWAS folder structure}
+\item{out}{output for .ma file. Default value is [tidyGWAS_paths()$ma_file]}
 }
 \description{
 Convert tidyGWAS to COJO .ma format

@@ -79,7 +79,7 @@ to_plink_clumping <- function(parent_folder) {
 #' Convert tidyGWAS to COJO .ma format
 #'
 #' @param parent_folder filepath to tidyGWAS folder
-#' @param out output for .ma file default is the tidyGWAS folder structure
+#' @param out output for .ma file. Default value is [tidyGWAS_paths()$ma_file]
 #'
 #' @return NULL
 #' @export
@@ -98,6 +98,6 @@ to_ma <- function(parent_folder, out) {
     dplyr::filter(!multi_allelic) |>
     dplyr::select(SNP = RSID, A1 = EffectAllele, A2 = OtherAllele, freq=EAF, b=B, se=SE, p=P, N) |>
     dplyr::collect() |>
-    readr::write_tsv(paths$ma_file)
+    readr::write_tsv(out)
 
 }

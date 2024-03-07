@@ -28,6 +28,7 @@ ldsc_call <- function(workdir) {
 #' script_location <- run_ldsc("my_sumstats/tidygwas/height2022")
 #' }
 run_ldsc <- function(parent_folder, write_script = c("no", "yes")) {
+  write_script <- rlang::arg_match(write_script)
   dep <- get_dependencies()
   paths <- tidyGWAS_paths(parent_folder)
 

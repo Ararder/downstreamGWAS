@@ -32,6 +32,8 @@ tidyGWAS:
 # Filepaths and container to run gctb
 gctb:
   container: genetics_latest.sif
+gcta:
+  container: genetics_latest.sif
 
 # using basic 7 million LD-matrix
 sbayesrc:

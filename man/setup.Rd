@@ -4,16 +4,13 @@
 \alias{setup}
 \title{Setup required filepaths for downstreamGWAS}
 \usage{
-setup(dir)
-}
-\arguments{
-\item{dir}{in what directory should the config file be stored?}
+setup()
 }
 \description{
 Setup required filepaths for downstreamGWAS
 }
 \examples{
 \dontrun{
-setup("my_dsg/folder/")
+setup()
 }
 }

@@ -28,7 +28,7 @@ to_ldsc <- function(parent_folder, sample_size = c("Effective", "N")) {
 
 
   df <- dset |>
-    dplyr::select(dplyr::any_of(c("RSID", "EffectAllele", "OtherAllele", effect,"SE", "P", "N", "CaseN", "ControlN"))) |>
+    dplyr::select(dplyr::any_of(c("RSID", "EffectAllele", "OtherAllele", effect,"SE", "P", "N", "CaseN", "ControlN", "INFO", "EAF"))) |>
     dplyr::filter(RSID %in% hm3$SNP) |>
     dplyr::collect()
 
@@ -46,7 +46,7 @@ to_ldsc <- function(parent_folder, sample_size = c("Effective", "N")) {
 
   # write out
   df |>
-    dplyr::select(dplyr::any_of(c("RSID", "EffectAllele", "OtherAllele", effect,"SE", "P", "N"))) |>
+    dplyr::select(dplyr::any_of(c("RSID", "EffectAllele", "OtherAllele", effect,"SE", "P", "N", "EAF", "INFO"))) |>
     readr::write_tsv(paths$ldsc_temp)
 
 

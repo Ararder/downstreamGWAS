@@ -1,7 +1,9 @@
-
+utils::globalVariables(
+  c("REF", "EA_is_ref", "CHR", "ID", "W")
+)
 
 align_to_ref <- function(dset) {
-  # EffectAllele is harmonized to be reference allele
+  # EffectAllele is harmonized to always be the reference allele
   dset |>
     dplyr::mutate(
       EA_is_ref = dplyr::if_else(EffectAllele == REF, TRUE,FALSE),
@@ -14,62 +16,28 @@ align_to_ref <- function(dset) {
     dplyr::select(-dplyr::all_of(c("EA_is_ref", "tmp")))
 
 }
-meta_analyze_by_chrom <- function(dset) {
-  # ids <-
-  #   dset |>
-  #   align_to_ref() |>
-  #   dplyr::filter(!multi_allelic) |>
-  #   dplyr::select(RSID, CHR, POS, EffectAllele, OtherAllele) |>
-  #   dplyr::distinct() |>
-  #   dplyr::collect()
+meta_analyze_by_chrom <- function(dset, chrom) {
 
-  step1 <- dset |>
-    dplyr::filter(!multi_allelic) |>
+  dset |>
+    dplyr::filter(CHR == {{ chrom }}) |>
+    dplyr::filter(is.finite(B) & is.finite(SE)) |>
     align_to_ref() |>
-    dplyr::select(dplyr::any_of(c("RSID","CHR", "POS", "EffectAllele","OtherAllele", "B", "SE", "EAF", "N", "CaseN", "ControlN","INFO"))) |>
+    dplyr::select(dplyr::any_of(c("ID", "B", "SE", "EAF", "N", "CaseN", "ControlN","INFO"))) |>
     dplyr::mutate(
-      w = 1 / (SE^2),
-      B = B*w,
-      EAF = EAF*N,
-      INFO = INFO*N
+      W = 1 / (SE^2),
+      B = B*W,
+      dplyr::across(dplyr::any_of(c("EAF", "INFO")), ~.x * N)
     ) |>
-    dplyr::group_by(RSID)
-
-
-  if(all(c("CaseN", "ControlN") %in% names(dset$schema))) {
-
-    step2 <- step1 |>
-      dplyr::summarise(
-        W = sum(w),
-        n_contributions = dplyr::n(),
-        B = sum(B),
-        N = sum(N, na.rm = TRUE),
-        EAF = sum(EAF, na.rm =TRUE),
-        INFO = sum(INFO, na.rm = TRUE),
-        CaseN = sum(CaseN),
-        ControlN = sum(ControlN)
-        )
-
-  } else {
-
-    step2 <- step1 |>
-      dplyr::summarise(
-        W = sum(w),
-        n_contributions = dplyr::n(),
-        B = sum(B),
-        N = sum(N, na.rm = TRUE),
-        EAF = sum(EAF, na.rm =TRUE),
-        INFO = sum(INFO, na.rm = TRUE)
-      )
-
-  }
-
-  step2 |>
+    dplyr::group_by(ID) |>
+    dplyr::summarise(
+      n_contributions = dplyr::n(),
+      dplyr::across(dplyr::any_of(c("W", "B")), sum),
+      dplyr::across(dplyr::any_of(c("EAF", "INFO", "CaseN", "ControlN", "N")), ~sum(.x, na.rm=T))
+    ) |>
     dplyr::mutate(
       B = B / W,
       SE = 1 / sqrt(W),
-      EAF = EAF / N,
-      INFO = INFO / N
+      dplyr::across(dplyr::any_of(c("EAF", "INFO")), ~.x / N)
     ) |>
     dplyr::select(-W) |>
     dplyr::collect() |>
@@ -77,40 +45,78 @@ meta_analyze_by_chrom <- function(dset) {
 
 }
 
-meta_analyze <- function(dset) {
+
+
+
+#' Perform meta-analysis of GWAS summary statistics datasets in [tidyGWAS::tidyGWAS()] hive-style format.
+#'
+#' @param dset an [arrow::open_dataset()] object
+#' @param method method to use for performing meta-analysis. Currently, only IVW (based on standard errors) is supported.
+#' @return a [dplyr::tibble()]
+#' @export
+#'
+#' @examples \dontrun{
+#' dset <- arrow::open_dataset("path_to/sumstats/")
+#' res <- meta_analyze(dset)
+#' }
+#'
+meta_analyze <- function(dset, method = c("ivw")) {
+  method <- rlang::arg_match(method)
   purrr::map(c(1:22), \(chrom) meta_analyze_by_chrom(dset, chrom = chrom)) |>
     purrr::list_rbind()
 }
 
-# meta_duckdb <- function(dset) {
-#   dset |>
-#     dplyr::filter(!multi_allelic) |>
-#     align_to_ref() |>
-#     dplyr::select(dplyr::any_of(c("RSID","CHR", "POS", "EffectAllele","OtherAllele", "B", "SE", "EAF", "N", "CaseN", "ControlN","INFO"))) |>
-#     dplyr::mutate(
-#       w = 1 / (SE^2),
-#       B = B*w,
-#       EAF = EAF*N,
-#       INFO = INFO*N
-#     ) |>
-#     to_duckdb() |>
-#     dplyr::group_by(RSID) |>
-#     mutate(
-#       W = sum(w),
-#       N = sum(N, na.rm = TRUE)
-#       ) |>
-#     dplyr::mutate(
-#       n_contributions = dplyr::n(),
-#       B = sum(B) / W,
-#       EAF = sum(EAF, na.rm =TRUE) / N,
-#       INFO = sum(INFO, na.rm = TRUE) / N
-#     ) |>
-#   dplyr::slice_head(n=1) |>
-#   dplyr::collect()
-#   dplyr::mutate(P  = stats::pnorm(-abs(B/SE)) *2)
+#' Get the unique set of SNP, CHR, POS EffectAllele, OtherAllele, ID from a set of summary statistics
+#'
+#' @param dset a [arrow::open_dataset()] object
+#'
+#' @return a [dplyr::tibble()]
+#' @export
+#'
+#' @examples \dontrun{
+#' dset <- arrow::open_dataset("path_to_dsets")
+#' snpids <- get_snp_ids(dset)
+#' }
+get_snp_ids <- function(dset) {
+  purrr::map(c(1:22), \(chrom) get_snp_ids_chrom(dset, chrom = chrom)) |>
+    purrr::list_rbind()
+}
+
+get_snp_ids_chrom <- function(dset, chrom) {
+
+    dset |>
+      dplyr::filter(CHR == chrom) |>
+      dplyr::filter(!multi_allelic) |>
+      align_to_ref() |>
+      dplyr::select(RSID, CHR, POS, EffectAllele, OtherAllele, ID) |>
+      dplyr::distinct() |>
+      dplyr::collect()
+
+}
+
+# get_chr_pos_ea_oa <- function(df) {
+#   stopifnot("ID" %in% colnames(df))
+#   t <- stringi::stri_split_fixed(df$ID, ":", simplify = TRUE)
+#
+#   df$CHR <- t[,1]
+#   df$POS <- t[,2]
+#   df$EffectAllele <- t[,3]
+#   df$OtherAllele <-  t[,4]
+#
+#   dplyr::select(df, CHR,POS, EffectAllele, OtherAllele, dplyr::everything())
 #
 # }
 
 
 
+check_correct_cols <- function(dset) {
+  colnames <- names(dset$schema)
+  req_cols <- c("ID", "B", "SE", "CHR")
+  stopifnot(
+  "Missing either ID, B,SE or CHR" =
+    all(req_cols %in% colnames))
+
+
+
+}
 

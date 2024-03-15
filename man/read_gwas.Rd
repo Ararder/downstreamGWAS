@@ -4,12 +4,12 @@
 \alias{read_gwas}
 \title{Read in a tidyGWAS formatted summary statistics file}
 \usage{
-read_gwas(parent_folder, ...)
+read_gwas(parent_folder, columns)
 }
 \arguments{
 \item{parent_folder}{filepath to the parent_folder of tidyGWAS_hivestyle}
 
-\item{...}{optional arguments passed on to [arrow::open_dataset()]}
+\item{columns}{character vector of columns names, passed to [dplyr::select(dplyr::any_of(columns))]}
 }
 \value{
 a [data.frame()]

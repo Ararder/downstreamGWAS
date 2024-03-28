@@ -122,15 +122,21 @@ sbayesrc <- function(workdir, ldm, ma_file, annot,out, thread_imp = 4, thread_rc
 
 
 
-#
-#
-#
-#
-#
-#
-#
-#
-run_sbayess <- function(parent_folder, ..., write_script = c("no","yes")) {
+
+#' Run Sbayes-S with tidyGWAS structure
+#'
+#' @param parent_folder filepath to a [tidyGWAS] folder
+#' @param ... pass arguments to [slurm_header()]
+#' @param write_script should the captured code be written to disk in a .sh file?
+#'
+#' @return a filepath or character vector
+#' @export
+#'
+#' @examples \dontrun{
+#' run_sbayess()
+#' }
+run_sbayess <- function(parent_folder, ..., write_script = c("yes","no")) {
+
   write_script <- rlang::arg_match(write_script)
 
 
@@ -145,34 +151,32 @@ run_sbayess <- function(parent_folder, ..., write_script = c("no","yes")) {
 
   # sbayess code ----------------------------------------------------------
 
-  code <- wrapper_sbayes(tempdir(), hsq = "0.3")
+  code <- wrapper_sbayes(paths$sbayess, ...)
 
 
   # container ---------------------------------------------------------------
-  with_container(
+  script <- with_container(
     exe_path = "gctb",
     code = code,
     config_key = "gctb",
-    workdir <- tempdir()
+    workdir = paths$sbayess
 
   )
 
-
-
-
   fs::dir_create(paths$sbayess)
 
-  code <- c(get_dependencies(), wrapper_sbayes(workdir = paths$sbayess))
 
-  all_code <- c(header, code)
+
+
+  full_script <- c(header, script)
   if(write_script == "yes") {
 
     p <- fs::path(paths$sbayess, "sbayess.sh")
-    writeLines(all_code, p)
+    writeLines(full_script, p)
     return(p)
 
   } else {
-    return(all_code)
+    return(full_script)
 
   }
 }

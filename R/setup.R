@@ -38,6 +38,14 @@ setup <- function() {
 }
 
 
+#' Check that the configuration file has been correctly set up
+#'
+#' @return text to terminal
+#' @export
+#'
+#' @examples \dontrun{
+#' check_setup()
+#' }
 check_setup <- function() {
   outpath <- fs::path(Sys.getenv("HOME"), ".config/downstreamGWAS/config.yml")
 

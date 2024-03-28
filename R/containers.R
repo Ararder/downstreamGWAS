@@ -35,6 +35,21 @@ call_container <- function(cmd, config_key, workdir) {
   glue::glue("{singularity_start}{binds}{container} {cmd}")
 }
 
+
+
+#' Run a command in a container
+#'
+#' @param exe_path filepath inside the container to software to run
+#' @param code code to run in the container in the software specified by exe_path
+#' @param config_key yml key in the config.yml file. The path to the container
+#' @param workdir workfolder to bind to the container
+#'
+#' @return a character vector of captured code
+#' @export
+#'
+#' @examples \dontrun{
+#' with_container()
+#' }
 with_container <- function(exe_path, code, config_key, workdir) {
 
   # Check input

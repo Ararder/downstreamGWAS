@@ -72,7 +72,7 @@ with_container <- function(exe_path, code, config_key, workdir) {
   container <- glue::glue("container='{container}'")
   assign_code <- glue::glue("code='{code}'")
   # check if a commamnd needs to be run to load apptainer
-  dep <- if(rlang::is_empty(p[["container_dependency"]])) "# no apptainer dependency in config file" else p[["container_dependency"]]
+  dep <- if(rlang::is_empty(paths[["container_dependency"]])) "# no apptainer dependency in config file" else paths[["container_dependency"]]
 
 
   container_call <- glue::glue(

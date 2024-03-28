@@ -50,7 +50,7 @@ tidyGWAS_paths <- function(dir) {
     ldsc_h2 = fs::path(ldsc, "ldsc_h2"),
 
     #
-    sbayess = fs::path(dir, "/analysis/sbayesS"),
+    sbayess = fs::path(dir, "analysis", "sbayesS"),
 
     magma = fs::path(dir, "analysis/magma"),
     mbat_combo = fs::path(dir, "analysis/mbat-combo"),

@@ -151,6 +151,8 @@ run_sbayess <- function(parent_folder, ..., write_script = c("yes","no")) {
 
   # sbayess code ----------------------------------------------------------
 
+
+
   code <- wrapper_sbayes(paths$sbayess, ...)
 
 
@@ -164,7 +166,7 @@ run_sbayess <- function(parent_folder, ..., write_script = c("yes","no")) {
   )
 
   fs::dir_create(paths$sbayess)
-
+  to_ma(parent_folder, fs::path(paths$sbayess, "sumstats.ma"))
 
 
 

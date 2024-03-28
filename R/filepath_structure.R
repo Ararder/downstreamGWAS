@@ -49,6 +49,9 @@ tidyGWAS_paths <- function(dir) {
     ldsc_munged = fs::path(ldsc, "ldsc"),
     ldsc_h2 = fs::path(ldsc, "ldsc_h2"),
 
+    #
+    sbayess = fs::path(dir, "(analysis/sbayesS"),
+
     magma = fs::path(dir, "analysis/magma"),
     mbat_combo = fs::path(dir, "analysis/mbat-combo"),
     sbayesrc = sbayesrc,
@@ -62,7 +65,7 @@ tidyGWAS_paths <- function(dir) {
   # -------------------------------------------------------------------------
 
 
-  fs::dir_create(out$ldsc)
+  fs::dir_create(out$ldsc, recurse = TRUE)
   fs::dir_create(out$magma)
   fs::dir_create(out$clumping)
 

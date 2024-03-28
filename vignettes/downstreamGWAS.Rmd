@@ -1,0 +1,27 @@
+---
+title: "downstreamGWAS"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{downstreamGWAS}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, include=FALSE}
+library(downstreamGWAS)
+```
+
+# Introduction
+
+`downstreamGWAS` is an R package that
+
+```{r}
+
+```

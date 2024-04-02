@@ -20,8 +20,16 @@ library(downstreamGWAS)
 
 # Introduction
 
-`downstreamGWAS` is an R package that
+`downstreamGWAS` is an R package that utilizes that standardized format of `tidyGWAS().`
+
+With column names and data-types preconfigured, many downstream analysis is just a step of inputting file paths into the desired software (the summary statistics, along with any potential reference data), as well as a set of parameters.
+
+The idea behind `downstreamGWAS` is to put this all together in one place, and to automate the oftentimes laborous steps of running a downstream analysis. Through containerization of external software, there is no additional dependency except apptainer/singularity installed on the computing system.
+
+Jobs are constructed within R, and can then be written out to disk as a slurm job, or programatically edited within the R environment. `downstreamGWAS` makes it extremely easy to run downstream analysis, and to scale analysis to hundreds of summary statistics.
 
 ```{r}
 
 ```
+
+In it's essence, downstreamGWAS is just a template package, abstracting away the steps of matching filepaths. In addition, the templating of containers allows us to abstract away any potential software installation problems.

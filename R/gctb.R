@@ -153,7 +153,7 @@ run_sbayess <- function(parent_folder, ..., write_script = c("yes","no")) {
 
 
 
-  code <- wrapper_sbayes(paths$sbayess, ...)
+  code <- wrapper_sbayes(paths$sbayess)
 
 
   # container ---------------------------------------------------------------
@@ -184,7 +184,7 @@ run_sbayess <- function(parent_folder, ..., write_script = c("yes","no")) {
 }
 
 # call_container()
-wrapper_sbayes <- function(workdir, ...) {
+wrapper_sbayes <- function(workdir) {
 
   # read in the filepaths for sbayes
   p <- get_system_paths()

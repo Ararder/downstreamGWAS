@@ -128,6 +128,13 @@ sbayesrc <- function(workdir, ldm, ma_file, annot,out, thread_imp = 4, thread_rc
 #' @param parent_folder filepath to a [tidyGWAS] folder
 #' @param ... pass arguments to [slurm_header()]
 #' @param write_script should the captured code be written to disk in a .sh file?
+#' @param pi argument passed to sbayes
+#' @param hsq argument passed to sbayes
+#' @param num_chains argument passed to sbayes
+#' @param chain_length argument passed to sbayes
+#' @param burn_in argument passed to sbayes
+#' @param seed argument passed to sbayes
+#' @param thread argument passed to sbayes
 #'
 #' @return a filepath or character vector
 #' @export

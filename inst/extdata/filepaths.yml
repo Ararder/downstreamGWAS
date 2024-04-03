@@ -40,3 +40,10 @@ sbayesrc:
   container: sbayesrc_latest.sif
   ldm: gctb/ukbEUR_Imputed
   annot: gctb/annot_baseline_updated_zoonomia.tsv
+
+
+# containers:
+#   container_dependency:
+#   container_dir:
+#   ref_mount: "/src"
+#   workdir_mount: "/mnt"

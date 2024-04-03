@@ -1,6 +1,6 @@
 
 
-slurm_header <- function(time="30:00:00", mem="8gb", output=NULL, account=NULL, partition=NULL, cpus_per_task=NULL) {
+slurm_header <- function(time="24:00:00", mem="8gb", output=NULL, account=NULL, partition=NULL, cpus_per_task=NULL) {
   c(
     glue::glue("#!/bin/bash"),
     glue::glue("#SBATCH --mem={mem}"),

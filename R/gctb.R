@@ -135,7 +135,18 @@ sbayesrc <- function(workdir, ldm, ma_file, annot,out, thread_imp = 4, thread_rc
 #' @examples \dontrun{
 #' run_sbayess()
 #' }
-run_sbayess <- function(parent_folder, ..., write_script = c("yes","no")) {
+run_sbayess <- function(
+    parent_folder,
+    ...,
+    write_script = c("yes","no"),
+    pi = "0.01",
+    hsq = "0.5",
+    num_chains = "4",
+    chain_length = "25000",
+    burn_in = "5000",
+    seed = "2023",
+    thread = "4"
+    ) {
 
   write_script <- rlang::arg_match(write_script)
 
@@ -146,17 +157,33 @@ run_sbayess <- function(parent_folder, ..., write_script = c("yes","no")) {
 
   # slurm -------------------------------------------------------------------
 
-  header <- slurm_header(..., output = fs::path_expand(fs::path(paths$sbayess, "slurm-%j.out")))
+  header <- slurm_header(..., output = fs::path_expand(fs::path(paths$sbayes, "slurm-%j.out")))
 
 
   # sbayess code ----------------------------------------------------------
 
+  ldm <- in_ref_dir("gctb", paths$gctb$ldm)
+  ma_file <- in_work_dir("sumstats.ma")
+  out <- in_work_dir("SbayesS")
 
 
-  code <- wrapper_sbayes(paths$sbayess)
+  code <- .sbayess(
+    ldm = ldm,
+    gwas_summary = ma_file,
+    out = out,
+    pi = pi,
+    hsq = hsq,
+    num_chains = num_chains,
+    chain_length = chain_length,
+    burn_in = burn_in,
+    seed = seed,
+    thread = thread
+  )
 
 
-  # container ---------------------------------------------------------------
+
+  # containerize the code --------------------------------------------------
+
   script <- with_container(
     exe_path = "gctb",
     code = code,
@@ -165,8 +192,12 @@ run_sbayess <- function(parent_folder, ..., write_script = c("yes","no")) {
 
   )
 
-  fs::dir_create(paths$sbayess)
-  to_ma(parent_folder, fs::path(paths$sbayess, "sumstats.ma"))
+
+  # force dir, create ma file -----------------------------------------------
+
+  fs::dir_create(paths$sbayes)
+  # code <- glue::glue("Rscript -e --silent ")
+  # to_ma(parent_folder, fs::path(paths$sbayes, "sumstats.ma"))
 
 
 
@@ -183,39 +214,18 @@ run_sbayess <- function(parent_folder, ..., write_script = c("yes","no")) {
   }
 }
 
-# call_container()
-wrapper_sbayes <- function(workdir) {
-
-  # read in the filepaths for sbayes
-  p <- get_system_paths()
-
-
-  # params
-  ldm <- paste0("/src/gctb/", p$gctb$ldm)
-  ma_file <- paste0("/mnt/", "sumstats.ma")
-  out <- paste0("/mnt/", "SbayeS")
-
-  .sbayess(
-    ldm = ldm,
-    gwas_summary = ma_file,
-    out = out,
-    ...
-  )
-
-
-}
 
 .sbayess <- function(
     ldm,
     gwas_summary,
     out,
-    pi = "0.01",
-    hsq = "0.5",
-    num_chains = "4",
-    chain_length = "25000",
-    burn_in = "5000",
-    seed = "2023",
-    thread = "4"
+    pi,
+    hsq,
+    num_chains,
+    chain_length,
+    burn_in,
+    seed,
+    thread
 
     ) {
   glue::glue(
@@ -230,7 +240,7 @@ wrapper_sbayes <- function(workdir) {
     "--burn-in {burn_in} ",
     "--seed {seed} ",
     "--thread {thread} ",
-    "--no-mcmc-bin ",
+    "--no-mcmc-bin "
   )
 
 }

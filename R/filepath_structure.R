@@ -51,6 +51,7 @@ tidyGWAS_paths <- function(dir) {
 
     magma = fs::path(dir, "analysis/magma"),
     mbat_combo = fs::path(dir, "analysis/mbat-combo"),
+    sbayes = fs::path(dir, "analysis/sbayes"),
     sbayesrc = sbayesrc,
     ma_file = fs::path(sbayesrc, "sumstats.ma"),
     imp_ma_file = fs::path(sbayesrc, "sumstats.imputed.ma"),

@@ -1,12 +1,10 @@
 test_that("... can pass arguments to slurm", {
   expect_no_error(
-
-  code <- run_sbayess(
-    parent_folder = tempdir(),
-    mem="1000gb",
-    hsq = "0.4",
-    write_script = "no"
-  )
+    code <- run_sbayess(
+      parent_folder = tempdir(),
+      mem="1000gb",
+      write_script = "no"
+    )
   )
 })
 

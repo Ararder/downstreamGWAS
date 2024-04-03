@@ -125,5 +125,5 @@ in_ref_dir <- function(folder, filename) {
 }
 
 in_work_dir <- function(filename) {
-  fs::path("mnt", filename)
+  fs::path("/mnt", filename)
 }

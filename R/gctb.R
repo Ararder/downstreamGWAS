@@ -169,7 +169,7 @@ run_sbayess <- function(
 
   # sbayess code ----------------------------------------------------------
 
-  ldm <- in_ref_dir("gctb", paths$gctb$ldm)
+  ldm <- in_ref_dir("gctb", paths$system_paths$gctb$ldm_s)
   ma_file <- in_work_dir("sumstats.ma")
   out <- in_work_dir("SbayesS")
 
@@ -195,8 +195,7 @@ run_sbayess <- function(
     exe_path = "gctb",
     code = code,
     config_key = "gctb",
-    workdir = paths$sbayess
-
+    workdir = paths$sbayes
   )
 
 
@@ -211,7 +210,7 @@ run_sbayess <- function(
   full_script <- c(header, script)
   if(write_script == "yes") {
 
-    p <- fs::path(paths$sbayess, "sbayess.sh")
+    p <- fs::path(paths$sbayes, "sbayess.sh")
     writeLines(full_script, p)
     return(p)
 
@@ -247,7 +246,7 @@ run_sbayess <- function(
     "--burn-in {burn_in} ",
     "--seed {seed} ",
     "--thread {thread} ",
-    "--no-mcmc-bin "
+    "--no-mcmc-bin"
   )
 
 }

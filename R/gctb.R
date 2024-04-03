@@ -152,7 +152,7 @@ run_sbayess <- function(
     chain_length = "25000",
     burn_in = "5000",
     seed = "2023",
-    thread = "4"
+    thread = "8"
     ) {
 
   write_script <- rlang::arg_match(write_script)
@@ -235,13 +235,12 @@ run_sbayess <- function(
 
     ) {
   glue::glue(
-    "--bayes s ",
+    "--sbayes S ",
     "--gwas-summary {gwas_summary} ",
     "--ldm {ldm} ",
     "--out {out} ",
     "--pi {pi} ",
     "--hsq {hsq} ",
-    "--num-chains {num_chains} ",
     "--chain-length {chain_length} ",
     "--burn-in {burn_in} ",
     "--seed {seed} ",

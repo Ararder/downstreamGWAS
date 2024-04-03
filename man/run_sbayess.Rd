@@ -14,7 +14,7 @@ run_sbayess(
   chain_length = "25000",
   burn_in = "5000",
   seed = "2023",
-  thread = "4"
+  thread = "8"
 )
 }
 \arguments{

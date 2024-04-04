@@ -80,6 +80,7 @@ to_plink_clumping <- function(parent_folder) {
 #'
 #' @param parent_folder filepath to tidyGWAS folder
 #' @param out output for .ma file. Default value is [tidyGWAS_paths()$ma_file]
+#' @param use_effective_n Should N be converted to effective sample size? Requires CaseN and ControlN in column names
 #'
 #' @return NULL
 #' @export
@@ -87,15 +88,25 @@ to_plink_clumping <- function(parent_folder) {
 #' @examples \dontrun{
 #' to_ma("/path/tidyGWAS_sumstats/a_sumstat")
 #' }
-to_ma <- function(parent_folder, out) {
+to_ma <- function(parent_folder, out, use_effective_n = FALSE) {
 
   paths <- tidyGWAS_paths(parent_folder)
   if(missing(out)) out <- paths$ma_file
   fs::dir_create(fs::path_dir(out))
 
+  # dataset: ds
+  ds <- arrow::open_dataset(paths$hivestyle)
 
-  arrow::open_dataset(paths$hivestyle) |>
-    dplyr::filter(!multi_allelic) |>
+  # dataset query: dsq
+  dsq <- ds |>
+    dplyr::filter(!multi_allelic)
+
+  if(isTRUE(use_effective_n)) {
+    stopifnot("CaseN or ContrlN missing from sumstats" = all(c("CaseN", "ControlN") %in% ds$schema$names))
+    dsq <- dsq |>
+      dplyr::mutate(N = effective_n(CaseN, ControlN))
+  }
+  dsq |>
     dplyr::select(SNP = RSID, A1 = EffectAllele, A2 = OtherAllele, freq=EAF, b=B, se=SE, p=P, N) |>
     dplyr::collect() |>
     readr::write_tsv(out)

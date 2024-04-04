@@ -4,12 +4,14 @@
 \alias{to_ma}
 \title{Convert tidyGWAS to COJO .ma format}
 \usage{
-to_ma(parent_folder, out)
+to_ma(parent_folder, out, use_effective_n = FALSE)
 }
 \arguments{
 \item{parent_folder}{filepath to tidyGWAS folder}
 
 \item{out}{output for .ma file. Default value is [tidyGWAS_paths()$ma_file]}
+
+\item{use_effective_n}{Should N be converted to effective sample size? Requires CaseN and ControlN in column names}
 }
 \description{
 Convert tidyGWAS to COJO .ma format

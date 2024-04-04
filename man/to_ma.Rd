@@ -4,7 +4,7 @@
 \alias{to_ma}
 \title{Convert tidyGWAS to COJO .ma format}
 \usage{
-to_ma(parent_folder, out, use_effective_n = FALSE)
+to_ma(parent_folder, out = NULL, use_effective_n = FALSE)
 }
 \arguments{
 \item{parent_folder}{filepath to tidyGWAS folder}

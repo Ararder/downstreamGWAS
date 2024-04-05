@@ -169,7 +169,7 @@ run_sbayess <- function(
 
   # sbayess code ----------------------------------------------------------
 
-  ldm <- in_ref_dir("gctb", paths$system_paths$gctb$ldm_s)
+  ldm <- in_ref_dir(paths$system_paths$gctb$ldm_s, "gctb")
   ma_file <- in_work_dir("sumstats.ma")
   out <- in_work_dir("SbayesS")
 

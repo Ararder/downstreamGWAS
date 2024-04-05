@@ -119,8 +119,15 @@ singularity_call2 <- function(cmd, workdir, program) {
 
 }
 
-in_ref_dir <- function(folder, filename) {
-  fs::path("/src", folder, filename)
+in_ref_dir <- function(filename, folder = NULL) {
+
+  if(rlang::is_empty(fs::path("/src", folder))) {
+    base <- "/src/"
+  } else {
+    base <- fs::path("/src", folder)
+  }
+
+  fs::path(base,filename)
 
 }
 

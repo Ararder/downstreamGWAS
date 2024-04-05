@@ -249,3 +249,115 @@ stratified_ldsc <- function(
 }
 
 
+#' Run stratified LDscore regression using the --h2-cts flag
+#'
+#' @param parent_folder the filepath to a [tidyGWAS::tidyGWAS()] folder
+#' @param cts_file filepath to cts file
+#' @param write_script should the code be written to a file?
+#' @param ... optional slurm argument
+#' @param out filepath to output directory. Defaults to "sldsc" in the ldsc folder
+#'
+#' @return a character vector
+#' @export
+#'
+#' @examples \dontrun{
+#'   run_sldsc_cts(tempdir(), "siletti2023.cts")
+#' }
+#'
+run_sldsc_cts <- function(
+    parent_folder,
+    cts_file,
+    write_script = TRUE,
+    ...,
+    out = NULL
+    ) {
+  # get paths
+  rlang::check_required(parent_folder)
+  stopifnot("write_script should be either TRUE or FALSE" = rlang::is_bool(write_script))
+  paths <- tidyGWAS_paths(parent_folder)
+  basedir <- paths$ldsc
+  out <- out %||% fs::path(basedir, "sldsc")
+
+  fs::dir_create(out)
+  slurm_out = fs::path_expand(fs::path(out, "slurm-%j.out"))
+
+
+
+  # filepaths from container perspective ------------------------------------
+
+  # preset filepaths
+  weights <- in_ref_dir(paths$system_paths$sldsc$eur$weights, "sldsc_ref")
+  freq <- in_ref_dir(paths$system_paths$sldsc$eur$freq, "sldsc_ref")
+  ref_ld_chr <- in_ref_dir(paths$system_paths$sldsc$eur$base_ldscore, "sldsc_ref")
+  sumstats <- in_work_dir("ldsc.sumstats.gz")
+
+  # variable filepath
+  cts <- in_ref_dir(cts_file)
+  out <- in_work_dir(fs::path(fs::path_ext_remove(cts_file)))
+
+
+  # -------------------------------------------------------------------------
+
+
+  code <- .stratified_ldsc_cts(
+    sumstats = sumstats,
+    ref_ld_chr = ref_ld_chr,
+    ref_ld_chr_cts = cts,
+    weights = weights,
+    freq = freq,
+    out = out
+    )
+
+
+
+  # containerize the ode ----------------------------------------------------
+
+
+  script <- with_container(
+    exe_path = "python /tools/ldsc/ldsc.py",
+    code = code,
+    config_key = "ldsc",
+    workdir = basedir
+  )
+
+
+  # slurm -------------------------------------------------------------------
+
+  header <- slurm_header(output = slurm_out, ...)
+
+  full_script <- c(header, script)
+
+
+  # -------------------------------------------------------------------------
+  # return the script
+  if(write_script)  {
+    write_script_to_disk(full_script, fs::path(out, "sldcs_cts.sh"))
+    } else  {
+    full_script
+  }
+
+
+}
+
+.stratified_ldsc_cts <- function(
+    sumstats,
+    ref_ld_chr,
+    ref_ld_chr_cts,
+    weights,
+    freq,
+    out
+
+) {
+  glue::glue(
+    "--h2-cts {sumstats} ",
+    "--ref-ld-chr {ref_ld_chr} ",
+    "--ref-ld-chr-cts {ref_ld_chr_cts} ",
+    "--w-ld-chr {weights} ",
+    "--overlap-annot ",
+    "--frqfile-chr {freq} ",
+    "--out {out}"
+  )
+}
+
+
+

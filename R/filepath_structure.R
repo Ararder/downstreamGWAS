@@ -72,3 +72,10 @@ tidyGWAS_paths <- function(dir) {
 
 
 
+write_script_to_disk <- function(script, path) {
+    writeLines(script, path)
+    return(path)
+}
+
+
+

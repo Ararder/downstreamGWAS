@@ -293,7 +293,7 @@ run_sldsc_cts <- function(
 
   # variable filepath
   cts <- in_ref_dir(cts_file)
-  out <- in_work_dir(fs::path(fs::path_ext_remove(cts_file)))
+  container_out <- in_work_dir(fs::path(fs::path_ext_remove(cts_file)))
 
 
   # -------------------------------------------------------------------------
@@ -305,7 +305,7 @@ run_sldsc_cts <- function(
     ref_ld_chr_cts = cts,
     weights = weights,
     freq = freq,
-    out = out
+    out = container_out
     )
 
 

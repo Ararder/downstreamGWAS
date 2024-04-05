@@ -1,21 +1,6 @@
 utils::globalVariables(c("RSID",".", "job"))
 
 
-
-ldsc_call <- function(workdir) {
-
-  paths <- get_system_paths()
-
-
-  ldsc_path <- fs::path(paths$containers, paths$ldsc$container)
-  singularity_start <- singularity_mount(workdir)
-
-  glue::glue("{singularity_start}{ldsc_path} python /tools/ldsc")
-
-}
-
-
-
 #' Run munge LDSC and LDSC -h2 from tidyGWAS
 #'
 #' @param parent_folder Folder to sumstats cleaned with tidyGWAS. see [tidyGWAS::tidyGWAS()] output_folder
@@ -27,97 +12,78 @@ ldsc_call <- function(workdir) {
 #' @examples \dontrun{
 #' script_location <- run_ldsc("my_sumstats/tidygwas/height2022")
 #' }
-run_ldsc <- function(parent_folder, write_script = c("no", "yes")) {
-  write_script <- rlang::arg_match(write_script)
-  dep <- get_dependencies()
+run_ldsc <- function(parent_folder, ..., write_script = TRUE) {
+
+  #check args
+  stopifnot(rlang::is_bool(write_script))
+  rlang::check_required(parent_folder)
+
   paths <- tidyGWAS_paths(parent_folder)
 
   prepare_sumstats <- glue::glue("R -e 'downstreamGWAS::to_ldsc(commandArgs(trailingOnly = TRUE)[1])'")|>
     paste0(" --args ", paths$base)
 
 
-  munge <- glue::glue(
-    "{ldsc_call(paths$ldsc)}/munge_sumstats.py ",
-    "--sumstats /mnt/{fs::path_file(paths$ldsc_temp)} ",
-    "--out /mnt/{fs::path_file(paths$ldsc_munged)} ",
-    "--snp RSID ",
-    "--a1 EffectAllele ",
-    "--a2 OtherAllele ",
-    "--merge-alleles /src/{paths$system_paths$ldsc$hm3} ",
-    "--chunksize 500000 && rm /mnt/{fs::path_file(paths$ldsc_temp)}"
+  # ldsc munge --------------------------------------------------------------
+
+
+  sumstats <- in_work_dir(fs::path_file(paths$ldsc_temp))
+  out <- in_work_dir(fs::path_file(paths$ldsc_munged))
+  merge_alleles <- in_ref_dir(paths$system_paths$ldsc$hm3)
+
+  code <- .munge(
+    sumstats = sumstats,
+    out = out,
+    merge_alleles = merge_alleles
+  )
+
+  munge_code <- with_container(
+    "python /tools/ldsc/munge.py ",
+    paste0(code, " && rm /mnt/temp.csv.gz"),
+    config_key = "ldsc",
+    workdir = paths$ldsc
   )
 
 
 
-  h2 <- glue::glue(
-    "{ldsc_call(paths$ldsc)}/ldsc.py ",
-    "--h2 /mnt/ldsc.sumstats.gz ",
-    "--ref-ld-chr /src/{paths$system_paths$ldsc$eur_wld} ",
-    "--w-ld-chr /src/{paths$system_paths$ldsc$eur_wld} ",
-    "--out /mnt/{fs::path_file(paths$ldsc_h2)}"
+  # ldsc h2 ----------------------------------------------------------------------
 
+  sumstats <- in_work_dir("ldsc.sumstats.gz")
+  ref_ld <- in_ref_dir(paths$system_paths$ldsc$eur_wld)
+  out_h2 <- in_work_dir(fs::path_file(paths$ldsc_h2))
+
+  code_h2 <- .h2(
+    sumstats = sumstats,
+    ref_ld_chr = ref_ld,
+    w_ld_chr = ref_ld,
+    out = out_h2
   )
 
-# out ---------------------------------------------------------------------
+  h2_full <- with_container(
+    "python /tools/ldsc/ldsc.py",
+    code_h2,
+    config_key = "ldsc",
+    workdir = paths$ldsc
+  )
+
+  complete_code <- c(munge_code, h2_full)
 
 
-  code <- c(dep, prepare_sumstats, munge, h2)
-  if(write_script =="yes") {
-    writeLines(code, fs::path(paths$ldsc, "run_ldsc.sh"))
-    return(fs::path(paths$ldsc, "run_ldsc.sh"))
+  # out ---------------------------------------------------------------------
+
+
+
+  if(isTRUE(write_script)) {
+    write_script_to_disk(complete_code, fs::path(paths$ldsc, "run_ldsc.sh"))
+
   } else {
 
-    return(code)
+    complete_code
   }
 
 
 }
 
-#' Parse the output of LDSC --h2
-#'
-#' @param path to log file
-#'
-#' @return a tibble
-#' @export
-#'
-#' @examples \dontrun{
-#' parse_ldsc_h2("ldsc_h2.log")
-#' }
-parse_ldsc_h2 <- function(path) {
-
-  dataset_name <- fs::path_file(fs::path_dir(fs::path_dir(fs::path_dir(path))))
-  df <- readLines(path)
-
-  if(length(df) != 32){
-    return(dplyr::tibble(dataset_name=dataset_name, obs_h2=NA_real_,
-                         obs_se=NA_real_, lambda=NA_real_,
-                         mean_chi2=NA_real_, intercept=NA_real_,
-                         intercept_se=NA_real_, ratio=NA_real_))
-  }
-
-  obs_h2 <- as.numeric(stringr::str_extract(df[26], "\\d{1}\\.\\d{1,5}"))
-
-  obs_se <- stringr::str_extract(df[26], "\\(\\d{1}\\.\\d{1,5}") |>
-    stringr::str_remove(string = _, pattern = "\\(") |>
-    as.numeric()
-
-  lambda <- stringr::str_extract(df[27], " \\d{1}\\.\\d{1,5}") |>
-    as.numeric()
-
-  mean_chi2 <- stringr::str_extract(df[28], " \\d{1}\\.\\d{1,5}") |>
-    as.numeric()
-
-  intercept <- stringr::str_extract(string = df[29], pattern = " \\d{1}\\.\\d{1,5}") |>
-    as.numeric()
-
-  intercept_se <- stringr::str_extract(string = df[29],pattern =  "\\(\\d{1}\\.\\d{1,5}") |>
-    stringr::str_remove(string = _, pattern =  "\\(") |>
-    as.numeric()
-  ratio <- stringr::str_extract(df[30], " \\d{1}\\.\\d{1,5}") |>
-    as.numeric()
-
-  dplyr::tibble(dataset_name, obs_h2, obs_se, lambda, mean_chi2, intercept, intercept_se, ratio)
-}
 
 
 
@@ -331,12 +297,50 @@ run_sldsc_cts <- function(
   # -------------------------------------------------------------------------
   # return the script
   if(write_script)  {
-    write_script_to_disk(full_script, fs::path(out, "sldcs_cts.sh"))
+    write_script_to_disk(full_script, fs::path(out, paste0(cts_file, ".sh")))
     } else  {
     full_script
   }
 
 
+}
+
+
+
+# -------------------------------------------------------------------------
+
+.h2 <- function(
+    sumstats,
+    ref_ld_chr,
+    w_ld_chr,
+    out
+) {
+  glue::glue(
+    "--h2 {sumstats} ",
+    "--ref-ld-chr {ref_ld_chr} ",
+    "--w-ld-chr {w_ld_chr} ",
+    "--out {out}"
+  )
+}
+
+.munge <- function(
+    sumstats,
+    out,
+    snp = "RSID",
+    a1 = "EffectAllele",
+    a2 = "OtherAllele",
+    merge_alleles
+) {
+
+  glue::glue(
+    "--sumstats {sumstats} ",
+    "--out {out} ",
+    "--snp {snp} ",
+    "--a1 {a1} ",
+    "--a2 {a2} ",
+    "--merge-alleles {merge_alleles} ",
+    "--chunksize 500000"
+  )
 }
 
 .stratified_ldsc_cts <- function(
@@ -358,6 +362,3 @@ run_sldsc_cts <- function(
     "--out {out}"
   )
 }
-
-
-

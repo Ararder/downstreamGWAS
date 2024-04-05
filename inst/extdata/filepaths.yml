@@ -1,5 +1,6 @@
 containers:
 container_dependency:
+container: apptainer
 reference:
 sumstats_folder:
 
@@ -44,6 +45,7 @@ sbayesrc:
 
 # containers:
 #   container_dependency:
+#   container_version: apptainer
 #   container_dir:
 #   ref_mount: "/src"
 #   workdir_mount: "/mnt"

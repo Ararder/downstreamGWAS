@@ -286,9 +286,9 @@ run_sldsc_cts <- function(
   # filepaths from container perspective ------------------------------------
 
   # preset filepaths
-  weights <- in_ref_dir(paths$system_paths$sldsc$eur$weights, "sldsc_ref")
-  freq <- in_ref_dir(paths$system_paths$sldsc$eur$freq, "sldsc_ref")
-  ref_ld_chr <- in_ref_dir(paths$system_paths$sldsc$eur$base_ldscore, "sldsc_ref")
+  weights <- in_ref_dir(paths$system_paths$sldsc$eur$weights)
+  freq <- in_ref_dir(paths$system_paths$sldsc$eur$freq)
+  ref_ld_chr <- in_ref_dir(paths$system_paths$sldsc$eur$base_ldscore)
   sumstats <- in_work_dir("ldsc.sumstats.gz")
 
   # variable filepath

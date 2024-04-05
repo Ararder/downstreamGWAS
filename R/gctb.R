@@ -240,7 +240,7 @@ run_sbayess <- function(
     "--ldm {ldm} ",
     "--out {out} ",
     "--pi {pi} ",
-    "--multi-chain 4",
+    "--num-chains {num_chains} ",
     "--hsq {hsq} ",
     "--chain-length {chain_length} ",
     "--burn-in {burn_in} ",

@@ -8,6 +8,7 @@ ldsc:
   container: "ldsc_latest.sif"
   hm3: "ldsc/eur_w_ld_chr/w_hm3.snplist"
   eur_wld: "ldsc/eur_w_ld_chr/"
+
 sldsc:
   container: "ldsc_latest.sif"
   eur:
@@ -15,8 +16,24 @@ sldsc:
     weights: "sldsc_ref/1000G_Phase3_weights_hm3_no_MHC/weights.hm3_noMHC."
     freq: "sldsc_ref/1000G_Phase3_frq/1000G.EUR.QC."
   cell_types:
-    superclusters: "siletti2023/superclusters"
-    clusters: "siletti2023/clusters"
+    siletti2023:
+      superclusters:
+        path: "s-ldsc-celltypes/siletti2023/superclusters"
+        download:
+      clusters:
+        path:"s-ldsc-celltypes/siletti2023/clusters"
+        download:
+    zeisel2018:
+      level4:
+        path: "s-ldsc-celltypes/zeisel2018/level4"
+        download:
+      level5:
+        path: "s-ldsc-celltypes/zeisel2018/level5"
+        download:
+    gtex_v8:
+      tissues:
+        path: "s-ldsc-celltypes/gtex_v8/tissues"
+        download:
 plink:
   container: "genetics_latest.sif"
   gene_ref: "1000G_merged/glist-hg37.tsv"

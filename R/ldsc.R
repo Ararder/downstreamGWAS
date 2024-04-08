@@ -299,7 +299,7 @@ run_sldsc_cts <- function(
   # -------------------------------------------------------------------------
   # return the script
   if(write_script)  {
-    write_script_to_disk(full_script, fs::path(out, paste0(cts_file, ".sh")))
+    write_script_to_disk(full_script, fs::path(out, fs::path_file(cts_file),ext="sh"))
     } else  {
     full_script
   }

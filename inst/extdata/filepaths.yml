@@ -21,7 +21,7 @@ sldsc:
         path: "s-ldsc-celltypes/siletti2023/superclusters"
         download:
       clusters:
-        path:"s-ldsc-celltypes/siletti2023/clusters"
+        path: "s-ldsc-celltypes/siletti2023/clusters"
         download:
     zeisel2018:
       level4:

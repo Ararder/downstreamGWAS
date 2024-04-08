@@ -319,8 +319,8 @@ run_sldsc_cts <- function(
 ) {
   glue::glue(
     "--h2 {sumstats} ",
-    "--ref-ld-chr {ref_ld_chr} ",
-    "--w-ld-chr {w_ld_chr} ",
+    "--ref-ld-chr {ref_ld_chr}/ ",
+    "--w-ld-chr {w_ld_chr}/ ",
     "--out {out}"
   )
 }

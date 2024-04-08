@@ -77,7 +77,7 @@ with_container <- function(exe_path, code, config_key, workdir) {
 
 
   container_call <- glue::glue(
-    "singularity exec --cleanenv --bind $wd,$ref $container {exe_path} $code"
+    "apptainer exec --cleanenv --bind $wd,$ref $container {exe_path} $code"
   )
 
 

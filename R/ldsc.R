@@ -39,10 +39,12 @@ run_ldsc <- function(parent_folder, ..., write_script = TRUE) {
 
   munge_code <- with_container(
     "python /tools/ldsc/munge_sumstats.py ",
-    paste0(code, " && rm /mnt/temp.csv.gz"),
+    code,
     config_key = "ldsc",
     workdir = paths$ldsc
   )
+
+  cleanup <- glue::glue("rm {paths$ldsc_temp}")
 
 
 
@@ -66,7 +68,7 @@ run_ldsc <- function(parent_folder, ..., write_script = TRUE) {
     workdir = paths$ldsc
   )
 
-  complete_code <- c(munge_code, h2_full)
+  complete_code <- c(prepare_sumstats, munge_code,cleanup, h2_full)
 
 
   # out ---------------------------------------------------------------------

@@ -4,7 +4,7 @@
 \alias{run_ldsc}
 \title{Run munge LDSC and LDSC -h2 from tidyGWAS}
 \usage{
-run_ldsc(parent_folder, ..., write_script = TRUE)
+run_ldsc(parent_folder, ..., write_script = TRUE, sample_size = "Effective")
 }
 \arguments{
 \item{parent_folder}{Folder to sumstats cleaned with tidyGWAS. see [tidyGWAS::tidyGWAS()] output_folder}

@@ -5,7 +5,7 @@ utils::globalVariables(c("RSID",".", "job"))
 #'
 #' @param parent_folder Folder to sumstats cleaned with tidyGWAS. see [tidyGWAS::tidyGWAS()] output_folder
 #' @param write_script Should the code be written to a bash script?
-#'
+#' @param ... Pass arguments to [slurm_header()]
 #' @return a path to slurm script
 #' @export
 #'
@@ -38,7 +38,7 @@ run_ldsc <- function(parent_folder, ..., write_script = TRUE) {
   )
 
   munge_code <- with_container(
-    "python /tools/ldsc/munge.py ",
+    "python /tools/ldsc/munge_sumstats.py ",
     paste0(code, " && rm /mnt/temp.csv.gz"),
     config_key = "ldsc",
     workdir = paths$ldsc

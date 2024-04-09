@@ -12,6 +12,9 @@ run_ldsc(parent_folder, ..., write_script = TRUE, sample_size = "Effective")
 \item{...}{Pass arguments to [slurm_header()]}
 
 \item{write_script}{Should the code be written to a bash script?}
+
+\item{sample_size}{Should sample size be computed with the effective_n formula if
+CaseN and ControlN is present?}
 }
 \value{
 a path to slurm script

@@ -5,6 +5,8 @@ utils::globalVariables(c("RSID",".", "job"))
 #'
 #' @param parent_folder Folder to sumstats cleaned with tidyGWAS. see [tidyGWAS::tidyGWAS()] output_folder
 #' @param write_script Should the code be written to a bash script?
+#' @param sample_size Should sample size be computed with the effective_n formula if
+#' CaseN and ControlN is present?
 #' @param ... Pass arguments to [slurm_header()]
 #' @return a path to slurm script
 #' @export

@@ -19,6 +19,7 @@ align_to_ref <- function(dset) {
 meta_analyze_by_chrom <- function(dset, chrom) {
 
   dset |>
+    dplyr::filter(!is.na(ID)) |>
     dplyr::filter(CHR == {{ chrom }}) |>
     dplyr::filter(is.finite(B) & is.finite(SE)) |>
     align_to_ref() |>

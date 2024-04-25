@@ -145,7 +145,7 @@ sbayesrc <- function(workdir, ldm, ma_file, annot,out, thread_imp = 4, thread_rc
 run_sbayess <- function(
     parent_folder,
     ...,
-    write_script = c("yes","no"),
+    write_script = TRUE,
     pi = "0.01",
     hsq = "0.5",
     num_chains = "4",
@@ -156,6 +156,7 @@ run_sbayess <- function(
     ) {
 
   write_script <- rlang::arg_match(write_script)
+  stopifnot(rlang::is_bool(write_script))
 
 
   # get default paths -------------------------------------------------------

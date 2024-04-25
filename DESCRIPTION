@@ -28,3 +28,5 @@ Suggests:
     withr
 Config/testthat/edition: 3
 RoxygenNote: 7.2.3
+Config/Needs/website: rmarkdown
+URL: http://arvidharder.com/downstreamGWAS/

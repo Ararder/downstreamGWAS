@@ -4,10 +4,17 @@
 \alias{meta_analyze}
 \title{Perform meta-analysis of GWAS summary statistics datasets in [tidyGWAS::tidyGWAS()] hive-style format.}
 \usage{
-meta_analyze(dset, method = c("ivw"))
+meta_analyze(
+  dset,
+  by = c("CHR", "POS", "RSID", "EffectAllele", "OtherAllele"),
+  method = c("ivw")
+)
 }
 \arguments{
 \item{dset}{an [arrow::open_dataset()] object}
+
+\item{by}{a character vector of column names to group by. Default is c("CHR", "POS", "RSID", "EffectAllele", "OtherAllele")
+Columns not in by will not be kept. So if you group by c("CHR", "POS"), only these columns will be kept in the output.}
 
 \item{method}{method to use for performing meta-analysis. Currently, only IVW (based on standard errors) is supported.}
 }

@@ -4,12 +4,15 @@
 \alias{meta_analyze_by_chrom}
 \title{meta_analyze summary statistics, one chromosome at a time!}
 \usage{
-meta_analyze_by_chrom(dset, chrom)
+meta_analyze_by_chrom(dset, chrom, by)
 }
 \arguments{
-\item{dset}{an object created by [arrow::open_dataset()]}
+\item{dset}{an [arrow::open_dataset()] object}
 
-\item{chrom}{chromosome to meta-analyse}
+\item{chrom}{chromosome to use for meta-analysis}
+
+\item{by}{a character vector of column names to group by. Default is c("CHR", "POS", "RSID", "EffectAllele", "OtherAllele")
+Columns not in by will not be kept. So if you group by c("CHR", "POS"), only these columns will be kept in the output.}
 }
 \value{
 a [dplyr::tibble()]

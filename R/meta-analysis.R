@@ -16,6 +16,17 @@ align_to_ref <- function(dset) {
     dplyr::select(-dplyr::all_of(c("EA_is_ref", "tmp")))
 
 }
+#' meta_analyze summary statistics, one chromosome at a time!
+#'
+#' @param dset an object created by [arrow::open_dataset()]
+#' @param chrom chromosome to meta-analyse
+#'
+#' @return a [dplyr::tibble()]
+#' @export
+#'
+#' @examples \dontrun{
+#' meta_analyze_by_crom(dset, chrom = "22")
+#' }
 meta_analyze_by_chrom <- function(dset, chrom) {
 
   dset |>

@@ -7,7 +7,7 @@
 run_sbayess(
   parent_folder,
   ...,
-  write_script = c("yes", "no"),
+  write_script = TRUE,
   pi = "0.01",
   hsq = "0.5",
   num_chains = "4",

@@ -154,8 +154,7 @@ run_sbayess <- function(
     seed = "2023",
     thread = "8"
     ) {
-
-  write_script <- rlang::arg_match(write_script)
+  rlang::check_required(parent_folder)
   stopifnot(rlang::is_bool(write_script))
 
 
@@ -209,7 +208,7 @@ run_sbayess <- function(
 
 
   full_script <- c(header, script)
-  if(write_script == "yes") {
+  if(write_script) {
 
     p <- fs::path(paths$sbayes, "sbayess.sh")
     writeLines(full_script, p)

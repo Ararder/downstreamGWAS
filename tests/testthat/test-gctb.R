@@ -3,7 +3,7 @@ test_that("... can pass arguments to slurm", {
     code <- run_sbayess(
       parent_folder = tempdir(),
       mem="1000gb",
-      write_script = "no"
+      write_script = FALSE
     )
   )
 })

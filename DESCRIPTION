@@ -2,7 +2,7 @@ Package: downstreamGWAS
 Type: Package
 Title: Standardized downstream pipelines for GWAS
 Version: 0.1.0
-Author: Who wrote it
+Author: Arvid Harder
 Maintainer: The package maintainer <arvid.harder@gmail.com>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
@@ -29,5 +29,6 @@ Suggests:
     withr
 Config/testthat/edition: 3
 RoxygenNote: 7.2.3
+Roxygen: list(markdown = TRUE)
 Config/Needs/website: rmarkdown
 URL: http://arvidharder.com/downstreamGWAS/

@@ -21,7 +21,7 @@ L2: LD score of variant}
 \item{blocks}{number of blocks to use in the jackknife regression. NOT YET IMPLEMENTED}
 }
 \value{
-a [dplyr::tibble()] with two columns: "int" and "obs_h2"
+a \code{\link[dplyr:reexports]{dplyr::tibble()}} with two columns: "int" and "obs_h2"
 }
 \description{
 Run LDscore regression --h2 flag.

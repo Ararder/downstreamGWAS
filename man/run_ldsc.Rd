@@ -7,9 +7,9 @@
 run_ldsc(parent_folder, ..., write_script = TRUE, sample_size = "Effective")
 }
 \arguments{
-\item{parent_folder}{Folder to sumstats cleaned with tidyGWAS. see [tidyGWAS::tidyGWAS()] output_folder}
+\item{parent_folder}{Folder to sumstats cleaned with tidyGWAS. see \code{\link[tidyGWAS:tidyGWAS]{tidyGWAS::tidyGWAS()}} output_folder}
 
-\item{...}{Pass arguments to [slurm_header()]}
+\item{...}{Pass arguments to \code{\link[=slurm_header]{slurm_header()}}}
 
 \item{write_script}{Should the code be written to a bash script?}
 

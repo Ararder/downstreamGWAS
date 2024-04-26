@@ -7,7 +7,7 @@
 #'
 #' @param cmd command to execute in the container
 #' @param config_key yml key in the config.yml file. The path to the container
-#' will be constructed using config[[config_key]]$container
+#' will be constructed using `config$config_key$container`
 #' @param workdir workfolder to bind to the container
 #'
 #' @return a character vector of captured code

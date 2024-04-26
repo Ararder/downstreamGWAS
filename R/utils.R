@@ -39,7 +39,7 @@ liability_scale_h2 <- function(obs_h2, pop_prev, sample_prev = 0.5) {
 #' Read in a tidyGWAS formatted summary statistics file
 #'
 #' @param parent_folder filepath to the parent_folder of tidyGWAS_hivestyle
-#' @param columns character vector of columns names, passed to [dplyr::select(dplyr::any_of(columns))]
+#' @param columns character vector of columns names, passed to `dplyr::select(dplyr::any_of(columns))`
 #'
 #' @return a [data.frame()]
 #' @export

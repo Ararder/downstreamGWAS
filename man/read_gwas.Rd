@@ -9,10 +9,10 @@ read_gwas(parent_folder, columns)
 \arguments{
 \item{parent_folder}{filepath to the parent_folder of tidyGWAS_hivestyle}
 
-\item{columns}{character vector of columns names, passed to [dplyr::select(dplyr::any_of(columns))]}
+\item{columns}{character vector of columns names, passed to \code{dplyr::select(dplyr::any_of(columns))}}
 }
 \value{
-a [data.frame()]
+a \code{\link[=data.frame]{data.frame()}}
 }
 \description{
 Read in a tidyGWAS formatted summary statistics file

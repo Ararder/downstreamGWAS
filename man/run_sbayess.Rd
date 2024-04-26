@@ -18,9 +18,9 @@ run_sbayess(
 )
 }
 \arguments{
-\item{parent_folder}{filepath to a [tidyGWAS] folder}
+\item{parent_folder}{filepath to a \code{\link[tidyGWAS:tidyGWAS]{tidyGWAS::tidyGWAS()}} folder}
 
-\item{...}{pass arguments to [slurm_header()]}
+\item{...}{pass arguments to \code{\link[=slurm_header]{slurm_header()}}}
 
 \item{write_script}{should the captured code be written to disk in a .sh file?}
 

@@ -10,7 +10,7 @@ call_container(cmd, config_key, workdir)
 \item{cmd}{command to execute in the container}
 
 \item{config_key}{yml key in the config.yml file. The path to the container
-will be constructed using config[[config_key]]$container}
+will be constructed using \code{config$config_key$container}}
 
 \item{workdir}{workfolder to bind to the container}
 }

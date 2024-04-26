@@ -12,7 +12,7 @@ Default value is NULL, and the sumstats_folder parameter will be used from the
 config.yaml file}
 }
 \value{
-a [dplyr::tibble()]
+a \code{\link[dplyr:reexports]{dplyr::tibble()}}
 }
 \description{
 List the available sumstats

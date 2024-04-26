@@ -64,12 +64,15 @@ meta_analyze_by_chrom <- function(dset, chrom, by) {
 
 
 
-#' Perform meta-analysis of GWAS summary statistics datasets in [tidyGWAS::tidyGWAS()] hive-style format.
+#' Perform meta-analysis of GWAS summary statistics datasets cleaned by tidyGWAS
 #'
 #' @param dset an [arrow::open_dataset()] object
 #' @param method method to use for performing meta-analysis. Currently, only IVW (based on standard errors) is supported.
 #' @param by a character vector of column names to group by. Default is c("CHR", "POS", "RSID", "EffectAllele", "OtherAllele")
 #'  Columns not in by will not be kept. So if you group by c("CHR", "POS"), only these columns will be kept in the output.
+#'  The columns passed are used to define a unique variant. If for example you pass c("CHR", "POS"), then all variants with the same
+#'  chromosome and position would be considered the same variant. You can use 'ID'
+#'  to speed up the meta analysis, but RSID information will then be lost.
 #' @return a [dplyr::tibble()]
 #' @export
 #'

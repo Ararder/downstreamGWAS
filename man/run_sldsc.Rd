@@ -11,7 +11,7 @@ run_sldsc(
 )
 }
 \arguments{
-\item{parent_folder}{Folder to sumstats cleaned with tidyGWAS. see [tidyGWAS::tidyGWAS()] output_folder}
+\item{parent_folder}{Folder to sumstats cleaned with tidyGWAS. see \code{\link[tidyGWAS:tidyGWAS]{tidyGWAS::tidyGWAS()}} output_folder}
 
 \item{ldscore}{which cell-type atlas to use. Has to match an entry in the reference file}
 

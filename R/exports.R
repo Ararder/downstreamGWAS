@@ -79,7 +79,7 @@ to_plink_clumping <- function(parent_folder) {
 #' Convert tidyGWAS to COJO .ma format
 #'
 #' @param parent_folder filepath to tidyGWAS folder
-#' @param out output for .ma file. Default value is [tidyGWAS_paths()$ma_file]
+#' @param out output for .ma file. Default value is `tidyGWAS_paths()[["ma_file]]`
 #' @param use_effective_n Should N be converted to effective sample size? Requires CaseN and ControlN in column names
 #'
 #' @return NULL

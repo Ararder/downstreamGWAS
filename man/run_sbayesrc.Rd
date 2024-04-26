@@ -13,7 +13,7 @@ run_sbayesrc(
 )
 }
 \arguments{
-\item{parent_folder}{Folder to sumstats cleaned with tidyGWAS. see [tidyGWAS::tidyGWAS()] output_folder}
+\item{parent_folder}{Folder to sumstats cleaned with tidyGWAS. see \code{\link[tidyGWAS:tidyGWAS]{tidyGWAS::tidyGWAS()}} output_folder}
 
 \item{...}{
   Arguments passed on to \code{\link[=sbayesrc]{sbayesrc}}

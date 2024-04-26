@@ -125,7 +125,7 @@ sbayesrc <- function(workdir, ldm, ma_file, annot,out, thread_imp = 4, thread_rc
 
 #' Run Sbayes-S with tidyGWAS structure
 #'
-#' @param parent_folder filepath to a [tidyGWAS] folder
+#' @param parent_folder filepath to a [tidyGWAS::tidyGWAS()] folder
 #' @param ... pass arguments to [slurm_header()]
 #' @param write_script should the captured code be written to disk in a .sh file?
 #' @param pi argument passed to sbayes

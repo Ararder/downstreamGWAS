@@ -7,7 +7,7 @@
 run_sldsc_cts(parent_folder, cts_file, write_script = TRUE, ..., out = NULL)
 }
 \arguments{
-\item{parent_folder}{the filepath to a [tidyGWAS::tidyGWAS()] folder}
+\item{parent_folder}{the filepath to a \code{\link[tidyGWAS:tidyGWAS]{tidyGWAS::tidyGWAS()}} folder}
 
 \item{cts_file}{filepath to cts file}
 

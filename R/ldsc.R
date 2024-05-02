@@ -4,10 +4,10 @@ utils::globalVariables(c("RSID",".", "job"))
 #' Run munge LDSC and LDSC -h2 from tidyGWAS
 #'
 #' @param parent_folder Folder to sumstats cleaned with tidyGWAS. see [tidyGWAS::tidyGWAS()] output_folder
+#' @param ... Pass arguments to [slurm_header()]
 #' @param write_script Should the code be written to a bash script?
 #' @param sample_size Should sample size be computed with the effective_n formula if
 #' CaseN and ControlN is present?
-#' @param ... Pass arguments to [slurm_header()]
 #' @return a path to slurm script
 #' @export
 #'
@@ -40,9 +40,8 @@ run_ldsc <- function(parent_folder, ..., write_script = TRUE, sample_size="Effec
   )
 
   munge_code <- with_container(
-    "python /tools/ldsc/munge_sumstats.py ",
-    code,
-    config_key = "ldsc",
+    code = paste0("python /tools/ldsc/munge_sumstats.py ", code),
+    image = "ldsc",
     workdir = paths$ldsc
   )
 
@@ -64,10 +63,10 @@ run_ldsc <- function(parent_folder, ..., write_script = TRUE, sample_size="Effec
   )
 
   h2_full <- with_container(
-    "python /tools/ldsc/ldsc.py",
-    code_h2,
-    config_key = "ldsc",
-    workdir = paths$ldsc
+    code = paste0("python /tools/ldsc/ldsc.py ", code_h2),
+    image = "ldsc",
+    workdir = paths$ldsc,
+    setup_exists = TRUE
   )
 
   complete_code <- c(prepare_sumstats, munge_code,cleanup, h2_full)
@@ -241,6 +240,7 @@ run_sldsc_cts <- function(
     ...,
     out = NULL
     ) {
+
   # get paths
   rlang::check_required(parent_folder)
   stopifnot("write_script should be either TRUE or FALSE" = rlang::is_bool(write_script))
@@ -284,9 +284,8 @@ run_sldsc_cts <- function(
 
 
   script <- with_container(
-    exe_path = "python /tools/ldsc/ldsc.py",
-    code = code,
-    config_key = "ldsc",
+    code = paste0("python /tools/ldsc/ldsc.py ", code),
+    image = "ldsc",
     workdir = basedir
   )
 

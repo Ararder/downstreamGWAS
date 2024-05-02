@@ -1,68 +1,13 @@
-containers:
+downstreamGWAS_folder:
 container_dependency:
-container: apptainer
-reference:
+container_software: apptainer
 sumstats_folder:
 
-ldsc:
-  container: "ldsc_latest.sif"
-  hm3: "ldsc/eur_w_ld_chr/w_hm3.snplist"
-  eur_wld: "ldsc/eur_w_ld_chr/"
-
-sldsc:
-  container: "ldsc_latest.sif"
-  eur:
-    base_ldscore: "sldsc_ref/1000G_EUR_Phase3_baseline/baseline."
-    weights: "sldsc_ref/1000G_Phase3_weights_hm3_no_MHC/weights.hm3_noMHC."
-    freq: "sldsc_ref/1000G_Phase3_frq/1000G.EUR.QC."
-  cell_types:
-    siletti2023:
-      superclusters:
-        path: "s-ldsc-celltypes/siletti2023/superclusters"
-        download:
-      clusters:
-        path: "s-ldsc-celltypes/siletti2023/clusters"
-        download:
-    zeisel2018:
-      level4:
-        path: "s-ldsc-celltypes/zeisel2018/level4"
-        download:
-      level5:
-        path: "s-ldsc-celltypes/zeisel2018/level5"
-        download:
-    gtex_v8:
-      tissues:
-        path: "s-ldsc-celltypes/gtex_v8/tissues"
-        download:
-plink:
-  container: "genetics_latest.sif"
-  gene_ref: "1000G_merged/glist-hg37.tsv"
-  genome_ref: "1000G_merged/1000G_merged"
-
-mixer:
-  container: "mixer.sif"
-  ref_files: "mixer/"
-
-tidyGWAS:
-  container: "tidygwas_latest.sif"
-  ref: "dbSNP155"
-
-# Filepaths and container to run gctb
-gctb:
-  container: genetics_latest.sif
-gcta:
-  container: genetics_latest.sif
-
-# using basic 7 million LD-matrix
-sbayesrc:
-  container: sbayesrc_latest.sif
-  ldm: gctb/ukbEUR_Imputed
-  annot: gctb/annot_baseline_updated_zoonomia.tsv
 
 
-# containers:
-#   container_dependency:
-#   container_version: apptainer
-#   container_dir:
-#   ref_mount: "/src"
-#   workdir_mount: "/mnt"
+# DEFAULT params
+default_params:
+  container_dir: containers
+  reference_dir: reference
+  ref_mount: "/src"
+  workdir_mount: "/mnt"

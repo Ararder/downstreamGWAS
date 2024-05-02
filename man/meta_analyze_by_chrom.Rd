@@ -2,7 +2,8 @@
 % Please edit documentation in R/meta-analysis.R
 \name{meta_analyze_by_chrom}
 \alias{meta_analyze_by_chrom}
-\title{meta_analyze summary statistics, one chromosome at a time!}
+\title{meta_analyze summary statistics, one chromosome at a time!
+This function is exposed to allow for testing using real data}
 \usage{
 meta_analyze_by_chrom(dset, chrom, by)
 }
@@ -22,9 +23,11 @@ a \code{\link[dplyr:reexports]{dplyr::tibble()}}
 }
 \description{
 meta_analyze summary statistics, one chromosome at a time!
+This function is exposed to allow for testing using real data
 }
 \examples{
 \dontrun{
 meta_analyze_by_crom(dset, chrom = "22")
 }
+
 }

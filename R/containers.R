@@ -1,103 +1,127 @@
-
-
-#' Construct the code to call a container using a specific program
+#' Run arbitrary code inside a container
 #'
-#' call_container uses three arguments to construct a call to a container:
-#'
-#'
-#' @param cmd command to execute in the container
-#' @param config_key yml key in the config.yml file. The path to the container
-#' will be constructed using `config$config_key$container`
-#' @param workdir workfolder to bind to the container
-#'
+#' @param code code to be executed inside a container.
+#' @param image which container should be used? Used to index into params.yml
+#' @param workdir filepath to a directory. Will be used as the working directory inside the container
+#' @param setup_exists logical. If TRUE, the workdir, reference_dir and container_dependecy paths are assumed to exist.
+#' bind paths and code to load apptainer/singularity will not be written out to the script
+#' @param env pass environmental variables to the container, in format:
+#'   "KEY=VALUE"
+#'   Currently only supports passing one variable
+#' @param R_code
+#'  Running R Code using the format: R -e "$code" is challening due to escaping of
+#'  quotes and special characters. If TRUE, the code will be run using R -e "$code"
 #' @return a character vector of captured code
 #' @export
 #'
-#' @examples \dontrun{
-#' call_container()
-#' }
-call_container <- function(cmd, config_key, workdir) {
-
-  paths <- get_system_paths()
-
-
-
-  container <- fs::path(paths$containers, paths[[config_key]][["container"]])
-
-  ref  <- paths$reference
-  binds <- glue::glue("--bind {workdir}:/mnt --bind {ref}:/src ")
-  glue::glue("bind_mnt='--bind {workdir}:/mnt")
-  glue::glue("bind_src ='--bind {ref}:/src'")
-
-  singularity_start <- glue::glue(
-    "singularity exec --cleanenv "
-  )
-
-  glue::glue("{singularity_start}{binds}{container} {cmd}")
-}
-
-
-
-#' Run a command in a container
+#' @examples
 #'
-#' @param exe_path filepath inside the container to software to run
-#' @param code code to run in the container in the software specified by exe_path
-#' @param config_key yml key in the config.yml file. The path to the container
-#' @param workdir workfolder to bind to the container
+#' with_container(
+#'  code = "echo hello",
+#'  image = "R",
+#'  workdir = tempdir()
+#'  )
 #'
-#' @return a character vector of captured code
-#' @export
-#'
-#' @examples \dontrun{
-#' with_container()
-#' }
-with_container <- function(exe_path, code, config_key, workdir) {
+with_container <- function(code, image, workdir, env = NULL, setup_exists=FALSE, R_code=FALSE) {
+
+  #
+  rlang::check_required(code)
+  rlang::check_required(image)
+  rlang::check_required(workdir)
+
+
+  if(!is.null(env)) {
+    env <- glue::glue("--env '{env}' ")
+  } else {
+    env <- NULL
+  }
+
 
   # Check input
   paths <- get_system_paths()
   stopifnot(
-    "The 'containers' parameter in the config.yml file is required, and has not been provided.
-    To remove this error, set the 'containers' parameter in the config.yml file to the folder where the singularity containers exist." =
-      !rlang::is_empty(paths$containers)
+    "The folder assumed to hold software containers does not exist locally" =
+      !fs::dir_exists(fs::path(paths$downstreamGWAS_folder, paths$default_params$container_dir))
   )
 
 
   # -------------------------------------------------------------------------
   # setup paths in bash format, to make it more readable in the script
 
-  ref  <- paths$reference
-  container <- fs::path(paths$containers, paths[[config_key]][["container"]])
+  ref  <- fs::path(
+    paths$downstreamGWAS_folder,
+    paths$default_params$reference_dir
+    )
 
-  wd <- glue::glue("wd='{workdir}:/mnt'")
-  ref_data <- glue::glue("ref='{ref}:/src'")
+  container <- fs::path(
+    paths$downstreamGWAS_folder,
+    paths$default_params$container_dir,
+    paths[[image]][["container"]]
+    )
+
+
+# -------------------------------------------------------------------------
+
+
+  wd <- glue::glue("workdir='{workdir}:/mnt'")
+  ref_data <- glue::glue("reference_dir='{ref}:/src'")
   container <- glue::glue("container='{container}'")
   assign_code <- glue::glue("code='{code}'")
-  # check if a commamnd needs to be run to load apptainer
-  dep <- if(rlang::is_empty(paths[["container_dependency"]])) "# no apptainer dependency in config file" else paths[["container_dependency"]]
-
+  dep <- container_dependency(paths)
 
   container_call <- glue::glue(
-    "apptainer exec --cleanenv --bind $wd,$ref $container {exe_path} $code"
+    "apptainer exec --cleanenv {env}--bind $workdir,$reference_dir $container $code",
+    .null = ""
   )
 
+  if(isTRUE(R_code)) {
+    assign_code <- glue::glue("code={code}")
+    container_call <- glue::glue(
+      "apptainer exec --cleanenv {env}--bind $workdir,$reference_dir $container R -e \"$code\"",
+      .null = ""
+    )
 
-  c(
-    dep,
-    wd,
-    ref_data,
-    container,
-    assign_code,
-    container_call
-  )
+  }
+
+
+  # if multiple commands are using the same container and reference data,
+  # no need to redefine those variables each time.
+  # -------------------------------------------------------------------------
+
+  if(isTRUE(setup_exists)) {
+    c(
+      container,
+      assign_code,
+      container_call
+    )
+
+
+  }  else {
+
+    c(
+      dep,
+      wd,
+      ref_data,
+      container,
+      assign_code,
+      container_call
+    )
+
+  }
+
+
 }
 
-# keeping track of containers
-# -------------------------------------------------------------------------
-get_dependencies <- function() {
-  # update later: for now only gives dependencies on Dardel
-  get_system_paths()[["container_dependency"]]
-}
 
+
+
+container_dependency <- function(paths) {
+  if(rlang::is_empty(paths[["container_dependency"]])) {
+    NULL
+  } else {
+    paths[["container_dependency"]]
+  }
+}
 
 
 in_ref_dir <- function(filename, folder = NULL) {

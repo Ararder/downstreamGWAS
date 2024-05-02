@@ -2,27 +2,46 @@
 % Please edit documentation in R/containers.R
 \name{with_container}
 \alias{with_container}
-\title{Run a command in a container}
+\title{Run arbitrary code inside a container}
 \usage{
-with_container(exe_path, code, config_key, workdir)
+with_container(
+  code,
+  image,
+  workdir,
+  env = NULL,
+  setup_exists = FALSE,
+  R_code = FALSE
+)
 }
 \arguments{
-\item{exe_path}{filepath inside the container to software to run}
+\item{code}{code to be executed inside a container.}
 
-\item{code}{code to run in the container in the software specified by exe_path}
+\item{image}{which container should be used? Used to index into params.yml}
 
-\item{config_key}{yml key in the config.yml file. The path to the container}
+\item{workdir}{filepath to a directory. Will be used as the working directory inside the container}
 
-\item{workdir}{workfolder to bind to the container}
+\item{env}{pass environmental variables to the container, in format:
+"KEY=VALUE"
+Currently only supports passing one variable}
+
+\item{setup_exists}{logical. If TRUE, the workdir, reference_dir and container_dependecy paths are assumed to exist.
+bind paths and code to load apptainer/singularity will not be written out to the script}
+
+\item{R_code}{Running R Code using the format: R -e "$code" is challening due to escaping of
+quotes and special characters. If TRUE, the code will be run using R -e "$code"}
 }
 \value{
 a character vector of captured code
 }
 \description{
-Run a command in a container
+Run arbitrary code inside a container
 }
 \examples{
-\dontrun{
-with_container()
-}
+
+with_container(
+ code = "echo hello",
+ image = "R",
+ workdir = tempdir()
+ )
+
 }

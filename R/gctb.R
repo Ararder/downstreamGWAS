@@ -12,15 +12,67 @@
 #' @examples \dontrun{
 #' run_sbayesrc()
 #' }
-run_sbayesrc <- function(parent_folder, ..., write_script = c("no","yes"), thread_rc = 8, thread_imp = 4) {
-  rlang::arg_match(write_script)
+run_sbayesrc <- function(parent_folder, ..., write_script = TRUE, thread_rc = 8, thread_imp = 4) {
+  stopifnot(rlang::is_bool(write_script))
   paths <- tidyGWAS_paths(parent_folder)
   header <- slurm_header(..., output = fs::path_expand(fs::path(paths$sbayesrc, "slurm-%j.out")))
   fs::dir_create(paths$sbayesrc)
 
   munge <- glue::glue("R -e \"downstreamGWAS::to_ma('{parent_folder}')\"")
 
-  code <- c(get_dependencies(), munge, wrapper_sbayesrc(paths = paths, thread_rc = thread_rc, thread_imp = thread_imp))
+
+
+  # container paths ---------------------------------------------------------
+
+  workdir <- paths$sbayesr
+  ldm <- in_ref_dir(paths$system_paths$sbayesrc$ldm)
+  ma_file <- in_work_dir(fs::path_file(paths$ma_file))
+  annot <- in_ref_dir(paths$system_paths$sbayesrc$annot)
+  out <- in_ref_dir("sbrc")
+
+
+
+  # construct code ----------------------------------------------------------
+
+  tidy <- with_container(
+    code = glue::glue("\"SBayesRC::tidy('{ma_file}',LDdir='{ldm}',output='{ma_file}')\""),
+    image = "sbayesrc",
+    workdir = workdir,
+    R_code=TRUE
+  )
+
+  impute <- with_container(
+    code = glue::glue("\"SBayesRC::impute('{ma_file}',LDdir='{ldm}',output='{ma_file}')\""),
+    image = "sbayesrc",
+    workdir = workdir,
+    env = glue::glue("OMP_NUM_THREADS={thread_imp}"),
+    setup_exists = TRUE,
+    R_code=TRUE
+  )
+
+  rescale <- with_container(
+    code = glue::glue("\"SBayesRC::sbayesrc('{ma_file}',LDdir='{ldm}',outPrefix='{out}', annot='{annot}')\""),
+    image = "sbayesrc",
+    workdir = workdir,
+    env = glue::glue("OMP_NUM_THREADS={thread_rc}"),
+    setup_exists = TRUE,
+    R_code=TRUE
+  )
+
+
+  code <- c(
+    paths$system_paths$container_dependency,
+    "\n",
+    munge,
+    "\n",
+    tidy,
+    "\n",
+    impute,
+    "\n",
+    rescale,
+    "\n"
+  )
+
   cleanup <- glue::glue("rm {paths$sbayesrc}/*.rds")
   ma_files <- glue::glue("rm {paths$sbayesrc}/sumstats.ma*")
   tune_txt <- glue::glue("rm {paths$sbayesrc}/sbrc_tune_inter.txt*")
@@ -28,7 +80,8 @@ run_sbayesrc <- function(parent_folder, ..., write_script = c("no","yes"), threa
 
   cleanup <- c(cleanup, ma_files, tune_txt, gzip_file)
   all_code <- c(header, code, cleanup)
-  if(write_script == "yes") {
+
+  if(isTRUE(write_script)) {
 
     p <- fs::path(paths$sbayesrc, "sbayesrc.sh")
     writeLines(all_code, p)
@@ -192,9 +245,8 @@ run_sbayess <- function(
   # containerize the code --------------------------------------------------
 
   script <- with_container(
-    exe_path = "gctb",
-    code = code,
-    config_key = "gctb",
+    code = paste0("gctb ",code),
+    image = "gctb",
     workdir = paths$sbayes
   )
 

@@ -7,7 +7,7 @@
 run_sbayesrc(
   parent_folder,
   ...,
-  write_script = c("no", "yes"),
+  write_script = TRUE,
   thread_rc = 8,
   thread_imp = 4
 )

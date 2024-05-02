@@ -11,4 +11,13 @@ temp_sumstat_repo <- function(name = NULL) {
 }
 
 
+tmp_config_file <- function() {
+  withr::with_envvar(
+    list("HOME" = tempdir()),
+    setup(dsg_folder)
+  )
+
+}
+
+
 

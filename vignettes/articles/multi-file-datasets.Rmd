@@ -43,20 +43,20 @@ for(i in c("trait1", "trait2", "trait3")) {
 
 In our `cleaned_GWAS`\` folder, we now have three folders corresponding to the three traits.
 
-```{r}
+```{r, eval=FALSE}
 dir_tree(gwas_repository, recurse = 1)
 ```
 
 Each cleaned summary statistics is divided by chromosome.
 
-```{r}
+```{r, eval=FALSE}
 dir_tree(fs::path(gwas_repository, "trait3", "tidyGWAS_hivestyle"))
 ```
 
-It will be turn out to be very useful to apply this hivestyle partition again - at the level of traits. \
+It will be turn out to be very useful to apply this hivestyle partition again - at the level of traits.\
 My recommended method is to use symbolic links to create the next level of mapping. This way the cleaning is separated.
 
-```{r}
+```{r, eval=FALSE}
 symlinks <- path(tempdir(), "arrow_traits")
 
 # identify the filepath to all cleaned summary statistics
@@ -76,14 +76,14 @@ dir_tree(symlinks)
 
 By creating symbolic links with the trait name in the hivestyle format, we've created a multi-file dataset at the level of traits.
 
-```{r}
+```{r, eval=FALSE}
 ds <- arrow::open_dataset(symlinks)
 ds
 ```
 
 Queries can now be built across multiple summary statistics using normal dplyr syntax.
 
-```{r}
+```{r, eval=FALSE}
 ds |> 
   dplyr::filter(P < 5e-08)
 
@@ -91,7 +91,7 @@ ds |>
 
 Without calling `dplyr::collect()`, the query will not executed. Rather, the planned query is displayed.
 
-```{r}
+```{r, eval=FALSE}
 ds |> 
   filter(P < 5e-08) |> 
   collect() |> 
@@ -100,7 +100,7 @@ ds |>
 
 More complex queries can be built:
 
-```{r}
+```{r, eval=FALSE}
 ds |> 
   # group by each summary statistic
   group_by(dataset_name, CHR) |> 
@@ -114,7 +114,7 @@ As an example, querying a specific region can be extremely fast.
 
 Across our test collection of 241 summary statistics, this command took \~8 seconds using just 2 cores. The beautiful thing is the seamless integration with dplyr. These types of queries can be written in normal dplyr code, but is transformed to the highly efficient arrow c++ code.
 
-```{r}
+```{r, eval=FALSE}
 all_sig <- ds |> 
   # CHR 7 POS >= 1788081 & POS <= 2289862 is one of the top significant loci
   # in schizophrenia.
@@ -130,7 +130,7 @@ To work with just a single trait, or just a few traits.
 
 Tip: I can take a lot of time to read in the 20 columns. Since `parquet` files are stored in columnar storage, there is no overhead in reading in a subset of columns
 
-```{r}
+```{r, eval=FALSE}
 
 sumstats <- ds |> 
   filter(dataset_name %in% c("trait1", "trait2")) |> 

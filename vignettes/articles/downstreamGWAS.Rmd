@@ -13,6 +13,8 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(downstreamGWAS)
+library(fs)
+library(tidyGWAS)
 
 ```
 
@@ -48,22 +50,23 @@ This virtualization also serves as another important factor in reproductibility,
 
 To illustrate the results, we first create an toy example of a cleaned tidyGWAS sumstat.
 
-```{r, include=FALSE}
+```{r}
 sumstats <- tidyGWAS::test_file
 outdir <- tempdir()
 cleaned <- tidyGWAS(
   # Here we input the summary statistics as a data.frame already in R memory
   tbl = sumstats, 
   # provide the filepath to the refence files you downloaded.
-  dbsnp_path = fs::path(fs::path_package("tidyGWAS"), "extdata/dbSNP155"),
-  output_dir = fs::path(outdir, "example_gwas")
+  dbsnp_path = path(fs::path_package("tidyGWAS"), "extdata/dbSNP155"),
+  output_dir = path(outdir, "example_gwas")
   )
 ```
 
 Using only the filepath to output_folder, downstreamGWAS can generate a slurm script to run the specific downstream analysis. Here for example, a script to run [SbayesRC](https://github.com/zhilizheng/SBayesRC) is created, ready to run.
 
 ```{r}
-downstreamGWAS::setup()
+
+setup()
 run_sldsc_cts(fs::path(outdir, "example_gwas"),cts_file = "toy.cts", write_script = FALSE)
 
 ```
@@ -73,3 +76,4 @@ run_sldsc_cts(fs::path(outdir, "example_gwas"),cts_file = "toy.cts", write_scrip
 ```{r}
 setup()
 ```
+

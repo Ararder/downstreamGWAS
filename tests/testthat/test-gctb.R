@@ -12,19 +12,15 @@ test_that("... can pass arguments to slurm", {
 
 
 test_that("can run .sbayess", {
-  expect_no_error(
-
-  .sbayess(
-    ldm = "xx",
-    gwas_summary = "xx",
-    out = "xx",
-    pi = "0.1",
-    hsq = "0.5",
-    num_chains = "4",
-    chain_length = "25000",
-    burn_in = "5000",
-    seed = "2023",
-    thread = "4"
+  dsg_folder <- fs::path(tempdir(), "downstreamGWAS")
+  withr::with_envvar(
+    list("HOME" = tempdir()),
+    setup(
+      dsg_folder,
     )
+  )
+
+  f <- run_sbayess(
+    tempdir()
   )
 })

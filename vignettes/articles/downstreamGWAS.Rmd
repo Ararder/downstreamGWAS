@@ -76,4 +76,3 @@ run_sldsc_cts(fs::path(outdir, "example_gwas"),cts_file = "toy.cts", write_scrip
 ```{r}
 setup()
 ```
-

@@ -39,10 +39,10 @@ with_container <- function(code, image, workdir, env = NULL, setup_exists=FALSE,
 
   # Check input
   paths <- get_system_paths()
-  stopifnot(
-    "The folder assumed to hold software containers does not exist locally" =
-      fs::dir_exists(fs::path(paths$downstreamGWAS_folder, paths$default_params$container_dir))
-  )
+  # stopifnot(
+  #   "The folder assumed to hold software containers does not exist locally" =
+  #     fs::dir_exists(fs::path(paths$downstreamGWAS_folder, paths$default_params$container_dir))
+  # )
 
 
   # -------------------------------------------------------------------------

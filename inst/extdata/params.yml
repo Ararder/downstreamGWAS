@@ -44,6 +44,7 @@ tidyGWAS:
 # Filepaths and container to run gctb
 gctb:
   container: genetics_latest.sif
+  ldm_s: "ukbEURu_imp_v3_HM3_n50k.chisq10.ldm.sparse"
 gcta:
   container: genetics_latest.sif
 

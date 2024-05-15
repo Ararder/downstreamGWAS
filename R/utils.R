@@ -83,3 +83,8 @@ ls_sumstats <- function(folder = NULL) {
 
 }
 
+dummy <- function() {
+  # to remove note on check
+  utils::alarm()
+}
+

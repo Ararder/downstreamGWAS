@@ -10,14 +10,15 @@ temp_sumstat_repo <- function(name = NULL) {
 
 }
 
-
-tmp_config_file <- function() {
-  withr::with_envvar(
+mock_setup <- function() {
+  withr::local_envvar(
     list("HOME" = tempdir()),
-    setup(dsg_folder)
+    .local_envir = parent.frame()
   )
-
+  dsg_folder <- fs::path(tempdir(), "downstreamGWAS")
+  setup(dsg_folder)
+  fs::dir_create(fs::path(dsg_folder, "reference"))
+  fs::dir_create(fs::path(dsg_folder, "containers"))
 }
-
 
 

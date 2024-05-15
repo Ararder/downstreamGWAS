@@ -181,7 +181,8 @@ run_sldsc <- function(parent_folder, ldscore = c("superclusters", "clusters"), w
   )) |>
     purrr::reduce(c)
 
-  code <- c(get_dependencies(), jobs)
+  # code <- c(get_dependencies(), jobs)
+  code <- "temp"
 
   if(write_script == "yes" ){
     slurm <- fs::path(paths$ldsc, glue::glue("sldsc/{ldscore}/run_all.sh"))

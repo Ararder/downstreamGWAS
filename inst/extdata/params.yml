@@ -44,7 +44,7 @@ tidyGWAS:
 # Filepaths and container to run gctb
 gctb:
   container: genetics_latest.sif
-  ldm_s: "ukbEURu_imp_v3_HM3_n50k.chisq10.ldm.sparse"
+  ldm_s: "gctb/ukbEURu_imp_v3_HM3_n50k.chisq10.ldm.sparse"
 gcta:
   container: genetics_latest.sif
 
@@ -52,4 +52,4 @@ gcta:
 sbayesrc:
   container: sbayesrc_latest.sif
   ldm: gctb/ukbEUR_Imputed
-  annot: gctb/annot_baseline_updated_zoonomia.tsv
+  annot: gctb/annot_baseline2.2.txt

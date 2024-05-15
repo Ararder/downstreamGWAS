@@ -6,7 +6,7 @@
 \alias{downstreamGWAS-package}
 \title{downstreamGWAS: Standardized downstream pipelines for GWAS}
 \description{
-More about what it does (maybe more than one line) Use four spaces when indenting paragraphs within the Description.
+Standardized analysis for genome-wide summary statistics.
 }
 \seealso{
 Useful links:

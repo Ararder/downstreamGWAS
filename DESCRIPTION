@@ -1,11 +1,10 @@
 Package: downstreamGWAS
 Type: Package
 Title: Standardized downstream pipelines for GWAS
-Version: 0.1.0
+Version: 0.2.0
 Author: Arvid Harder
 Maintainer: The package maintainer <arvid.harder@gmail.com>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description
+Description: Standardized analysis for genome-wide summary statistics.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

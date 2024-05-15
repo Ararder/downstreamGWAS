@@ -15,15 +15,7 @@ run_sbayesrc(
 \arguments{
 \item{parent_folder}{Folder to sumstats cleaned with tidyGWAS. see \code{\link[tidyGWAS:tidyGWAS]{tidyGWAS::tidyGWAS()}} output_folder}
 
-\item{...}{
-  Arguments passed on to \code{\link[=sbayesrc]{sbayesrc}}
-  \describe{
-    \item{\code{workdir}}{where will the files be written to?}
-    \item{\code{ldm}}{path to ldmatrix}
-    \item{\code{ma_file}}{path to ma file}
-    \item{\code{annot}}{path to annotation file}
-    \item{\code{out}}{output folder}
-  }}
+\item{...}{Pass arguments to \code{\link[=slurm_header]{slurm_header()}}}
 
 \item{write_script}{Should the code be written to a bash script?}
 

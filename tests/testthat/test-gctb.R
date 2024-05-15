@@ -12,15 +12,21 @@ test_that("... can pass arguments to slurm", {
 
 
 test_that("can run .sbayess", {
-  dsg_folder <- fs::path(tempdir(), "downstreamGWAS")
-  withr::with_envvar(
-    list("HOME" = tempdir()),
-    setup(
-      dsg_folder,
-    )
-  )
+  mock_setup()
 
   f <- run_sbayess(
+    tempdir()
+  )
+})
+
+
+
+
+test_that("can run sbayesrc", {
+
+  mock_setup()
+
+  f <- run_sbayesrc(
     tempdir()
   )
 })

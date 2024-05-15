@@ -225,3 +225,38 @@ write_script_to_disk <- function(script, path) {
 }
 
 
+check_dependency <- function(file, dir = c("reference", "container")) {
+  syspaths <- get_system_paths()
+  dir <- rlang::arg_match(dir)
+
+  if(dir == "reference") {
+    prefix <- fs::path(syspaths$downstreamGWAS_folder, dir)
+    full_file <- fs::path(
+      prefix,
+      file
+      )
+  } else {
+    full_file <- fs::path(
+      fs::path(syspaths$downstreamGWAS_folder, syspaths$default_params$container_dir),
+      file
+    )
+  }
+
+
+
+
+  cli::cli_h2("Checking if required files exist on local system...")
+  cli::cli_alert_info("Looking for {.path {file}}")
+  if(!fs::file_exists(full_file)) {
+    cli::cli_alert_danger("file {.path {full_file}} does not exist")
+    cli::cli_inform("Expected to find the file {.path {file}} to exist within the downstreamGWAS directory")
+    cli::cli_inform("DownstreamGWAS directory: {.path {syspaths$downstreamGWAS_folder}}")
+    cli::cli_inform("full path: {.path {full_file}}")
+    return(FALSE)
+
+  } else {
+    cli::cli_alert_success("file {.path {file}} exists inside local downstreamGWAS folder")
+    return(TRUE)
+  }
+
+}

@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">downstreamGWAS</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,13 +18,17 @@
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="active nav-item">
+      <ul class="navbar-nav me-auto"><li class="nav-item">
+  <a class="nav-link" href="../articles/downstreamGWAS.html">Get started</a>
+</li>
+<li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/meta-analysis.html">meta-analysis</a>
+    <a class="dropdown-item" href="../articles/multi-file-datasets.html">multi-file datasets</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -53,11 +57,6 @@
 
       <dl><dt>
           
-          <code><a href="call_container.html">call_container()</a></code> 
-        </dt>
-        <dd>Construct the code to call a container using a specific program</dd>
-      </dl><dl><dt>
-          
           <code><a href="check_setup.html">check_setup()</a></code> 
         </dt>
         <dd>Check that the configuration file has been correctly set up</dd>
@@ -70,7 +69,7 @@
           
           <code><a href="get_system_paths.html">get_system_paths()</a></code> 
         </dt>
-        <dd>Read downstreamGWAS filepaths from yaml file</dd>
+        <dd>Read downstreamGWAS filepaths from yaml file downstreamGWAS manages external filepaths through two files:</dd>
       </dl><dl><dt>
           
           <code><a href="irwl_ldsc.html">irwl_ldsc()</a></code> 
@@ -95,17 +94,12 @@
           
           <code><a href="meta_analyze.html">meta_analyze()</a></code> 
         </dt>
-        <dd>Perform meta-analysis of GWAS summary statistics datasets in [tidyGWAS::tidyGWAS()] hive-style format.</dd>
+        <dd>Perform meta-analysis of GWAS summary statistics datasets cleaned by tidyGWAS</dd>
       </dl><dl><dt>
           
           <code><a href="meta_analyze_by_chrom.html">meta_analyze_by_chrom()</a></code> 
         </dt>
-        <dd>meta_analyze summary statistics, one chromosome at a time!</dd>
-      </dl><dl><dt>
-          
-          <code><a href="ranges_to_bed.html">ranges_to_bed()</a></code> 
-        </dt>
-        <dd>Convert clumped.ranges output from Plink to bed format</dd>
+        <dd>meta_analyze summary statistics, one chromosome at a time! This function is exposed to allow for testing using real data</dd>
       </dl><dl><dt>
           
           <code><a href="read_gwas.html">read_gwas()</a></code> 
@@ -116,11 +110,6 @@
           <code><a href="read_ldsc_h2.html">read_ldsc_h2()</a></code> 
         </dt>
         <dd>read the output of LDSC --h2</dd>
-      </dl><dl><dt>
-          
-          <code><a href="run_clumping.html">run_clumping()</a></code> 
-        </dt>
-        <dd>Construct genetic loci from GWAS</dd>
       </dl><dl><dt>
           
           <code><a href="run_ldsc.html">run_ldsc()</a></code> 
@@ -138,6 +127,11 @@
         <dd>Run Sbayes-S with tidyGWAS structure</dd>
       </dl><dl><dt>
           
+          <code><a href="run_sbayess_req.html">run_sbayess_req()</a></code> 
+        </dt>
+        <dd>Check if required files exist for Sbayes-S</dd>
+      </dl><dl><dt>
+          
           <code><a href="run_sldsc.html">run_sldsc()</a></code> 
         </dt>
         <dd>run Stratified LDscore regression on tidyGWAS formatted sumstats</dd>
@@ -148,14 +142,14 @@
         <dd>Run stratified LDscore regression using the --h2-cts flag</dd>
       </dl><dl><dt>
           
-          <code><a href="sbayesrc.html">sbayesrc()</a></code> 
-        </dt>
-        <dd>Run SbayesRC from R with containers</dd>
-      </dl><dl><dt>
-          
           <code><a href="setup.html">setup()</a></code> 
         </dt>
         <dd>Setup required filepaths for downstreamGWAS</dd>
+      </dl><dl><dt>
+          
+          <code><a href="slurm_header.html">slurm_header()</a></code> 
+        </dt>
+        <dd>Construct a slurm header</dd>
       </dl><dl><dt>
           
           <code><a href="tidyGWAS_paths.html">tidyGWAS_paths()</a></code> 
@@ -180,12 +174,7 @@
           
           <code><a href="with_container.html">with_container()</a></code> 
         </dt>
-        <dd>Run a command in a container</dd>
-      </dl><dl><dt>
-          
-          <code><a href="wrapper_sbayesrc.html">wrapper_sbayesrc()</a></code> 
-        </dt>
-        <dd>Capture code to run sbayesRC</dd>
+        <dd>Run arbitrary code inside a container</dd>
       </dl></div>
   </main></div>
 

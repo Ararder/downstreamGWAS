@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">downstreamGWAS</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,13 +18,17 @@
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="active nav-item">
+      <ul class="navbar-nav me-auto"><li class="nav-item">
+  <a class="nav-link" href="../articles/downstreamGWAS.html">Get started</a>
+</li>
+<li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/meta-analysis.html">meta-analysis</a>
+    <a class="dropdown-item" href="../articles/multi-file-datasets.html">multi-file datasets</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -51,7 +55,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">run_sbayesrc</span><span class="op">(</span></span>
 <span>  <span class="va">parent_folder</span>,</span>
 <span>  <span class="va">...</span>,</span>
-<span>  write_script <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"no"</span>, <span class="st">"yes"</span><span class="op">)</span>,</span>
+<span>  write_script <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  thread_rc <span class="op">=</span> <span class="fl">8</span>,</span>
 <span>  thread_imp <span class="op">=</span> <span class="fl">4</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -60,27 +64,11 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>parent_folder</dt>
-<dd><p>Folder to sumstats cleaned with tidyGWAS. see [tidyGWAS::tidyGWAS()] output_folder</p></dd>
+<dd><p>Folder to sumstats cleaned with tidyGWAS. see <code><a href="http://arvidharder.com/tidyGWAS/reference/tidyGWAS.html" class="external-link">tidyGWAS::tidyGWAS()</a></code> output_folder</p></dd>
 
 
 <dt>...</dt>
-<dd><p>Arguments passed on to <code><a href="sbayesrc.html">sbayesrc</a></code></p><dl><dt><code>workdir</code></dt>
-<dd><p>where will the files be written to?</p></dd>
-
-    <dt><code>ldm</code></dt>
-<dd><p>path to ldmatrix</p></dd>
-
-    <dt><code>ma_file</code></dt>
-<dd><p>path to ma file</p></dd>
-
-    <dt><code>annot</code></dt>
-<dd><p>path to annotation file</p></dd>
-
-    <dt><code>out</code></dt>
-<dd><p>output folder</p></dd>
-
-  
-</dl></dd>
+<dd><p>Pass arguments to <code><a href="slurm_header.html">slurm_header()</a></code></p></dd>
 
 
 <dt>write_script</dt>

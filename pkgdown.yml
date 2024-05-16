@@ -2,8 +2,10 @@ pandoc: 3.1.11
 pkgdown: 2.0.9
 pkgdown_sha: ~
 articles:
+  downstreamGWAS: downstreamGWAS.html
   meta-analysis: meta-analysis.html
-last_built: 2024-04-25T14:12Z
+  multi-file-datasets: multi-file-datasets.html
+last_built: 2024-05-16T07:50Z
 urls:
   reference: http://arvidharder.com/downstreamGWAS/reference
   article: http://arvidharder.com/downstreamGWAS/articles

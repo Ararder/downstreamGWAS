@@ -31,7 +31,9 @@ sldsc:
 plink:
   container: "genetics_latest.sif"
   gene_ref: "1000G_merged/glist-hg37.tsv"
-  genome_ref: "1000G_merged/1000G_merged"
+
+genome_refs:
+  merged_1kg: "1000G_merged/1000G_merged"
 
 mixer:
   container: "mixer.sif"
@@ -45,6 +47,7 @@ tidyGWAS:
 gctb:
   container: genetics_latest.sif
   ldm_s: "gctb/ukbEURu_imp_v3_HM3_n50k.chisq10.ldm.sparse"
+  mbat_gene_list_b37: "gctb/glist_ensgid_hg19_v40.txt"
 gcta:
   container: genetics_latest.sif
 

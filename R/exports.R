@@ -14,7 +14,7 @@ to_ldsc <- function(parent_folder, sample_size = c("Effective", "N")) {
 
   sample_size <- rlang::arg_match(sample_size)
   paths <- tidyGWAS_paths(parent_folder)
-  hm3_path <- fs::path(paths$system_paths$reference, paths$system_paths$ldsc$hm3)
+  hm3_path <- fs::path(paths$system_paths$downstreamGWAS_folder, "reference", paths$system_paths$ldsc$hm3)
   hm3 <- arrow::read_tsv_arrow(hm3_path)
   dset <- arrow::open_dataset(paths$hivestyle)
 

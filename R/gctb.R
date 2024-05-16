@@ -261,3 +261,59 @@ run_sbayess_req <- function() {
 
 
 
+# mbat --------------------------------------------------------------------
+
+run_mbat_combo <- function(parent_folder, ..., write_script = TRUE, outfolder=NULL, thread_num = 10) {
+
+  # filepaths
+  paths <- tidyGWAS_paths(parent_folder)
+  outfolder <- outfolder %||% fs::path(parent_folder, "analysis", "mbat_combo")
+  fs::dir_create(outfolder)
+  out <- fs::path(outfolder, "sumstats.ma")
+  to_ma <- glue::glue("R -e \"downstreamGWAS::to_ma('{parent_folder}',out='{out}')\"")
+
+  # filepaths inside container
+  container <- fs::path(paths$system_paths$downstreamGWAS_folder, "containers", paths$system_paths$gcta$container)
+  ref_genome <- in_ref_dir(paths$system_paths$genome_refs$merged_1kg)
+  ma_file <- in_work_dir("sumstats.ma")
+  gene_list <- in_ref_dir(paths$system_paths$gctb$mbat_gene_list_b37)
+  out <- in_work_dir("mbat-combo")
+
+  # mbat code
+  code <- glue::glue(
+    "gcta --bfile {ref_genome} ",
+    "--mBAT-combo {ma_file} ",
+    "--mBAT-gene-list {gene_list}",
+    "--out {out} ",
+    "--thread-num {thread_num}"
+  )
+
+  # containerize the code
+  script <- with_container(
+    code = code,
+    image = "gcta",
+    workdir = outfolder
+  )
+
+  # slurm header
+  header <- slurm_header(..., output = fs::path_expand(fs::path(outfolder, "slurm-%j.out")))
+
+  full_script <- c(header, script)
+
+  # return ------------------------------------------------------------------
+
+  if(write_script) {
+
+    p <- fs::path(outfolder, "mbat-combo.sh")
+    writeLines(full_script, p)
+    return(p)
+
+  } else {
+    return(full_script)
+
+  }
+
+}
+
+
+

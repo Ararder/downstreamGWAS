@@ -4,7 +4,7 @@
 \alias{to_ldsc}
 \title{Export tidyGWAS format to LDSC format}
 \usage{
-to_ldsc(parent_folder, sample_size = c("Effective", "N"))
+to_ldsc(parent_folder, use_effective_n = TRUE)
 }
 \arguments{
 \item{parent_folder}{filepath to tidyGWAS folder}

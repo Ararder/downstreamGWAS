@@ -4,7 +4,7 @@
 \alias{run_ldsc}
 \title{Run munge LDSC and LDSC -h2 from tidyGWAS}
 \usage{
-run_ldsc(parent_folder, ..., write_script = TRUE, sample_size = "Effective")
+run_ldsc(parent_folder, ..., write_script = TRUE, use_effective_n = TRUE)
 }
 \arguments{
 \item{parent_folder}{Folder to sumstats cleaned with tidyGWAS. see \code{\link[tidyGWAS:tidyGWAS]{tidyGWAS::tidyGWAS()}} output_folder}
@@ -13,7 +13,7 @@ run_ldsc(parent_folder, ..., write_script = TRUE, sample_size = "Effective")
 
 \item{write_script}{Should the code be written to a bash script?}
 
-\item{sample_size}{Should sample size be computed with the effective_n formula if
+\item{use_effective_n}{Should sample size be computed with the effective_n formula if
 CaseN and ControlN is present?}
 }
 \value{

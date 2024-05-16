@@ -14,7 +14,7 @@ utils::globalVariables(c("RSID",".", "job"))
 #' @examples \dontrun{
 #' script_location <- run_ldsc("my_sumstats/tidygwas/height2022")
 #' }
-run_ldsc <- function(parent_folder, ..., write_script = TRUE, use_effective_n=TRUE) {
+run_ldsc <- function(parent_folder, ..., write_script = TRUE, use_effective_n = TRUE) {
 
   #check args
   stopifnot(rlang::is_bool(write_script))

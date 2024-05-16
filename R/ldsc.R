@@ -22,7 +22,7 @@ run_ldsc <- function(parent_folder, ..., write_script = TRUE, use_effective_n=TR
 
   paths <- tidyGWAS_paths(parent_folder)
 
-  prepare_sumstats <- glue::glue("R -e 'downstreamGWAS::to_ldsc(commandArgs(trailingOnly = TRUE)[1], sample_size={use_effective_n})'")|>
+  prepare_sumstats <- glue::glue("R -e 'downstreamGWAS::to_ldsc(commandArgs(trailingOnly = TRUE)[1], use_effective_n={use_effective_n})'")|>
     paste0(" --args ", paths$base)
 
 

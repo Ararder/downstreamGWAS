@@ -12,7 +12,7 @@ utils::globalVariables(c("CaseN", "ControlN", "multi_allelic", "EffectAllele","O
 #' }
 to_ldsc <- function(parent_folder, use_effective_n = TRUE) {
 
-  sample_size <- rlang::arg_match(sample_size)
+
   paths <- tidyGWAS_paths(parent_folder)
   hm3_path <- fs::path(paths$system_paths$downstreamGWAS_folder, "reference", paths$system_paths$ldsc$hm3)
   hm3 <- arrow::read_tsv_arrow(hm3_path)

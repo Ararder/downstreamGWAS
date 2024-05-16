@@ -14,7 +14,7 @@ utils::globalVariables(c("RSID",".", "job"))
 #' @examples \dontrun{
 #' script_location <- run_ldsc("my_sumstats/tidygwas/height2022")
 #' }
-run_ldsc <- function(parent_folder, ..., write_script = TRUE, sample_size="Effective") {
+run_ldsc <- function(parent_folder, ..., write_script = TRUE, use_effective_n=TRUE) {
 
   #check args
   stopifnot(rlang::is_bool(write_script))
@@ -22,7 +22,7 @@ run_ldsc <- function(parent_folder, ..., write_script = TRUE, sample_size="Effec
 
   paths <- tidyGWAS_paths(parent_folder)
 
-  prepare_sumstats <- glue::glue("R -e 'downstreamGWAS::to_ldsc(commandArgs(trailingOnly = TRUE)[1], sample_size=\"{sample_size}\")'")|>
+  prepare_sumstats <- glue::glue("R -e 'downstreamGWAS::to_ldsc(commandArgs(trailingOnly = TRUE)[1], sample_size={use_effective_n})'")|>
     paste0(" --args ", paths$base)
 
 

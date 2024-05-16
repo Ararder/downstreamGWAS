@@ -10,7 +10,7 @@ utils::globalVariables(c("CaseN", "ControlN", "multi_allelic", "EffectAllele","O
 #' @examples \dontrun{
 #' to_ldsc("my_sumstats/tidygwas/height2022")
 #' }
-to_ldsc <- function(parent_folder, sample_size = c("Effective", "N")) {
+to_ldsc <- function(parent_folder, use_effective_n = TRUE) {
 
   sample_size <- rlang::arg_match(sample_size)
   paths <- tidyGWAS_paths(parent_folder)
@@ -35,11 +35,11 @@ to_ldsc <- function(parent_folder, sample_size = c("Effective", "N")) {
   # use Effective N as N?
   has_ncas <- all(c("CaseN", "ControlN") %in% dset$schema$names)
 
-  if(!has_ncas & sample_size == "Effective") {
+  if(!has_ncas & use_effective_n == "Effective") {
     cli::cli_alert_danger("Tried to calculate effective sample, but the required columns are missing: CaseN or ControlN")
   }
 
-  if(sample_size == "Effective" & has_ncas) {
+  if(use_effective_n & has_ncas) {
     cli::cli_alert_success("OBS: Using Effective N as N!")
     df <- dplyr::mutate(df, N = effective_n(CaseN, ControlN))
   }

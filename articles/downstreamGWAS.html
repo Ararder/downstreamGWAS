@@ -156,9 +156,9 @@ cleaned tidyGWAS sumstat.</p>
 <span>  <span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Running </span><span style="color: #0000BB; font-weight: bold;">tidyGWAS 0.8.0</span> <span style="color: #00BBBB;">──────────────────────────────────────────────────────</span></span></span>
-<span><span class="co">#&gt; Starting at 2024-05-16 11:17:32.154097</span></span>
+<span><span class="co">#&gt; Starting at 2024-05-16 11:19:39.797607</span></span>
 <span><span class="co">#&gt; with 100000 rows in input data.frame</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Saving output in folder: <span style="color: #0000BB;">/tmp/RtmpTOfryg/example_gwas</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Saving output in folder: <span style="color: #0000BB;">/tmp/RtmpyTqUpD/example_gwas</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -221,10 +221,10 @@ cleaned tidyGWAS sumstat.</p>
 <span><span class="co">#&gt; 3437 snps matched GRCh38, 9998 for GRCh37, inferring build to be 37</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> Removed 11 rows with no dbSNP entry</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #0000BB;">/tmp/RtmpTOfryg/example_gwas/pipeline_info/removed_nodbsnp.parquet</span></span></span>
+<span><span class="co">#&gt; <span style="color: #0000BB;">/tmp/RtmpyTqUpD/example_gwas/pipeline_info/removed_nodbsnp.parquet</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> Removed 486 rows with missing on either build</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #0000BB;">/tmp/RtmpTOfryg/example_gwas/pipeline_info/removed_missing_on_either_build.parquet</span></span></span>
+<span><span class="co">#&gt; <span style="color: #0000BB;">/tmp/RtmpyTqUpD/example_gwas/pipeline_info/removed_missing_on_either_build.parquet</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">6) Repairing missings statistics columns if possible</span> ──</span></span>
@@ -255,7 +255,7 @@ cleaned tidyGWAS sumstat.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Total running time: 4.7s</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Saving metadata from analysis to <span style="color: #0000BB;">/tmp/RtmpTOfryg/example_gwas/metadata.yaml</span></span></span></code></pre></div>
+<span><span class="co">#&gt; Saving metadata from analysis to <span style="color: #0000BB;">/tmp/RtmpyTqUpD/example_gwas/metadata.yaml</span></span></span></code></pre></div>
 <p>Using only the filepath to output_folder, downstreamGWAS can generate
 a slurm script to run the specific downstream analysis. Here for
 example, a script to run <a href="https://github.com/zhilizheng/SBayesRC" class="external-link">SbayesRC</a> is created,
@@ -270,24 +270,24 @@ ready to run.</p>
 <span><span class="co"># use setup to tell downstreamGWAS where the reference data and containers are kept</span></span>
 <span><span class="co"># only has to be done once</span></span>
 <span><span class="fu"><a href="../reference/setup.html">setup</a></span><span class="op">(</span><span class="va">dsg_folder</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Wrote the downstreamGWAS config file to <span style="color: #0000BB;">/tmp/RtmpTOfryg/.config/downstreamGWAS/config.yml</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Using <span style="color: #0000BB;">/tmp/RtmpTOfryg/downstreamGWAS_folder</span> to store downstreamGWAS data</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Reference data required for downstreamGWAS should be stored in <span style="color: #0000BB;">/tmp/RtmpTOfryg/downstreamGWAS_folder/reference</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Containers required for downstreamGWAS should be stored in <span style="color: #0000BB;">/tmp/RtmpTOfryg/downstreamGWAS_folder/containers</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Wrote the downstreamGWAS config file to <span style="color: #0000BB;">/tmp/RtmpyTqUpD/.config/downstreamGWAS/config.yml</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Using <span style="color: #0000BB;">/tmp/RtmpyTqUpD/downstreamGWAS_folder</span> to store downstreamGWAS data</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Reference data required for downstreamGWAS should be stored in <span style="color: #0000BB;">/tmp/RtmpyTqUpD/downstreamGWAS_folder/reference</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Containers required for downstreamGWAS should be stored in <span style="color: #0000BB;">/tmp/RtmpyTqUpD/downstreamGWAS_folder/containers</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/run_sbayesrc.html">run_sbayesrc</a></span><span class="op">(</span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"example_gwas"</span><span class="op">)</span>,  write_script <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "#!/bin/bash"                                                                                                                                    </span></span>
 <span><span class="co">#&gt;  [2] "#SBATCH --mem=8gb"                                                                                                                              </span></span>
 <span><span class="co">#&gt;  [3] "#SBATCH --time=24:00:00"                                                                                                                        </span></span>
-<span><span class="co">#&gt;  [4] "#SBATCH --output=/tmp/RtmpTOfryg/example_gwas/analysis/sbayesrc/slurm-%j.out"                                                                   </span></span>
+<span><span class="co">#&gt;  [4] "#SBATCH --output=/tmp/RtmpyTqUpD/example_gwas/analysis/sbayesrc/slurm-%j.out"                                                                   </span></span>
 <span><span class="co">#&gt;  [5] ""                                                                                                                                               </span></span>
 <span><span class="co">#&gt;  [6] "\n"                                                                                                                                             </span></span>
-<span><span class="co">#&gt;  [7] "R -e \"downstreamGWAS::to_ma('/tmp/RtmpTOfryg/example_gwas')\""                                                                                 </span></span>
+<span><span class="co">#&gt;  [7] "R -e \"downstreamGWAS::to_ma('/tmp/RtmpyTqUpD/example_gwas')\""                                                                                 </span></span>
 <span><span class="co">#&gt;  [8] "\n"                                                                                                                                             </span></span>
 <span><span class="co">#&gt;  [9] ""                                                                                                                                               </span></span>
-<span><span class="co">#&gt; [10] "workdir='/tmp/RtmpTOfryg/example_gwas/analysis/sbayesrc:/mnt'"                                                                                  </span></span>
-<span><span class="co">#&gt; [11] "reference_dir='/tmp/RtmpTOfryg/downstreamGWAS_folder/reference:/src'"                                                                           </span></span>
-<span><span class="co">#&gt; [12] "container='/tmp/RtmpTOfryg/downstreamGWAS_folder/containers/sbayesrc_latest.sif'"                                                               </span></span>
+<span><span class="co">#&gt; [10] "workdir='/tmp/RtmpyTqUpD/example_gwas/analysis/sbayesrc:/mnt'"                                                                                  </span></span>
+<span><span class="co">#&gt; [11] "reference_dir='/tmp/RtmpyTqUpD/downstreamGWAS_folder/reference:/src'"                                                                           </span></span>
+<span><span class="co">#&gt; [12] "container='/tmp/RtmpyTqUpD/downstreamGWAS_folder/containers/sbayesrc_latest.sif'"                                                               </span></span>
 <span><span class="co">#&gt; [13] "code=\"SBayesRC::tidy('/mnt/sumstats.ma',LDdir='/src/gctb/ukbEUR_Imputed',output='/mnt/sumstats.ma')\""                                         </span></span>
 <span><span class="co">#&gt; [14] "apptainer exec --cleanenv --bind $workdir,$reference_dir $container R -e \"$code\""                                                             </span></span>
 <span><span class="co">#&gt; [15] "\n"                                                                                                                                             </span></span>
@@ -297,10 +297,10 @@ ready to run.</p>
 <span><span class="co">#&gt; [19] "code=\"SBayesRC::sbayesrc('/mnt/sumstats.ma',LDdir='/src/gctb/ukbEUR_Imputed',outPrefix='/mnt/sbrc', annot='/src/gctb/annot_baseline2.2.txt')\""</span></span>
 <span><span class="co">#&gt; [20] "apptainer exec --cleanenv --env 'OMP_NUM_THREADS=8' --bind $workdir,$reference_dir $container R -e \"$code\""                                   </span></span>
 <span><span class="co">#&gt; [21] "\n"                                                                                                                                             </span></span>
-<span><span class="co">#&gt; [22] "rm /tmp/RtmpTOfryg/example_gwas/analysis/sbayesrc/*.rds"                                                                                        </span></span>
-<span><span class="co">#&gt; [23] "rm /tmp/RtmpTOfryg/example_gwas/analysis/sbayesrc/sumstats.ma*"                                                                                 </span></span>
-<span><span class="co">#&gt; [24] "rm /tmp/RtmpTOfryg/example_gwas/analysis/sbayesrc/sbrc_tune_inter.txt*"                                                                         </span></span>
-<span><span class="co">#&gt; [25] "gzip /tmp/RtmpTOfryg/example_gwas/analysis/sbayesrc/sbrc.txt"</span></span></code></pre></div>
+<span><span class="co">#&gt; [22] "rm /tmp/RtmpyTqUpD/example_gwas/analysis/sbayesrc/*.rds"                                                                                        </span></span>
+<span><span class="co">#&gt; [23] "rm /tmp/RtmpyTqUpD/example_gwas/analysis/sbayesrc/sumstats.ma*"                                                                                 </span></span>
+<span><span class="co">#&gt; [24] "rm /tmp/RtmpyTqUpD/example_gwas/analysis/sbayesrc/sbrc_tune_inter.txt*"                                                                         </span></span>
+<span><span class="co">#&gt; [25] "gzip /tmp/RtmpyTqUpD/example_gwas/analysis/sbayesrc/sbrc.txt"</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="cell-type-analysis-using-s-ldsc">cell-type analysis using S-LDSC<a class="anchor" aria-label="anchor" href="#cell-type-analysis-using-s-ldsc"></a>
@@ -310,11 +310,11 @@ ready to run.</p>
 <span><span class="co">#&gt;  [1] "#!/bin/bash"                                                                                                                                                                                                                                                                                                                           </span></span>
 <span><span class="co">#&gt;  [2] "#SBATCH --mem=8gb"                                                                                                                                                                                                                                                                                                                     </span></span>
 <span><span class="co">#&gt;  [3] "#SBATCH --time=24:00:00"                                                                                                                                                                                                                                                                                                               </span></span>
-<span><span class="co">#&gt;  [4] "#SBATCH --output=/tmp/RtmpTOfryg/example_gwas/analysis/ldsc/sldsc/slurm-%j.out"                                                                                                                                                                                                                                                        </span></span>
+<span><span class="co">#&gt;  [4] "#SBATCH --output=/tmp/RtmpyTqUpD/example_gwas/analysis/ldsc/sldsc/slurm-%j.out"                                                                                                                                                                                                                                                        </span></span>
 <span><span class="co">#&gt;  [5] ""                                                                                                                                                                                                                                                                                                                                      </span></span>
-<span><span class="co">#&gt;  [6] "workdir='/tmp/RtmpTOfryg/example_gwas/analysis/ldsc:/mnt'"                                                                                                                                                                                                                                                                             </span></span>
-<span><span class="co">#&gt;  [7] "reference_dir='/tmp/RtmpTOfryg/downstreamGWAS_folder/reference:/src'"                                                                                                                                                                                                                                                                  </span></span>
-<span><span class="co">#&gt;  [8] "container='/tmp/RtmpTOfryg/downstreamGWAS_folder/containers/ldsc_latest.sif'"                                                                                                                                                                                                                                                          </span></span>
+<span><span class="co">#&gt;  [6] "workdir='/tmp/RtmpyTqUpD/example_gwas/analysis/ldsc:/mnt'"                                                                                                                                                                                                                                                                             </span></span>
+<span><span class="co">#&gt;  [7] "reference_dir='/tmp/RtmpyTqUpD/downstreamGWAS_folder/reference:/src'"                                                                                                                                                                                                                                                                  </span></span>
+<span><span class="co">#&gt;  [8] "container='/tmp/RtmpyTqUpD/downstreamGWAS_folder/containers/ldsc_latest.sif'"                                                                                                                                                                                                                                                          </span></span>
 <span><span class="co">#&gt;  [9] "code='python /tools/ldsc/ldsc.py --h2-cts /mnt/ldsc.sumstats.gz --ref-ld-chr /src/sldsc_ref/1000G_EUR_Phase3_baseline/baseline. --ref-ld-chr-cts /src/toy.cts --w-ld-chr /src/sldsc_ref/1000G_Phase3_weights_hm3_no_MHC/weights.hm3_noMHC. --overlap-annot --frqfile-chr /src/sldsc_ref/1000G_Phase3_frq/1000G.EUR.QC. --out /mnt/toy'"</span></span>
 <span><span class="co">#&gt; [10] "apptainer exec --cleanenv --bind $workdir,$reference_dir $container $code"</span></span></code></pre></div>
 </div>

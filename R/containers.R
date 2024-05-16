@@ -28,7 +28,7 @@ with_container <- function(code, image, workdir, env = NULL, setup_exists=FALSE,
   rlang::check_required(code)
   rlang::check_required(image)
   rlang::check_required(workdir)
-
+  paths <- get_system_paths()
 
   if(!is.null(env)) {
     env <- glue::glue("--env '{env}' ")
@@ -36,13 +36,6 @@ with_container <- function(code, image, workdir, env = NULL, setup_exists=FALSE,
     env <- NULL
   }
 
-
-  # Check input
-  paths <- get_system_paths()
-  # stopifnot(
-  #   "The folder assumed to hold software containers does not exist locally" =
-  #     fs::dir_exists(fs::path(paths$downstreamGWAS_folder, paths$default_params$container_dir))
-  # )
 
 
   # -------------------------------------------------------------------------
@@ -69,6 +62,7 @@ with_container <- function(code, image, workdir, env = NULL, setup_exists=FALSE,
   assign_code <- glue::glue("code='{code}'")
   dep <- container_dependency(paths)
 
+  # {env} is null if not passed -> have to change default null value
   container_call <- glue::glue(
     "apptainer exec --cleanenv {env}--bind $workdir,$reference_dir $container $code",
     .null = ""
@@ -90,7 +84,6 @@ with_container <- function(code, image, workdir, env = NULL, setup_exists=FALSE,
 
   if(isTRUE(setup_exists)) {
     c(
-      container,
       assign_code,
       container_call
     )

@@ -26,7 +26,7 @@ run_sbayesrc <- function(parent_folder, ..., write_script = TRUE, thread_rc = 8,
   ldm <- in_ref_dir(paths$system_paths$sbayesrc$ldm)
   ma_file <- in_work_dir(fs::path_file(paths$ma_file))
   annot <- in_ref_dir(paths$system_paths$sbayesrc$annot)
-  out <- in_ref_dir("sbrc")
+  out <- in_work_dir("sbrc")
 
 
 

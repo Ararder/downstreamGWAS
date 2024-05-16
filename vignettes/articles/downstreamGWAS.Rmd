@@ -73,7 +73,7 @@ dsg_folder <- fs::path(tempdir(), "downstreamGWAS_folder")
 # use setup to tell downstreamGWAS where the reference data and containers are kept
 # only has to be done once
 setup(dsg_folder)
-run_sbayesrc(fs::path(outdir, "example_gwas"),cts_file = "toy.cts", write_script = FALSE)
+run_sbayesrc(fs::path(outdir, "example_gwas"),  write_script = FALSE)
 
 ```
 

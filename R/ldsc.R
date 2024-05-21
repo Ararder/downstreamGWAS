@@ -21,6 +21,7 @@ run_ldsc <- function(parent_folder, ..., write_script = TRUE, use_effective_n = 
   rlang::check_required(parent_folder)
 
   paths <- tidyGWAS_paths(parent_folder)
+  fs::dir_create(paths$ldsc)
 
   prepare_sumstats <- glue::glue("R -e 'downstreamGWAS::to_ldsc(commandArgs(trailingOnly = TRUE)[1], use_effective_n={use_effective_n})'")|>
     paste0(" --args ", paths$base)
@@ -69,7 +70,9 @@ run_ldsc <- function(parent_folder, ..., write_script = TRUE, use_effective_n = 
     setup_exists = TRUE
   )
 
-  complete_code <- c(prepare_sumstats, munge_code,cleanup, h2_full)
+  complete_code <- c(
+    container_dependency(paths),
+    prepare_sumstats, munge_code,cleanup, h2_full)
 
 
   # out ---------------------------------------------------------------------

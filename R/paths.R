@@ -209,11 +209,6 @@ tidyGWAS_paths <- function(dir) {
 
   # -------------------------------------------------------------------------
 
-
-  fs::dir_create(out$ldsc)
-  fs::dir_create(out$magma)
-  fs::dir_create(out$clumping)
-
   out
 }
 

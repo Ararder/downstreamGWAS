@@ -3,7 +3,7 @@ utils::globalVariables(c("CaseN", "ControlN", "multi_allelic", "EffectAllele","O
 #' Export tidyGWAS format to LDSC format
 #'
 #' @param parent_folder filepath to tidyGWAS folder
-#' @param sample_size Should an attempt be made to calculate effective N and use that as N?
+#' @param use_effective_n Should an attempt be made to calculate effective N and use that as N?
 #' @return NULL
 #' @export
 #'

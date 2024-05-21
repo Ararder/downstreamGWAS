@@ -9,7 +9,7 @@ to_ldsc(parent_folder, use_effective_n = TRUE)
 \arguments{
 \item{parent_folder}{filepath to tidyGWAS folder}
 
-\item{sample_size}{Should an attempt be made to calculate effective N and use that as N?}
+\item{use_effective_n}{Should an attempt be made to calculate effective N and use that as N?}
 }
 \description{
 Export tidyGWAS format to LDSC format

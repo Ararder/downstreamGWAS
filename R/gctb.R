@@ -263,6 +263,20 @@ run_sbayess_req <- function() {
 
 # mbat --------------------------------------------------------------------
 
+#' run mBAT-combo gene-test in GCTB
+#'
+#' @param parent_folder filepath to a tidyGWAS folder
+#' @param ... arguments to slurm
+#' @param write_script should the code be written to disk?
+#' @param outfolder Where to write the output
+#' @param thread_num number of threads to use
+#'
+#' @return a character vector with the script or a filepath
+#' @export
+#'
+#' @examples \dontrun{
+#' mbat_combo("path_to_tidyGWAS/folder/sumstat1")
+#' }
 run_mbat_combo <- function(parent_folder, ..., write_script = TRUE, outfolder=NULL, thread_num = 10) {
 
   # filepaths

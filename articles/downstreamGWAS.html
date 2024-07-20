@@ -5,58 +5,48 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="downstreamGWAS">
 <title>downstreamGWAS • downstreamGWAS</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js" integrity="sha512-7O5pXpc0oCRrxk8RUfDYFgn0nO1t+jLuIOQdOMRp4APB7uZ4vSjspzp5y6YDtDs4VzUSTbWzBFZ/LKJhnyFOKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="downstreamGWAS">
-<meta property="og:description" content="downstreamGWAS">
-<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="downstreamGWAS">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
-    
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light" data-bs-theme="light"><div class="container">
-    
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
     <a class="navbar-brand me-2" href="../index.html">downstreamGWAS</a>
 
     <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
-    
+
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="active nav-item">
-  <a class="nav-link" href="../articles/downstreamGWAS.html">Get started</a>
-</li>
-<li class="nav-item">
-  <a class="nav-link" href="../reference/index.html">Reference</a>
-</li>
+<li class="active nav-item"><a class="nav-link" href="../articles/downstreamGWAS.html">Get started</a></li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/meta-analysis.html">meta-analysis</a>
-    <a class="dropdown-item" href="../articles/multi-file-datasets.html">multi-file datasets</a>
-  </div>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="../articles/meta-analysis.html">meta-analysis</a></li>
+    <li><a class="dropdown-item" href="../articles/multi-file-datasets.html">multi-file datasets</a></li>
+  </ul>
 </li>
       </ul>
-<form class="form-inline my-2 my-lg-0" role="search">
-        <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
-</form>
-
-      <ul class="navbar-nav"></ul>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+      </ul>
 </div>
 
-    
+
   </div>
 </nav><div class="container template-article">
 
@@ -65,10 +55,11 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="" class="logo" alt=""><h1>downstreamGWAS</h1>
+
+      <h1>downstreamGWAS</h1>
             
       
-      
+
       <div class="d-none name"><code>downstreamGWAS.Rmd</code></div>
     </div>
 
@@ -156,9 +147,9 @@ cleaned tidyGWAS sumstat.</p>
 <span>  <span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Running </span><span style="color: #0000BB; font-weight: bold;">tidyGWAS 0.8.0</span> <span style="color: #00BBBB;">──────────────────────────────────────────────────────</span></span></span>
-<span><span class="co">#&gt; Starting at 2024-05-29 12:26:12.683923</span></span>
+<span><span class="co">#&gt; Starting at 2024-07-20 13:45:44.815323</span></span>
 <span><span class="co">#&gt; with 100000 rows in input data.frame</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Saving output in folder: <span style="color: #0000BB;">/tmp/Rtmp1knjAi/example_gwas</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Saving output in folder: <span style="color: #0000BB;">/tmp/Rtmp1k1cBw/example_gwas</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -221,10 +212,10 @@ cleaned tidyGWAS sumstat.</p>
 <span><span class="co">#&gt; 3437 snps matched GRCh38, 9998 for GRCh37, inferring build to be 37</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> Removed 11 rows with no dbSNP entry</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #0000BB;">/tmp/Rtmp1knjAi/example_gwas/pipeline_info/removed_nodbsnp.parquet</span></span></span>
+<span><span class="co">#&gt; <span style="color: #0000BB;">/tmp/Rtmp1k1cBw/example_gwas/pipeline_info/removed_nodbsnp.parquet</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> Removed 486 rows with missing on either build</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #0000BB;">/tmp/Rtmp1knjAi/example_gwas/pipeline_info/removed_missing_on_either_build.parquet</span></span></span>
+<span><span class="co">#&gt; <span style="color: #0000BB;">/tmp/Rtmp1k1cBw/example_gwas/pipeline_info/removed_missing_on_either_build.parquet</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">6) Repairing missings statistics columns if possible</span> ──</span></span>
@@ -253,9 +244,9 @@ cleaned tidyGWAS sumstat.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> A total of 497 rows were removed</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Total running time: 4.4s</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Total running time: 4.7s</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Saving metadata from analysis to <span style="color: #0000BB;">/tmp/Rtmp1knjAi/example_gwas/metadata.yaml</span></span></span></code></pre></div>
+<span><span class="co">#&gt; Saving metadata from analysis to <span style="color: #0000BB;">/tmp/Rtmp1k1cBw/example_gwas/metadata.yaml</span></span></span></code></pre></div>
 <p>Using only the filepath to output_folder, downstreamGWAS can generate
 a slurm script to run the specific downstream analysis. Here for
 example, a script to run <a href="https://github.com/zhilizheng/SBayesRC" class="external-link">SbayesRC</a> is created,
@@ -270,24 +261,23 @@ ready to run.</p>
 <span><span class="co"># use setup to tell downstreamGWAS where the reference data and containers are kept</span></span>
 <span><span class="co"># only has to be done once</span></span>
 <span><span class="fu"><a href="../reference/setup.html">setup</a></span><span class="op">(</span><span class="va">dsg_folder</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Wrote the downstreamGWAS config file to <span style="color: #0000BB;">/tmp/Rtmp1knjAi/.config/downstreamGWAS/config.yml</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Using <span style="color: #0000BB;">/tmp/Rtmp1knjAi/downstreamGWAS_folder</span> to store downstreamGWAS data</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Reference data required for downstreamGWAS should be stored in <span style="color: #0000BB;">/tmp/Rtmp1knjAi/downstreamGWAS_folder/reference</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Containers required for downstreamGWAS should be stored in <span style="color: #0000BB;">/tmp/Rtmp1knjAi/downstreamGWAS_folder/containers</span></span></span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/run_sbayesrc.html">run_sbayesrc</a></span><span class="op">(</span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"example_gwas"</span><span class="op">)</span>,  write_script <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Wrote the downstreamGWAS config file to <span style="color: #0000BB;">/tmp/Rtmp1k1cBw/.config/downstreamGWAS/config.yml</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Using <span style="color: #0000BB;">/tmp/Rtmp1k1cBw/downstreamGWAS_folder</span> to store downstreamGWAS data</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Reference data required for downstreamGWAS should be stored in <span style="color: #0000BB;">/tmp/Rtmp1k1cBw/downstreamGWAS_folder/reference</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Containers required for downstreamGWAS should be stored in <span style="color: #0000BB;">/tmp/Rtmp1k1cBw/downstreamGWAS_folder/containers</span></span></span>
+<span><span class="fu"><a href="../reference/run_sbayesrc.html">run_sbayesrc</a></span><span class="op">(</span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"example_gwas"</span><span class="op">)</span>,  write_script <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "#!/bin/bash"                                                                                                                                    </span></span>
 <span><span class="co">#&gt;  [2] "#SBATCH --mem=8gb"                                                                                                                              </span></span>
 <span><span class="co">#&gt;  [3] "#SBATCH --time=24:00:00"                                                                                                                        </span></span>
-<span><span class="co">#&gt;  [4] "#SBATCH --output=/tmp/Rtmp1knjAi/example_gwas/analysis/sbayesrc/slurm-%j.out"                                                                   </span></span>
+<span><span class="co">#&gt;  [4] "#SBATCH --output=/tmp/Rtmp1k1cBw/example_gwas/analysis/sbayesrc/slurm-%j.out"                                                                   </span></span>
 <span><span class="co">#&gt;  [5] ""                                                                                                                                               </span></span>
 <span><span class="co">#&gt;  [6] "\n"                                                                                                                                             </span></span>
-<span><span class="co">#&gt;  [7] "R -e \"downstreamGWAS::to_ma('/tmp/Rtmp1knjAi/example_gwas')\""                                                                                 </span></span>
+<span><span class="co">#&gt;  [7] "R -e \"downstreamGWAS::to_ma('/tmp/Rtmp1k1cBw/example_gwas')\""                                                                                 </span></span>
 <span><span class="co">#&gt;  [8] "\n"                                                                                                                                             </span></span>
 <span><span class="co">#&gt;  [9] ""                                                                                                                                               </span></span>
-<span><span class="co">#&gt; [10] "workdir='/tmp/Rtmp1knjAi/example_gwas/analysis/sbayesrc:/mnt'"                                                                                  </span></span>
-<span><span class="co">#&gt; [11] "reference_dir='/tmp/Rtmp1knjAi/downstreamGWAS_folder/reference:/src'"                                                                           </span></span>
-<span><span class="co">#&gt; [12] "container='/tmp/Rtmp1knjAi/downstreamGWAS_folder/containers/sbayesrc_latest.sif'"                                                               </span></span>
+<span><span class="co">#&gt; [10] "workdir='/tmp/Rtmp1k1cBw/example_gwas/analysis/sbayesrc:/mnt'"                                                                                  </span></span>
+<span><span class="co">#&gt; [11] "reference_dir='/tmp/Rtmp1k1cBw/downstreamGWAS_folder/reference:/src'"                                                                           </span></span>
+<span><span class="co">#&gt; [12] "container='/tmp/Rtmp1k1cBw/downstreamGWAS_folder/containers/sbayesrc_latest.sif'"                                                               </span></span>
 <span><span class="co">#&gt; [13] "code=\"SBayesRC::tidy('/mnt/sumstats.ma',LDdir='/src/gctb/ukbEUR_Imputed',output='/mnt/sumstats.ma')\""                                         </span></span>
 <span><span class="co">#&gt; [14] "apptainer exec --cleanenv --bind $workdir,$reference_dir $container R -e \"$code\""                                                             </span></span>
 <span><span class="co">#&gt; [15] "\n"                                                                                                                                             </span></span>
@@ -297,24 +287,24 @@ ready to run.</p>
 <span><span class="co">#&gt; [19] "code=\"SBayesRC::sbayesrc('/mnt/sumstats.ma',LDdir='/src/gctb/ukbEUR_Imputed',outPrefix='/mnt/sbrc', annot='/src/gctb/annot_baseline2.2.txt')\""</span></span>
 <span><span class="co">#&gt; [20] "apptainer exec --cleanenv --env 'OMP_NUM_THREADS=8' --bind $workdir,$reference_dir $container R -e \"$code\""                                   </span></span>
 <span><span class="co">#&gt; [21] "\n"                                                                                                                                             </span></span>
-<span><span class="co">#&gt; [22] "rm /tmp/Rtmp1knjAi/example_gwas/analysis/sbayesrc/*.rds"                                                                                        </span></span>
-<span><span class="co">#&gt; [23] "rm /tmp/Rtmp1knjAi/example_gwas/analysis/sbayesrc/sumstats.ma*"                                                                                 </span></span>
-<span><span class="co">#&gt; [24] "rm /tmp/Rtmp1knjAi/example_gwas/analysis/sbayesrc/sbrc_tune_inter.txt*"                                                                         </span></span>
-<span><span class="co">#&gt; [25] "gzip /tmp/Rtmp1knjAi/example_gwas/analysis/sbayesrc/sbrc.txt"</span></span></code></pre></div>
+<span><span class="co">#&gt; [22] "rm /tmp/Rtmp1k1cBw/example_gwas/analysis/sbayesrc/*.rds"                                                                                        </span></span>
+<span><span class="co">#&gt; [23] "rm /tmp/Rtmp1k1cBw/example_gwas/analysis/sbayesrc/sumstats.ma*"                                                                                 </span></span>
+<span><span class="co">#&gt; [24] "rm /tmp/Rtmp1k1cBw/example_gwas/analysis/sbayesrc/sbrc_tune_inter.txt*"                                                                         </span></span>
+<span><span class="co">#&gt; [25] "gzip /tmp/Rtmp1k1cBw/example_gwas/analysis/sbayesrc/sbrc.txt"</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="cell-type-analysis-using-s-ldsc">cell-type analysis using S-LDSC<a class="anchor" aria-label="anchor" href="#cell-type-analysis-using-s-ldsc"></a>
 </h4>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/run_sldsc_cts.html">run_sldsc_cts</a></span><span class="op">(</span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"example_gwas"</span><span class="op">)</span>,cts_file <span class="op">=</span> <span class="st">"toy.cts"</span>, write_script <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "#!/bin/bash"                                                                                                                                                                                                                                                                                                                           </span></span>
 <span><span class="co">#&gt;  [2] "#SBATCH --mem=8gb"                                                                                                                                                                                                                                                                                                                     </span></span>
 <span><span class="co">#&gt;  [3] "#SBATCH --time=24:00:00"                                                                                                                                                                                                                                                                                                               </span></span>
-<span><span class="co">#&gt;  [4] "#SBATCH --output=/tmp/Rtmp1knjAi/example_gwas/analysis/ldsc/sldsc/slurm-%j.out"                                                                                                                                                                                                                                                        </span></span>
+<span><span class="co">#&gt;  [4] "#SBATCH --output=/tmp/Rtmp1k1cBw/example_gwas/analysis/ldsc/sldsc/slurm-%j.out"                                                                                                                                                                                                                                                        </span></span>
 <span><span class="co">#&gt;  [5] ""                                                                                                                                                                                                                                                                                                                                      </span></span>
-<span><span class="co">#&gt;  [6] "workdir='/tmp/Rtmp1knjAi/example_gwas/analysis/ldsc:/mnt'"                                                                                                                                                                                                                                                                             </span></span>
-<span><span class="co">#&gt;  [7] "reference_dir='/tmp/Rtmp1knjAi/downstreamGWAS_folder/reference:/src'"                                                                                                                                                                                                                                                                  </span></span>
-<span><span class="co">#&gt;  [8] "container='/tmp/Rtmp1knjAi/downstreamGWAS_folder/containers/ldsc_latest.sif'"                                                                                                                                                                                                                                                          </span></span>
+<span><span class="co">#&gt;  [6] "workdir='/tmp/Rtmp1k1cBw/example_gwas/analysis/ldsc:/mnt'"                                                                                                                                                                                                                                                                             </span></span>
+<span><span class="co">#&gt;  [7] "reference_dir='/tmp/Rtmp1k1cBw/downstreamGWAS_folder/reference:/src'"                                                                                                                                                                                                                                                                  </span></span>
+<span><span class="co">#&gt;  [8] "container='/tmp/Rtmp1k1cBw/downstreamGWAS_folder/containers/ldsc_latest.sif'"                                                                                                                                                                                                                                                          </span></span>
 <span><span class="co">#&gt;  [9] "code='python /tools/ldsc/ldsc.py --h2-cts /mnt/ldsc.sumstats.gz --ref-ld-chr /src/sldsc_ref/1000G_EUR_Phase3_baseline/baseline. --ref-ld-chr-cts /src/toy.cts --w-ld-chr /src/sldsc_ref/1000G_Phase3_weights_hm3_no_MHC/weights.hm3_noMHC. --overlap-annot --frqfile-chr /src/sldsc_ref/1000G_Phase3_frq/1000G.EUR.QC. --out /mnt/toy'"</span></span>
 <span><span class="co">#&gt; [10] "apptainer exec --cleanenv --bind $workdir,$reference_dir $container $code"</span></span></code></pre></div>
 </div>
@@ -325,7 +315,7 @@ ready to run.</p>
 </h2>
 <p>WORK IN PROGRESS</p>
 </div>
-  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>
 
@@ -336,15 +326,15 @@ ready to run.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
 </div>
 
     </footer>
 </div>
 
-  
 
-  
+
+
 
   </body>
 </html>

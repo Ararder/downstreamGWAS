@@ -1,5 +1,5 @@
 utils::globalVariables(
-  c("REF", "EA_is_ref", "CHR", "ID", "W")
+  c("REF", "EA_is_ref", "CHR", "ID", "W", "N_info", "INFO")
 )
 
 
@@ -73,15 +73,19 @@ meta_analyze_by_chrom <- function(dset, chrom, by) {
     dplyr::summarise(
       n_contributions = dplyr::n(),
       dplyr::across(dplyr::any_of(c("W", "B")), sum),
-      dplyr::across(dplyr::any_of(c("EAF", "INFO", "CaseN", "ControlN", "N")), ~sum(.x, na.rm=T))
+      dplyr::across(dplyr::any_of(c("EAF", "INFO", "CaseN", "ControlN", "N")), ~sum(.x, na.rm=T)),
+      # calculate the total sample size for all SNPs with info
+      N_info = sum((N*INFO)/INFO, na.rm = TRUE),
+      N_EAF = sum((N*EAF)/EAF, na.rm = TRUE),
     ) |>
     dplyr::ungroup() |>
     dplyr::mutate(
       B = B / W,
       SE = 1 / sqrt(W),
-      dplyr::across(dplyr::any_of(c("EAF", "INFO")), ~.x / N)
+      dplyr::across(dplyr::any_of(c("INFO")), ~.x / N_info),
+      dplyr::across(dplyr::any_of(c("EAF")), ~.x / N_EAF)
     ) |>
-    dplyr::select(-W) |>
+    dplyr::select(-W, N_info) |>
     dplyr::collect() |>
     dplyr::mutate(P  = stats::pnorm(-abs(B/SE)) *2)
 

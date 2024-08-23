@@ -76,7 +76,10 @@ run_sbayesrc <- function(parent_folder, ..., write_script = TRUE, thread_rc = 8,
   tune_txt <- glue::glue("rm {paths$sbayesrc}/sbrc_tune_inter.txt*")
   gzip_file <- glue::glue("gzip {paths$sbayesrc}/sbrc.txt")
 
-  cleanup <- c(cleanup, ma_files, tune_txt, gzip_file)
+  tar <- glue::glue("(cd {paths$sbayesrc} && tar --exclude='sbrc.txt.gz' --exclude='sbrc.par' -cvf sbrc.tar * && find . -type f ! -name 'sbrc.txt.gz' ! -name 'sbrc.par' ! -name 'sbrc.tar' -delete)")
+
+
+  cleanup <- c(cleanup, ma_files, tune_txt, gzip_file, tar)
   all_code <- c(header, code, cleanup)
 
   if(isTRUE(write_script)) {
@@ -297,7 +300,7 @@ run_mbat_combo <- function(parent_folder, ..., write_script = TRUE, outfolder=NU
   code <- glue::glue(
     "gcta --bfile {ref_genome} ",
     "--mBAT-combo {ma_file} ",
-    "--mBAT-gene-list {gene_list}",
+    "--mBAT-gene-list {gene_list} ",
     "--out {out} ",
     "--thread-num {thread_num}"
   )

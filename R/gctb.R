@@ -75,7 +75,7 @@ run_sbayesrc <- function(parent_folder, ..., write_script = TRUE, thread_rc = 8,
   ma_files <- glue::glue("rm {paths$sbayesrc}/sumstats.ma*")
   tune_txt <- glue::glue("rm {paths$sbayesrc}/sbrc_tune_inter.txt*")
   rm1 <- glue::glue("rm {paths$sbayesrc}/sbrc.mcmcsamples*")
-  rm2 <- glue::glue("rm {paths$sbayesrc}/sbrc_tune")
+  rm2 <- glue::glue("rm {paths$sbayesrc}/sbrc_tune*")
   gzip_file <- glue::glue("gzip {paths$sbayesrc}/sbrc.txt")
 
 

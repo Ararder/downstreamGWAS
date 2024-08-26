@@ -74,12 +74,13 @@ run_sbayesrc <- function(parent_folder, ..., write_script = TRUE, thread_rc = 8,
   cleanup <- glue::glue("rm {paths$sbayesrc}/*.rds")
   ma_files <- glue::glue("rm {paths$sbayesrc}/sumstats.ma*")
   tune_txt <- glue::glue("rm {paths$sbayesrc}/sbrc_tune_inter.txt*")
+  rm1 <- glue::glue("rm {paths$sbayesrc}/sbrc.mcmcsamples*")
+  rm2 <- glue::glue("rm {paths$sbayesrc}/sbrc_tune")
   gzip_file <- glue::glue("gzip {paths$sbayesrc}/sbrc.txt")
 
-  tar <- glue::glue("(cd {paths$sbayesrc} && tar --exclude='sbrc.txt.gz' --exclude='sbrc.par' -cvf sbrc.tar * && find . -type f ! -name 'sbrc.txt.gz' ! -name 'sbrc.par' ! -name 'sbrc.tar' -delete)")
 
 
-  cleanup <- c(cleanup, ma_files, tune_txt, gzip_file, tar)
+  cleanup <- c(cleanup, ma_files, tune_txt, gzip_file, rm1,rm2)
   all_code <- c(header, code, cleanup)
 
   if(isTRUE(write_script)) {

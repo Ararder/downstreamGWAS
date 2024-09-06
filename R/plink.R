@@ -17,10 +17,6 @@ run_clumping <- function(path) {
 
     workdir <- paths$clumping
     fs::dir_create(workdir)
-    # arrow::open_dataset(paths$hivestyle) |>
-    #     dplyr::select(RSID, P) |>
-    #     dplyr::collect() |>
-    #     readr::write_tsv(fs::path(workdir, "sumstats.tsv.gz"))
 
 
     sumstat <- in_work_dir("sumstats.tsv.gz")
@@ -41,11 +37,11 @@ run_clumping <- function(path) {
         workdir = workdir
     )
 
-
+    setup_file <- glue::glue("R -e \"downstreamGWAS::to_plink('{path}')\"")
     format <- glue::glue("R -e \"downstreamGWAS::ranges_to_bed('{path}')\"")
     bedtools_code <- glue::glue("apptainer exec --cleanenv --bind $workdir,$reference_dir $container /bin/bash -c \"bedtools merge -d 50000 -i /mnt/clumps.bed -c 4,5 -o sum,min > /mnt/merged_loci.bed\"")
     cleanup <- glue::glue("apptainer exec --cleanenv --bind $workdir,$reference_dir $container rm /mnt/sumstats.tsv.gz")
-    script  <- c(script,"\n", format,"\n", bedtools_code, cleanup)
+    script  <- c(setup_file, script,"\n", format,"\n", bedtools_code, cleanup)
 
 
 
@@ -129,9 +125,9 @@ to_clumping <- function(path) {
     fs::dir_create(workdir)
     arrow::open_dataset(paths$hivestyle) |>
         dplyr::select(RSID, P) |>
-        dplyr::filter(!is.na(RSID)) |> 
+        dplyr::filter(!is.na(RSID)) |>
         readr::write_tsv(fs::path(workdir, "sumstats.tsv"))
 
 }
-  
+
 

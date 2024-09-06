@@ -120,13 +120,14 @@ clump_plink <- function(
 #' to_clumping("/path/to/tidyGWAS")
 #' }
 to_clumping <- function(path) {
-    paths <- tidyGWAS_paths(path)
-    workdir <- paths$clumping
-    fs::dir_create(workdir)
-    arrow::open_dataset(paths$hivestyle) |>
-        dplyr::select(RSID, P) |>
-        dplyr::filter(!is.na(RSID)) |>
-        readr::write_tsv(fs::path(workdir, "sumstats.tsv"))
+  paths <- tidyGWAS_paths(path)
+  workdir <- paths$clumping
+  fs::dir_create(workdir)
+  arrow::open_dataset(paths$hivestyle) |>
+    dplyr::select(RSID, P) |>
+    dplyr::filter(!is.na(RSID)) |>
+    dplyr::collect() |>
+    readr::write_tsv(fs::path(workdir, "sumstats.tsv"))
 
 }
 

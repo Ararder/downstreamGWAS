@@ -1,7 +1,16 @@
 utils::globalVariables(c("POS", "tmp", "chr", "start", "end", "N", "P", "SNP"))
 
 
-# path <- "/cfs/klemming/projects/supr/ki-pgi-storage/Data/sumstats/wave1/scz2022_eur"
+#' Run a clumping pipeline on a tidyGWAS sumstats
+#'
+#' @param path filepath to tidyGWAS folder
+#'
+#' @return bed file with clumps
+#' @export
+#'
+#' @examples \dontrun{
+#' ranges_to_bed("/path/to/tidyGWAS")
+#' }
 run_clumping <- function(path) {
 
     paths <- tidyGWAS_paths(path)
@@ -34,21 +43,15 @@ run_clumping <- function(path) {
 
 
     format <- glue::glue("R -e \"downstreamGWAS::ranges_to_bed('{path}')\"")
-    bedtools_code <- with_container(
-        glue::glue("bedtools merge -d 50000 -i clumps.bed -c 4,5 -o sum,min > merged_loci.bed"),
-        image = "plink",
-        setup_exists = TRUE,
-        workdir = workdir
-    )
-
-    script  <- c(script,"\n", format,"\n", bedtools_code)
+    bedtools_code <- glue::glue("apptainer exec --cleanenv --bind $workdir,$reference_dir $container /bin/bash -c \"bedtools merge -d 50000 -i /mnt/clumps.bed -c 4,5 -o sum,min > /mnt/merged_loci.bed\"")
+    cleanup <- glue::glue("apptainer exec --cleanenv --bind $workdir,$reference_dir $container rm /mnt/sumstats.tsv.gz")
+    script  <- c(script,"\n", format,"\n", bedtools_code, cleanup)
 
 
 
-
-    writeLines(script, "test.sh")
-
-
+    script_path <- fs::path(workdir, "clumping_job.sh")
+    writeLines(script, script_path)
+    script_path
 
 }
 
@@ -109,3 +112,26 @@ clump_plink <- function(
   )
 
 }
+
+#' Convert tidyGWAS to file with RSID and P for clumping
+#'
+#' @param path filepath to tidyGWAS folder
+#'
+#' @return writes out a tsv.gz file
+#' @export
+#'
+#' @examples \dontrun{
+#' to_clumping("/path/to/tidyGWAS")
+#' }
+to_clumping <- function(path) {
+    paths <- tidyGWAS_paths(path)
+    workdir <- paths$clumping
+    fs::dir_create(workdir)
+    arrow::open_dataset(paths$hivestyle) |>
+        dplyr::select(RSID, P) |>
+        dplyr::filter(!is.na(RSID)) |> 
+        readr::write_tsv(fs::path(workdir, "sumstats.tsv"))
+
+}
+  
+

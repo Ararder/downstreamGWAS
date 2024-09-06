@@ -19,7 +19,7 @@ run_clumping <- function(path) {
     fs::dir_create(workdir)
 
 
-    sumstat <- in_work_dir("sumstats.tsv.gz")
+    sumstat <- in_work_dir("sumstats.tsv")
     genome_ref <- in_ref_dir(paths$system_paths$genome_refs$merged_1kg)
     gene_list <- in_ref_dir("plink/glist-hg19")
 
@@ -40,7 +40,7 @@ run_clumping <- function(path) {
     setup_file <- glue::glue("R -e \"downstreamGWAS::to_clumping('{path}')\"")
     format <- glue::glue("R -e \"downstreamGWAS::ranges_to_bed('{path}')\"")
     bedtools_code <- glue::glue("apptainer exec --cleanenv --bind $workdir,$reference_dir $container /bin/bash -c \"bedtools merge -d 50000 -i /mnt/clumps.bed -c 4,5 -o sum,min > /mnt/merged_loci.bed\"")
-    cleanup <- glue::glue("apptainer exec --cleanenv --bind $workdir,$reference_dir $container rm /mnt/sumstats.tsv.gz")
+    cleanup <- glue::glue("apptainer exec --cleanenv --bind $workdir,$reference_dir $container rm /mnt/sumstats.tsv")
     script  <- c(setup_file, script,"\n", format,"\n", bedtools_code, cleanup)
 
 

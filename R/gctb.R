@@ -1,6 +1,9 @@
+utils::globalVariables(c("RSID"))
 #' Run sbayerc with tidyGWAS structure
 #'
-#' @inheritParams run_ldsc
+#' @param parent_folder path to tidyGWAS folder
+#' @param ... pass arguments to [slurm_header()]
+#' @param write_script Should the script be written to a file on disk?
 #' @param thread_rc threads for rescaling
 #' @param thread_imp threads for imputing
 #'

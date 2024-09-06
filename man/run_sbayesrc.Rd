@@ -13,11 +13,11 @@ run_sbayesrc(
 )
 }
 \arguments{
-\item{parent_folder}{Folder to sumstats cleaned with tidyGWAS. see \code{\link[tidyGWAS:tidyGWAS]{tidyGWAS::tidyGWAS()}} output_folder}
+\item{parent_folder}{path to tidyGWAS folder}
 
-\item{...}{Pass arguments to \code{\link[=slurm_header]{slurm_header()}}}
+\item{...}{pass arguments to \code{\link[=slurm_header]{slurm_header()}}}
 
-\item{write_script}{Should the code be written to a bash script?}
+\item{write_script}{Should the script be written to a file on disk?}
 
 \item{thread_rc}{threads for rescaling}
 

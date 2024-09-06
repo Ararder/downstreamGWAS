@@ -8,8 +8,8 @@ run_clumping <- function(path) {
 
     workdir <- paths$clumping
     fs::dir_create(workdir)
-    # arrow::open_dataset(paths$hivestyle) |> 
-    #     dplyr::select(RSID, P) |> 
+    # arrow::open_dataset(paths$hivestyle) |>
+    #     dplyr::select(RSID, P) |>
     #     dplyr::collect() |>
     #     readr::write_tsv(fs::path(workdir, "sumstats.tsv.gz"))
 
@@ -25,14 +25,14 @@ run_clumping <- function(path) {
         outdir = "/mnt"
     )
 
-  
+
    script <- with_container(
         code,
         image = "plink",
         workdir = workdir
     )
 
-    
+
     format <- glue::glue("R -e \"downstreamGWAS::ranges_to_bed('{path}')\"")
     bedtools_code <- with_container(
         glue::glue("bedtools merge -d 50000 -i clumps.bed -c 4,5 -o sum,min > merged_loci.bed"),
@@ -49,32 +49,34 @@ run_clumping <- function(path) {
     writeLines(script, "test.sh")
 
 
-    
+
 }
 
-#' Setup required filepaths for downstreamGWAS
+
+#' Convert plink ranges file to bed
 #'
-#' @param path Local filepath to where the downstreamGWAS data is stored
-#' @return NULL
+#' @param path filepath to tidyGWAS folder
+#'
+#' @return bed file with clumps
 #' @export
 #'
 #' @examples \dontrun{
-#' ranges_to_bed()
+#' ranges_to_bed("/path/to/tidyGWAS")
 #' }
 ranges_to_bed <- function(path){
 
   paths <- tidyGWAS_paths(path)
   out <- fs::path(paths$clumping, "clumps.bed")
 
-  readr::read_table(fs::path(paths$clumping, "clumps.clumped.ranges"))  |> 
+  readr::read_table(fs::path(paths$clumping, "clumps.clumped.ranges"))  |>
     dplyr::mutate(
       chr = stringr::word(POS, 1, sep = stringr::fixed(":")),
       tmp = stringr::word(POS, 2, sep = stringr::fixed(":")),
       start = as.integer(stringr::word(tmp, 1, sep = stringr::fixed(".."))),
       end = as.integer(stringr::word(tmp, 2, sep = stringr::fixed("..")))
-    )  |> 
-    dplyr::arrange(chr, start, end)  |> 
-    dplyr::select(chr, start, end, N, P, SNP)  |> 
+    )  |>
+    dplyr::arrange(chr, start, end)  |>
+    dplyr::select(chr, start, end, N, P, SNP)  |>
     readr::write_tsv(out, col_names = FALSE)
 }
 
@@ -105,5 +107,5 @@ clump_plink <- function(
     "--clump-range {range} ",
     "--clump-field {p_field} "
   )
-  
+
 }

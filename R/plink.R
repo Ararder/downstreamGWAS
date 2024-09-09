@@ -39,7 +39,7 @@ run_clumping <- function(path) {
 
     setup_file <- glue::glue("R -e \"downstreamGWAS::to_clumping('{path}')\"")
     format <- glue::glue("R -e \"downstreamGWAS::ranges_to_bed('{path}')\"")
-    bedtools_code <- glue::glue("apptainer exec --cleanenv --bind $workdir,$reference_dir $container /bin/bash -c \"bedtools merge -d 50000 -i /mnt/clumps.bed -c 4,5 -o sum,min > /mnt/merged_loci.bed\"")
+    bedtools_code <- glue::glue("apptainer exec --cleanenv --bind $workdir,$reference_dir $container /bin/bash -c \"bedtools merge -d 50000 -i /mnt/clumps.bed -c 4,5,6 -o sum,collapse,collapse > /mnt/merged_loci.bed\"")
     cleanup <- glue::glue("apptainer exec --cleanenv --bind $workdir,$reference_dir $container rm /mnt/sumstats.tsv")
     script  <- c(setup_file, script,"\n", format,"\n", bedtools_code, cleanup)
 

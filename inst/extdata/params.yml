@@ -34,6 +34,7 @@ plink:
 
 genome_refs:
   merged_1kg: "1000G_merged/1000G_merged"
+  deep_1kg: "deep_1kg/EUR/EUR_rsID"
 
 mixer:
   container: "mixer.sif"

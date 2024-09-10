@@ -50,7 +50,7 @@ This virtualization also serves as another important factor in reproductibility,
 
 To illustrate the results, we first create an toy example of a cleaned tidyGWAS sumstat.
 
-```{r}
+```{r, eval = FALSE}
 sumstats <- tidyGWAS::test_file
 outdir <- tempdir()
 cleaned <- tidyGWAS(
@@ -66,7 +66,7 @@ Using only the filepath to output_folder, downstreamGWAS can generate a slurm sc
 
 ### Running SbayesRC
 
-```{r}
+```{r,eval = FALSE}
 # downstreamGWAS uses the "HOME" variable to store data on where you keep the reference files between sessions. 
 withr::local_envvar(list("HOME" = tempdir()))
 dsg_folder <- fs::path(tempdir(), "downstreamGWAS_folder")
@@ -79,7 +79,7 @@ run_sbayesrc(fs::path(outdir, "example_gwas"),  write_script = FALSE)
 
 ### cell-type analysis using S-LDSC
 
-```{r}
+```{r,eval = FALSE}
 run_sldsc_cts(fs::path(outdir, "example_gwas"),cts_file = "toy.cts", write_script = FALSE)
 ```
 

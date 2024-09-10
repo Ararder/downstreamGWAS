@@ -20,7 +20,7 @@ run_clumping <- function(path) {
 
 
     sumstat <- in_work_dir("sumstats.tsv")
-    genome_ref <- in_ref_dir(paths$system_paths$genome_refs$merged_1kg)
+    genome_ref <- in_ref_dir(paths$system_paths$genome_refs$deep_1kg)
     gene_list <- in_ref_dir("plink/glist-hg19")
 
     code <- clump_plink(

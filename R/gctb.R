@@ -21,7 +21,7 @@ run_sbayesrc <- function(parent_folder, ..., write_script = TRUE, thread_rc = 8,
   fs::dir_create(paths$sbayesrc)
 
   if(is.null(repair_EAF)) {
-    munge <- glue::glue("R -e \"downstreamGWAS::to_ma('{parent_folder}', use_effective_n = {use_effective_n}, repair_EAF = NULL)\"")
+    munge <- glue::glue("R -e \"downstreamGWAS::to_ma('{parent_folder}', use_effective_n = {use_effective_n})\"")
   } else {
     munge <- glue::glue("R -e \"downstreamGWAS::to_ma('{parent_folder}', use_effective_n = {use_effective_n}, repair_EAF = '{repair_EAF}')\"")
   }

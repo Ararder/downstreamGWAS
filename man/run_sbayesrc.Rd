@@ -9,7 +9,9 @@ run_sbayesrc(
   ...,
   write_script = TRUE,
   thread_rc = 8,
-  thread_imp = 4
+  thread_imp = 4,
+  use_effective_n = FALSE,
+  repair_EAF = NULL
 )
 }
 \arguments{

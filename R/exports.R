@@ -81,6 +81,7 @@ to_plink_clumping <- function(parent_folder) {
 #' @param parent_folder filepath to tidyGWAS folder
 #' @param out output for .ma file. Default value is `tidyGWAS_paths()[["ma_file]]`
 #' @param use_effective_n Should N be converted to effective sample size? Requires CaseN and ControlN in column names
+#' @param repair_EAF default is NULL. Pass a filepath to repair EAF if possible
 #'
 #' @return NULL
 #' @export
@@ -88,7 +89,7 @@ to_plink_clumping <- function(parent_folder) {
 #' @examples \dontrun{
 #' to_ma("/path/tidyGWAS_sumstats/a_sumstat")
 #' }
-to_ma <- function(parent_folder, out = NULL, use_effective_n = FALSE) {
+to_ma <- function(parent_folder, out = NULL, use_effective_n = FALSE, repair_EAF = NULL) {
 
   paths <- tidyGWAS_paths(parent_folder)
   out <- if(is.null(out)) paths$ma_file else out
@@ -97,18 +98,43 @@ to_ma <- function(parent_folder, out = NULL, use_effective_n = FALSE) {
   # dataset: ds
   ds <- arrow::open_dataset(paths$hivestyle)
 
+  # check that columsn exist
+  column_names <- names(ds$schema)
+
   # dataset query: dsq
   dsq <- ds |>
     dplyr::filter(!multi_allelic)
 
   if(isTRUE(use_effective_n)) {
-    stopifnot("CaseN or ContrlN missing from sumstats" = all(c("CaseN", "ControlN") %in% ds$schema$names))
+    stopifnot("use_effective_n = TRUE, but CaseN or ControlN missing from sumstats" = all(c("CaseN", "ControlN") %in% ds$schema$names))
     dsq <- dsq |>
       dplyr::mutate(N = 4 * ( CaseN / (CaseN+ControlN)) * (1 - CaseN / (CaseN+ControlN)) * (CaseN + ControlN))
   }
-  dsq |>
-    dplyr::select(SNP = RSID, A1 = EffectAllele, A2 = OtherAllele, freq=EAF, b=B, se=SE, p=P, N) |>
-    dplyr::collect() |>
+
+
+
+  if(!"EAF" %in% column_names & !missing(repair_EAF))  {
+    cli::cli_alert_warning("EAF missing from sumstats. Imputing EAF from reference:
+    {.path {repair_EAF}}")
+    dsq <- dsq |>
+      # dplyr::select(SNP = RSID, A1 = EffectAllele, A2 = OtherAllele, b=B, se=SE, p=P, N) |>
+      dplyr::select(RSID, EffectAllele, OtherAllele, B, SE, P, N) |>
+      dplyr::collect()
+    eaf_file <- arrow::read_parquet(repair_EAF)
+
+    dsq1 <- dplyr::inner_join(dsq, eaf_file, by = c("RSID", "EffectAllele", "OtherAllele"))
+    dsq2 <- dplyr::inner_join(dsq, eaf_file, by = c("RSID", "EffectAllele" =  "OtherAllele", "OtherAllele" = "EffectAllele")) |>
+      dplyr::mutate(EAF = 1-EAF)
+    dsq <- dplyr::bind_rows(dsq1, dsq2)
+
+  } else {
+    stop("EAF missing from sumstats. Pass filepath to repair_EAF to impute EAF")
+  }
+
+
+
+
+  dplyr::select(dsq, SNP = RSID, A1 = EffectAllele, A2 = OtherAllele, freq=EAF, b=B, se=SE, p=P, N) |>
     readr::write_tsv(out)
 
 }

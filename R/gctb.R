@@ -6,20 +6,25 @@ utils::globalVariables(c("RSID"))
 #' @param write_script Should the script be written to a file on disk?
 #' @param thread_rc threads for rescaling
 #' @param thread_imp threads for imputing
-#'
+#' @param use_effective_n Should an attempt be made to calculate effective N
+#' @param repair_EAF Should EAF be repaired? If so, provide a path to a file with columns RSID, EffectAllele, OtherAllele, EAF
 #' @return a filepath or character vector
 #' @export
 #'
 #' @examples \dontrun{
 #' run_sbayesrc()
 #' }
-run_sbayesrc <- function(parent_folder, ..., write_script = TRUE, thread_rc = 8, thread_imp = 4) {
+run_sbayesrc <- function(parent_folder, ..., write_script = TRUE, thread_rc = 8, thread_imp = 4, use_effective_n=FALSE, repair_EAF=NULL) {
   stopifnot(rlang::is_bool(write_script))
   paths <- tidyGWAS_paths(parent_folder)
   header <- slurm_header(..., output = fs::path_expand(fs::path(paths$sbayesrc, "slurm-%j.out")))
   fs::dir_create(paths$sbayesrc)
 
-  munge <- glue::glue("R -e \"downstreamGWAS::to_ma('{parent_folder}')\"")
+  if(is.null(repair_EAF)) {
+    munge <- glue::glue("R -e \"downstreamGWAS::to_ma('{parent_folder}', use_effective_n = {use_effective_n}, repair_EAF = NULL)\"")
+  } else {
+    munge <- glue::glue("R -e \"downstreamGWAS::to_ma('{parent_folder}', use_effective_n = {use_effective_n}, repair_EAF = '{repair_EAF}')\"")
+  }
 
 
 

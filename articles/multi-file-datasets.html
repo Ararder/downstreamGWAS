@@ -8,8 +8,8 @@
 <title>multi-file datasets • downstreamGWAS</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="multi-file datasets">
 </head>
 <body>
@@ -106,18 +106,29 @@ format, partitioned by chromosome (on build GRCH38).</p>
 seems natural to put them all in the same place, so that whenever you
 want to work with summary statistics, you can all the ones that have
 already been cleaned.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">gwas_repository</span> <span class="op">&lt;-</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"cleaned_GWAS"</span><span class="op">)</span></span>
+<span><span class="kw">for</span><span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"trait1"</span>, <span class="st">"trait2"</span>, <span class="st">"trait3"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span><span class="va">gwas_repository</span>, <span class="va">i</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Cleaning "</span>, <span class="va">i</span>, <span class="st">"and saving results to: "</span>, <span class="va">out</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="http://arvidharder.com/tidyGWAS/reference/tidyGWAS.html" class="external-link">tidyGWAS</a></span><span class="op">(</span></span>
+<span>   tbl <span class="op">=</span> <span class="va">test_file</span>,</span>
+<span>   dbsnp_path <span class="op">=</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path_package.html" class="external-link">path_package</a></span><span class="op">(</span><span class="st">"tidyGWAS"</span><span class="op">)</span>, <span class="st">"extdata/dbSNP155"</span><span class="op">)</span>,</span>
+<span>   output_dir <span class="op">=</span> <span class="va">out</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
 <p>In our <code>cleaned_GWAS</code>` folder, we now have three folders
 corresponding to the three traits.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://fs.r-lib.org/reference/dir_tree.html" class="external-link">dir_tree</a></span><span class="op">(</span><span class="va">gwas_repository</span>, recurse <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <p>Each cleaned summary statistics is divided by chromosome.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://fs.r-lib.org/reference/dir_tree.html" class="external-link">dir_tree</a></span><span class="op">(</span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span><span class="va">gwas_repository</span>, <span class="st">"trait3"</span>, <span class="st">"tidyGWAS_hivestyle"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>It will be turn out to be very useful to apply this hivestyle
 partition again - at the level of traits.<br>
 My recommended method is to use symbolic links to create the next level
 of mapping. This way the cleaning is separated.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">symlinks</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"arrow_traits"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># identify the filepath to all cleaned summary statistics</span></span>
@@ -134,23 +145,23 @@ of mapping. This way the cleaning is separated.</p>
 <span><span class="fu"><a href="https://fs.r-lib.org/reference/dir_tree.html" class="external-link">dir_tree</a></span><span class="op">(</span><span class="va">symlinks</span><span class="op">)</span></span></code></pre></div>
 <p>By creating symbolic links with the trait name in the hivestyle
 format, we’ve created a multi-file dataset at the level of traits.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ds</span> <span class="op">&lt;-</span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html" class="external-link">open_dataset</a></span><span class="op">(</span><span class="va">symlinks</span><span class="op">)</span></span>
 <span><span class="va">ds</span></span></code></pre></div>
 <p>Queries can now be built across multiple summary statistics using
 normal dplyr syntax.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ds</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">P</span> <span class="op">&lt;</span> <span class="fl">5e-08</span><span class="op">)</span></span></code></pre></div>
 <p>Without calling <code><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">dplyr::collect()</a></code>, the query will not
 executed. Rather, the planned query is displayed.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ds</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">P</span> <span class="op">&lt;</span> <span class="fl">5e-08</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">collect</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>More complex queries can be built:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ds</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="co"># group by each summary statistic</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">dataset_name</span>, <span class="va">CHR</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -164,7 +175,7 @@ took ~8 seconds using just 2 cores. The beautiful thing is the seamless
 integration with dplyr. These types of queries can be written in normal
 dplyr code, but is transformed to the highly efficient arrow c++
 code.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">all_sig</span> <span class="op">&lt;-</span> <span class="va">ds</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="co"># CHR 7 POS &gt;= 1788081 &amp; POS &lt;= 2289862 is one of the top significant loci</span></span>
 <span>  <span class="co"># in schizophrenia.</span></span>
@@ -174,10 +185,10 @@ code.</p>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">RSID</span>, <span class="va">P</span>, <span class="va">B</span>, <span class="va">SE</span>, <span class="va">dataset_name</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">collect</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>To work with just a single trait, or just a few traits.</p>
-<p>Tip: I can take a lot of time to read in the 20 columns. Since
+<p>Tip: It can take a lot of time to read in the 20 columns. Since
 <code>parquet</code> files are stored in columnar storage, there is no
 overhead in reading in a subset of columns</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">sumstats</span> <span class="op">&lt;-</span> <span class="va">ds</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">dataset_name</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"trait1"</span>, <span class="st">"trait2"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -196,7 +207,7 @@ overhead in reading in a subset of columns</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer>

@@ -27,7 +27,7 @@ Multi-file datasets is a natural fit for summary statistics. We can store the su
 
 Let's pretend you have cleaned 3 different summary statistics. It seems natural to put them all in the same place, so that whenever you want to work with summary statistics, you can all the ones that have already been cleaned.
 
-```{r, include=FALSE}
+```{r, eval=FALSE}
 gwas_repository <- fs::path(tempdir(), "cleaned_GWAS")
 for(i in c("trait1", "trait2", "trait3")) {
   out <- fs::path(gwas_repository, i)
@@ -128,7 +128,7 @@ all_sig <- ds |>
 
 To work with just a single trait, or just a few traits.
 
-Tip: I can take a lot of time to read in the 20 columns. Since `parquet` files are stored in columnar storage, there is no overhead in reading in a subset of columns
+Tip: It can take a lot of time to read in the 20 columns. Since `parquet` files are stored in columnar storage, there is no overhead in reading in a subset of columns
 
 ```{r, eval=FALSE}
 

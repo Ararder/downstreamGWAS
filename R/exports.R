@@ -113,7 +113,8 @@ to_ma <- function(parent_folder, out = NULL, use_effective_n = FALSE, repair_EAF
 
 
 
-  if(!"EAF" %in% column_names & !missing(repair_EAF))  {
+  if(!"EAF" %in% column_names & !is.null(repair_EAF))  {
+
     cli::cli_alert_warning("EAF missing from sumstats. Imputing EAF from reference:
     {.path {repair_EAF}}")
     dsq <- dsq |>
@@ -127,9 +128,14 @@ to_ma <- function(parent_folder, out = NULL, use_effective_n = FALSE, repair_EAF
       dplyr::mutate(EAF = 1-EAF)
     dsq <- dplyr::bind_rows(dsq1, dsq2)
 
-  } else {
+  } else if(!"EAF" %in% column_names & is.null(repair_EAF)) {
     stop("EAF missing from sumstats. Pass filepath to repair_EAF to impute EAF")
+  } else if("EAF" %in% column_names) {
+    dsq <- dsq |>
+      dplyr::select(RSID, EffectAllele, OtherAllele, EAF, B, SE, P, N) |>
+      dplyr::collect()
   }
+
 
 
 

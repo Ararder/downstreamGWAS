@@ -111,7 +111,7 @@ already been cleaned.</p>
 <span><span class="kw">for</span><span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"trait1"</span>, <span class="st">"trait2"</span>, <span class="st">"trait3"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span><span class="va">gwas_repository</span>, <span class="va">i</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Cleaning "</span>, <span class="va">i</span>, <span class="st">"and saving results to: "</span>, <span class="va">out</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="http://arvidharder.com/tidyGWAS/reference/tidyGWAS.html" class="external-link">tidyGWAS</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tidyGWAS/man/tidyGWAS.html" class="external-link">tidyGWAS</a></span><span class="op">(</span></span>
 <span>   tbl <span class="op">=</span> <span class="va">test_file</span>,</span>
 <span>   dbsnp_path <span class="op">=</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path_package.html" class="external-link">path_package</a></span><span class="op">(</span><span class="st">"tidyGWAS"</span><span class="op">)</span>, <span class="st">"extdata/dbSNP155"</span><span class="op">)</span>,</span>
 <span>   output_dir <span class="op">=</span> <span class="va">out</span></span>
@@ -207,7 +207,7 @@ overhead in reading in a subset of columns</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer>

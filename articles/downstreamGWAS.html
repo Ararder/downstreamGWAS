@@ -89,7 +89,7 @@ Each part is tackled in the following way:</p>
 <h4 id="summary-statistics">(1) Summary statistics<a class="anchor" aria-label="anchor" href="#summary-statistics"></a>
 </h4>
 <p>downstreamGWAS relies on summary statistics first being cleaned by
-<code><a href="http://arvidharder.com/tidyGWAS/reference/tidyGWAS.html" class="external-link">tidyGWAS::tidyGWAS()</a></code>, and assumes that
+<code><a href="https://rdrr.io/pkg/tidyGWAS/man/tidyGWAS.html" class="external-link">tidyGWAS::tidyGWAS()</a></code>, and assumes that
 <code>output_format="hivestyle"</code> (the default argument), and that
 no changes has been made to the resulting folder structure.</p>
 <p>With standardized column names and data formats, the functionality to
@@ -138,7 +138,7 @@ cleaned tidyGWAS sumstat.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sumstats</span> <span class="op">&lt;-</span> <span class="fu">tidyGWAS</span><span class="fu">::</span><span class="va">test_file</span></span>
 <span><span class="va">outdir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">cleaned</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://arvidharder.com/tidyGWAS/reference/tidyGWAS.html" class="external-link">tidyGWAS</a></span><span class="op">(</span></span>
+<span><span class="va">cleaned</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tidyGWAS/man/tidyGWAS.html" class="external-link">tidyGWAS</a></span><span class="op">(</span></span>
 <span>  <span class="co"># Here we input the summary statistics as a data.frame already in R memory</span></span>
 <span>  tbl <span class="op">=</span> <span class="va">sumstats</span>, </span>
 <span>  <span class="co"># provide the filepath to the refence files you downloaded.</span></span>
@@ -185,7 +185,7 @@ ready to run.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer>

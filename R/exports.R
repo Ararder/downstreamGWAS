@@ -112,7 +112,7 @@ to_ma <- function(parent_folder, out = NULL, use_effective_n = FALSE) {
     )
 
     if("EffectiveN" %in% column_names) {
-      dsq <- dplyr::mutate(N = EffectiveN)
+      dsq <- dplyr::mutate(dsq, N = EffectiveN)
 
     } else if(all(c("CaseN", "ControlN") %in% column_names)) {
       dsq <- dsq |>

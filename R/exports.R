@@ -122,6 +122,7 @@ to_ma <- function(parent_folder, out = NULL, use_effective_n = FALSE) {
   }
 
   dplyr::select(dsq, SNP = RSID, A1 = EffectAllele, A2 = OtherAllele, freq=EAF, b=B, se=SE, p=P, N) |>
+    dplyr::collect() |>
     readr::write_tsv(out)
 
 }

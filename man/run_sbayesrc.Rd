@@ -24,6 +24,10 @@ run_sbayesrc(
 \item{thread_rc}{threads for rescaling}
 
 \item{thread_imp}{threads for imputing}
+
+\item{use_effective_n}{Should an attempt be made to calculate effective N}
+
+\item{repair_EAF}{Should EAF be repaired? If so, provide a path to a file with columns RSID, EffectAllele, OtherAllele, EAF}
 }
 \value{
 a filepath or character vector

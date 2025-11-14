@@ -2,21 +2,18 @@
 % Please edit documentation in R/plink.R
 \name{ranges_to_bed}
 \alias{ranges_to_bed}
-\title{Convert plink ranges file to bed}
+\title{Convert the output of plink clumping ranges to a flat file}
 \usage{
-ranges_to_bed(path)
+ranges_to_bed(clump_dir)
 }
 \arguments{
-\item{path}{filepath to tidyGWAS folder}
-}
-\value{
-bed file with clumps
+\item{clump_dir}{directory where plink clumping output is stored}
 }
 \description{
-Convert plink ranges file to bed
+Convert the output of plink clumping ranges to a flat file
 }
 \examples{
 \dontrun{
-ranges_to_bed("/path/to/tidyGWAS")
+ranges_to_bed("/path/to/clumping/dir")
 }
 }

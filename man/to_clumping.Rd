@@ -2,21 +2,20 @@
 % Please edit documentation in R/plink.R
 \name{to_clumping}
 \alias{to_clumping}
-\title{Convert tidyGWAS to file with RSID and P for clumping}
+\title{Prepare tidyGWAS sumstats for PLINK clumping}
 \usage{
-to_clumping(path)
+to_clumping(hivestyle_path, output_dir)
 }
 \arguments{
-\item{path}{filepath to tidyGWAS folder}
-}
-\value{
-writes out a tsv.gz file
+\item{hivestyle_path}{path to tidyGWAS hivestyle dataset}
+
+\item{output_dir}{directory to write sumstats.tsv}
 }
 \description{
-Convert tidyGWAS to file with RSID and P for clumping
+Prepare tidyGWAS sumstats for PLINK clumping
 }
 \examples{
 \dontrun{
-to_clumping("/path/to/tidyGWAS")
+to_clumping("/path/to/hivestyle/dataset", "/path/to/output/dir")
 }
 }

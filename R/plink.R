@@ -54,6 +54,16 @@ run_clumping <- function(path, output_dir=NULL, ...) {
 }
 
 
+#' Convert the output of plink clumping ranges to a flat file
+#'
+#' @param clump_dir directory where plink clumping output is stored
+#'
+#' @returns NULL
+#' @export
+#'
+#' @examples \dontrun{
+#' ranges_to_bed("/path/to/clumping/dir")
+#' }
 ranges_to_bed <- function(clump_dir){
 
   out <- fs::path(clump_dir, "clumps.bed")
@@ -72,6 +82,17 @@ ranges_to_bed <- function(clump_dir){
 
 
 
+#' Prepare tidyGWAS sumstats for PLINK clumping
+#'
+#' @param hivestyle_path path to tidyGWAS hivestyle dataset
+#' @param output_dir directory to write sumstats.tsv
+#'
+#' @returns NULL
+#' @export
+#'
+#' @examples \dontrun{
+#' to_clumping("/path/to/hivestyle/dataset", "/path/to/output/dir")
+#' }
 to_clumping <- function(hivestyle_path, output_dir) {
 
   arrow::open_dataset(hivestyle_path) |>

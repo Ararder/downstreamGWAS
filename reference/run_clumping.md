@@ -14,6 +14,10 @@ run_clumping(path, output_dir = NULL, ...)
 
   filepath to tidyGWAS folder
 
+- output_dir:
+
+  directory to write clumping results
+
 ## Value
 
 bed file with clumps

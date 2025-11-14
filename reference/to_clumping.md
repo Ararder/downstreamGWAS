@@ -1,27 +1,27 @@
-# Convert tidyGWAS to file with RSID and P for clumping
+# Prepare tidyGWAS sumstats for PLINK clumping
 
-Convert tidyGWAS to file with RSID and P for clumping
+Prepare tidyGWAS sumstats for PLINK clumping
 
 ## Usage
 
 ``` r
-to_clumping(path)
+to_clumping(hivestyle_path, output_dir)
 ```
 
 ## Arguments
 
-- path:
+- hivestyle_path:
 
-  filepath to tidyGWAS folder
+  path to tidyGWAS hivestyle dataset
 
-## Value
+- output_dir:
 
-writes out a tsv.gz file
+  directory to write sumstats.tsv
 
 ## Examples
 
 ``` r
 if (FALSE) { # \dontrun{
-to_clumping("/path/to/tidyGWAS")
+to_clumping("/path/to/hivestyle/dataset", "/path/to/output/dir")
 } # }
 ```

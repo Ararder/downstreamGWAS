@@ -1,27 +1,23 @@
-# Convert plink ranges file to bed
+# Convert the output of plink clumping ranges to a flat file
 
-Convert plink ranges file to bed
+Convert the output of plink clumping ranges to a flat file
 
 ## Usage
 
 ``` r
-ranges_to_bed(path)
+ranges_to_bed(clump_dir)
 ```
 
 ## Arguments
 
-- path:
+- clump_dir:
 
-  filepath to tidyGWAS folder
-
-## Value
-
-bed file with clumps
+  directory where plink clumping output is stored
 
 ## Examples
 
 ``` r
 if (FALSE) { # \dontrun{
-ranges_to_bed("/path/to/tidyGWAS")
+ranges_to_bed("/path/to/clumping/dir")
 } # }
 ```

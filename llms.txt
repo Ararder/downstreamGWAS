@@ -53,7 +53,7 @@ singularity images sif_script()
 - [`ls_sumstats()`](http://arvidharder.com/downstreamGWAS/reference/ls_sumstats.md)
   : List the available sumstats
 - [`ranges_to_bed()`](http://arvidharder.com/downstreamGWAS/reference/ranges_to_bed.md)
-  : Convert plink ranges file to bed
+  : Convert the output of plink clumping ranges to a flat file
 - [`read_gwas()`](http://arvidharder.com/downstreamGWAS/reference/read_gwas.md)
   : Read in a tidyGWAS formatted summary statistics file
 - [`read_ldsc_h2()`](http://arvidharder.com/downstreamGWAS/reference/read_ldsc_h2.md)
@@ -76,7 +76,7 @@ singularity images sif_script()
   : Create the folder structure and filepaths for downstreamGWAS
   directory
 - [`to_clumping()`](http://arvidharder.com/downstreamGWAS/reference/to_clumping.md)
-  : Convert tidyGWAS to file with RSID and P for clumping
+  : Prepare tidyGWAS sumstats for PLINK clumping
 - [`to_ldsc()`](http://arvidharder.com/downstreamGWAS/reference/to_ldsc.md)
   : Export tidyGWAS format to LDSC format
 - [`to_ma()`](http://arvidharder.com/downstreamGWAS/reference/to_ma.md)

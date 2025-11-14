@@ -28,7 +28,7 @@ Suggests:
     tidyGWAS (>= 0.8.0),
     withr
 Config/testthat/edition: 3
-RoxygenNote: 7.3.2.9000
+RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
 Config/Needs/website: rmarkdown
 URL: http://arvidharder.com/downstreamGWAS/

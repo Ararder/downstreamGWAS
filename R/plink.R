@@ -19,7 +19,7 @@ run_clumping <- function(path, output_dir=NULL, ...) {
   if(!is.null(output_dir)) {
     paths$clumping <- output_dir
   }
-  workdir <- paths$clumping
+  workdir <- fs::dir_create(paths$clumping)
 
 
   sumstat <- in_work_dir("sumstats.tsv")

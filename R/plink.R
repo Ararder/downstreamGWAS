@@ -15,8 +15,8 @@ run_clumping <- function(path, output_dir=NULL, ...) {
 
   paths <- tidyGWAS_paths(path)
 
-  if(is.null(output_dir)) {
-    workdir <- paths$clumping
+  if(!is.null(output_dir)) {
+    paths$clumping <- output_dir
   }
   workdir <- fs::dir_create(output_dir)
 
@@ -39,8 +39,8 @@ run_clumping <- function(path, output_dir=NULL, ...) {
     workdir = workdir
   )
 
-  setup_file <- glue::glue("R -e \"downstreamGWAS::to_clumping('{path}')\"")
-  format <- glue::glue("R -e \"downstreamGWAS::ranges_to_bed('{path}')\"")
+  setup_file <- glue::glue("R -e \"downstreamGWAS::to_clumping('{paths$hivestyle}','{paths$clumping}')\"")
+  format <- glue::glue("R -e \"downstreamGWAS::ranges_to_bed('{paths$clumping}')\"")
   bedtools_code <- glue::glue("apptainer exec --cleanenv --bind $workdir,$reference_dir $container /bin/bash -c \"bedtools merge -d 50000 -i /mnt/clumps.bed -c 4,5,6 -o sum,collapse,collapse > /mnt/merged_loci.bed\"")
   cleanup <- glue::glue("apptainer exec --cleanenv --bind $workdir,$reference_dir $container rm /mnt/sumstats.tsv")
   script  <- c(setup_file, script,"\n", format,"\n", bedtools_code, cleanup)
@@ -52,22 +52,13 @@ run_clumping <- function(path, output_dir=NULL, ...) {
   script_path
 
 }
-#' Convert plink ranges file to bed
-#'
-#' @param path filepath to tidyGWAS folder
-#'
-#' @return bed file with clumps
-#' @export
-#'
-#' @examples \dontrun{
-#' ranges_to_bed("/path/to/tidyGWAS")
-#' }
-ranges_to_bed <- function(path){
 
-  paths <- tidyGWAS_paths(path)
-  out <- fs::path(paths$clumping, "clumps.bed")
 
-  readr::read_table(fs::path(paths$clumping, "clumps.clumped.ranges"))  |>
+ranges_to_bed <- function(clump_dir){
+
+  out <- fs::path(clump_dir, "clumps.bed")
+
+  readr::read_table(fs::path(clump_dir, "clumps.clumped.ranges"))  |>
     dplyr::mutate(
       chr = stringr::word(POS, 1, sep = stringr::fixed(":")),
       tmp = stringr::word(POS, 2, sep = stringr::fixed(":")),
@@ -80,25 +71,14 @@ ranges_to_bed <- function(path){
 }
 
 
-#' Convert tidyGWAS to file with RSID and P for clumping
-#'
-#' @param path filepath to tidyGWAS folder
-#'
-#' @return writes out a tsv.gz file
-#' @export
-#'
-#' @examples \dontrun{
-#' to_clumping("/path/to/tidyGWAS")
-#' }
-to_clumping <- function(path) {
-  paths <- tidyGWAS_paths(path)
-  workdir <- paths$clumping
-  fs::dir_create(workdir)
-  arrow::open_dataset(paths$hivestyle) |>
+
+to_clumping <- function(hivestyle_path, output_dir) {
+
+  arrow::open_dataset(hivestyle_path) |>
     dplyr::select(RSID, P) |>
     dplyr::filter(!is.na(RSID)) |>
     dplyr::collect() |>
-    readr::write_tsv(fs::path(workdir, "sumstats.tsv"))
+    readr::write_tsv(fs::path(output_dir, "sumstats.tsv"))
 
 }
 

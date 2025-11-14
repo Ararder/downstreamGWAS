@@ -8,6 +8,8 @@ run_clumping(path, output_dir = NULL, ...)
 }
 \arguments{
 \item{path}{filepath to tidyGWAS folder}
+
+\item{output_dir}{directory to write clumping results}
 }
 \value{
 bed file with clumps

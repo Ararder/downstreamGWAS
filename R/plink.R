@@ -4,6 +4,7 @@ utils::globalVariables(c("POS", "tmp", "chr", "start", "end", "N", "P", "SNP"))
 #' Run a clumping pipeline on a tidyGWAS sumstats
 #'
 #' @param path filepath to tidyGWAS folder
+#' @param output_dir directory to write clumping results
 #'
 #' @return bed file with clumps
 #' @export

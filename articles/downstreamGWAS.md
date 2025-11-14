@@ -1,0 +1,117 @@
+# downstreamGWAS
+
+## Introduction
+
+``` r
+library(downstreamGWAS)
+library(fs)
+library(tidyGWAS)
+```
+
+downstreamGWAS has to ambition make standardized pipelines for
+downstream analysis that has genome-wide summary statistics as
+***primary input***. Examples of these types of analysis are: gene-based
+tests (with magma or GCTA), or heritability enrichment (with S-LDSC).
+The required input for these analyses can typically be put into one of
+three categories:
+
+1.  summary statistics
+
+2.  reference data
+
+3.  software dependencies
+
+downstreamGWAS is aimed at making this painless and reproducible. Each
+part is tackled in the following way:
+
+#### (1) Summary statistics
+
+downstreamGWAS relies on summary statistics first being cleaned by
+[`tidyGWAS::tidyGWAS()`](https://ararder.github.io/tidyGWAS/reference/tidyGWAS.html),
+and assumes that `output_format="hivestyle"` (the default argument), and
+that no changes has been made to the resulting folder structure.
+
+With standardized column names and data formats, the functionality to
+prepare the summary statistics for the downstream analysis can be
+continously reused. For example, the
+[GCTB](https://cnsgenomics.com/software/gctb/#Overview) suite of genetic
+analysis uses the .ma format, and downstreamGWAS has defined method for
+converting tidyGWAS to .ma in
+[`downstreamGWAS::to_ma()`](http://arvidharder.com/downstreamGWAS/reference/to_ma.md).
+No need to write new code each time!
+
+A common (and very time consuming step) is to first munge summary
+statistics, and prepare them with correct filters, column names and
+data-types. downstreamGWAS uses the standardized tidyGWAS output to
+automate this munging step, for example
+[`downstreamGWAS::to_ma()`](http://arvidharder.com/downstreamGWAS/reference/to_ma.md)
+or
+[`downstreamGWAS::to_ldsc()`](http://arvidharder.com/downstreamGWAS/reference/to_ldsc.md).
+
+#### (2) Reference data
+
+Another common issue is acquiring and using the same reference data for
+analysis. downstreamGWAS uses [Zenodo](https://zenodo.org) to host and
+share reference data where it is possible. This makes it easy to
+reproduce your results across computational clusters and research
+groups. See for example the reference files for running stratified
+LDscore regression [here](https://zenodo.org/records/8367200).
+
+#### (3) Software dependencies
+
+Software can be difficult to install properly, especially when you are
+working on high performance clusters where you might not have enough
+permissions. To handle this, downstreamGWAS makes use of the software
+container [apptainer](https://apptainer.org). Apptainer can use
+[Docker](https://www.docker.com) images to produce a virtual
+environment, where sudo privileges are not required. For the downstream
+analysis implemented in downstreamGWAS, we have created docker images
+for each.
+
+This virtualization also serves as another important factor in
+reproductibility, making sure analysis is conducted using the same
+underlying software.
+
+### Setting up downstreamGWAS
+
+To illustrate the results, we first create an toy example of a cleaned
+tidyGWAS sumstat.
+
+``` r
+sumstats <- tidyGWAS::test_file
+outdir <- tempdir()
+cleaned <- tidyGWAS(
+  # Here we input the summary statistics as a data.frame already in R memory
+  tbl = sumstats, 
+  # provide the filepath to the refence files you downloaded.
+  dbsnp_path = path(fs::path_package("tidyGWAS"), "extdata/dbSNP155"),
+  output_dir = path(outdir, "example_gwas")
+  )
+```
+
+Using only the filepath to output_folder, downstreamGWAS can generate a
+slurm script to run the specific downstream analysis. Here for example,
+a script to run [SbayesRC](https://github.com/zhilizheng/SBayesRC) is
+created, ready to run.
+
+#### Running SbayesRC
+
+``` r
+# downstreamGWAS uses the "HOME" variable to store data on where you keep the reference files between sessions. 
+withr::local_envvar(list("HOME" = tempdir()))
+dsg_folder <- fs::path(tempdir(), "downstreamGWAS_folder")
+# use setup to tell downstreamGWAS where the reference data and containers are kept
+# only has to be done once
+setup(dsg_folder)
+run_sbayesrc(fs::path(outdir, "example_gwas"),  write_script = FALSE)
+```
+
+#### cell-type analysis using S-LDSC
+
+``` r
+run_sldsc_cts(fs::path(outdir, "example_gwas"),cts_file = "toy.cts", write_script = FALSE)
+```
+
+## Setting up downstreamGWAS
+
+WORK IN PROGRESS

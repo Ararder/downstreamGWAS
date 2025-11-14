@@ -1,0 +1,171 @@
+# multi-file datasets
+
+``` r
+library(downstreamGWAS)
+library(tidyGWAS)
+library(arrow)
+#> 
+#> Attaching package: 'arrow'
+#> The following object is masked from 'package:utils':
+#> 
+#>     timestamp
+library(fs)
+library(dplyr)
+#> 
+#> Attaching package: 'dplyr'
+#> The following objects are masked from 'package:stats':
+#> 
+#>     filter, lag
+#> The following objects are masked from 'package:base':
+#> 
+#>     intersect, setdiff, setequal, union
+```
+
+One of the core problems that
+[tidyGWAS](https://github.com/Ararder/tidyGWAS) seeks to improve upon is
+the workflow of using summary statistics in the day to day life of an
+analyst working in genetics.
+
+By providing a consistent format (columnar names, data types and
+possible values), a lot of “boiler-plate” code can be abstracted away.
+One of core packages that can make working with multiple summary
+statistics easy and fast is the
+[arrow](https://arrow.apache.org/docs/r/articles/dataset.html) package.
+If you are unfamiliar with the arrow package, i highly recommend you
+scan through the vignettes.
+
+Multi-file datasets is a natural fit for summary statistics. We can
+store the summary statistic for multiple traits, separately for each
+trait, and then combine them to form a multi-trait dataset. To make
+things even more efficient, the default file storage for a summary
+statistics file cleaned by tidyGWAS is a
+[hivestyle](https://arrow.apache.org/cookbook/r/reading-and-writing-data---multiple-files.html)
+format, partitioned by chromosome (on build GRCH38).
+
+## Combining cleaned summary statistics
+
+Let’s pretend you have cleaned 3 different summary statistics. It seems
+natural to put them all in the same place, so that whenever you want to
+work with summary statistics, you can all the ones that have already
+been cleaned.
+
+``` r
+gwas_repository <- fs::path(tempdir(), "cleaned_GWAS")
+for(i in c("trait1", "trait2", "trait3")) {
+  out <- fs::path(gwas_repository, i)
+  print(paste0("Cleaning ", i, "and saving results to: ", out))
+  tidyGWAS(
+   tbl = test_file,
+   dbsnp_path = fs::path(fs::path_package("tidyGWAS"), "extdata/dbSNP155"),
+   output_dir = out
+  )
+}
+```
+
+In our `cleaned_GWAS`\` folder, we now have three folders corresponding
+to the three traits.
+
+``` r
+dir_tree(gwas_repository, recurse = 1)
+```
+
+Each cleaned summary statistics is divided by chromosome.
+
+``` r
+dir_tree(fs::path(gwas_repository, "trait3", "tidyGWAS_hivestyle"))
+```
+
+It will be turn out to be very useful to apply this hivestyle partition
+again - at the level of traits.  
+My recommended method is to use symbolic links to create the next level
+of mapping. This way the cleaning is separated.
+
+``` r
+symlinks <- path(tempdir(), "arrow_traits")
+
+# identify the filepath to all cleaned summary statistics
+sumstats_path <- dir_ls(gwas_repository, glob = "*tidyGWAS_hivestyle", recurse = 1)
+
+# for each sumstat, we can get the trait name by considering the parent directory name
+names <- path_file(path_dir(sumstats_path))
+symlinked_path <- path(symlinks, paste0("dataset_name=", names))
+
+# create the directory where we create the symbolic links
+dir_create(symlinks)
+link_create(sumstats_path, symlinked_path)
+
+dir_tree(symlinks)
+```
+
+By creating symbolic links with the trait name in the hivestyle format,
+we’ve created a multi-file dataset at the level of traits.
+
+``` r
+ds <- arrow::open_dataset(symlinks)
+ds
+```
+
+Queries can now be built across multiple summary statistics using normal
+dplyr syntax.
+
+``` r
+ds |> 
+  dplyr::filter(P < 5e-08)
+```
+
+Without calling
+[`dplyr::collect()`](https://dplyr.tidyverse.org/reference/compute.html),
+the query will not executed. Rather, the planned query is displayed.
+
+``` r
+ds |> 
+  filter(P < 5e-08) |> 
+  collect() |> 
+  summarise(n = n())
+```
+
+More complex queries can be built:
+
+``` r
+ds |> 
+  # group by each summary statistic
+  group_by(dataset_name, CHR) |> 
+  filter(P < 5e-08) |> 
+  summarise(n_sig_variants_per_trait = n()) |> 
+  collect() |> 
+  head()
+```
+
+As an example, querying a specific region can be extremely fast.
+
+Across our test collection of 241 summary statistics, this command took
+~8 seconds using just 2 cores. The beautiful thing is the seamless
+integration with dplyr. These types of queries can be written in normal
+dplyr code, but is transformed to the highly efficient arrow c++ code.
+
+``` r
+all_sig <- ds |> 
+  # CHR 7 POS >= 1788081 & POS <= 2289862 is one of the top significant loci
+  # in schizophrenia.
+  dplyr::filter(CHR == "7") |> 
+  dplyr::filter(POS >= 1788081 & POS <= 2289862) |> 
+  dplyr::filter(P < 5e-08) |> 
+  dplyr::select(RSID, P, B, SE, dataset_name) |> 
+  dplyr::collect()
+```
+
+To work with just a single trait, or just a few traits.
+
+Tip: It can take a lot of time to read in the 20 columns. Since
+`parquet` files are stored in columnar storage, there is no overhead in
+reading in a subset of columns
+
+``` r
+
+sumstats <- ds |> 
+  filter(dataset_name %in% c("trait1", "trait2")) |> 
+  # addin this line will is much quicker to read in the data to memory
+  select(dataset_name, RSID, EffectAllele, OtherAlllele, EAF, B, SE, P, N) |> 
+  collect()
+  
+```

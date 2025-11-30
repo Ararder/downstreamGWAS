@@ -22,6 +22,7 @@ Imports:
     purrr,
     tidyr
 Suggests: 
+    coloc,
     testthat (>= 3.0.0),
     tictoc,
     tidyGWAS (>= 0.8.0),

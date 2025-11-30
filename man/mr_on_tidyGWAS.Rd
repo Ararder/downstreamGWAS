@@ -8,7 +8,8 @@ mr_on_tidyGWAS(
   exposure_dir,
   outcome_dir,
   exposure_bed = NULL,
-  bidirectional = FALSE
+  bidirectional = FALSE,
+  r2 = 0.01
 )
 }
 \arguments{
@@ -20,6 +21,8 @@ mr_on_tidyGWAS(
 and downstreamGWAS will run \code{\link[=run_clumping]{run_clumping()}} if no bed file exists.}
 
 \item{bidirectional}{run with outcome as exposure and exposure as outcome as well?}
+
+\item{r2}{r2 to pass to plink2 clumping}
 }
 \value{
 a list

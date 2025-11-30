@@ -7,6 +7,7 @@ utils::globalVariables(c("CHR", "X1", "X2","X3", "X4", "X5", "X6", "id"))
 #' @param exposure_bed Use a custom bed file to define lead SNPs? Default is NULL,
 #'  and downstreamGWAS will run [run_clumping()] if no bed file exists.
 #' @param bidirectional run with outcome as exposure and exposure as outcome as well?
+#' @param r2 r2 to pass to plink2 clumping
 #'
 #' @returns a list
 #' @export
@@ -14,10 +15,10 @@ utils::globalVariables(c("CHR", "X1", "X2","X3", "X4", "X5", "X6", "id"))
 #' @examples \dontrun{
 #' mr_on_tidyGWAS("exp_dir/trait1", "outcomes/trait2")
 #' }
-mr_on_tidyGWAS <- function(exposure_dir, outcome_dir, exposure_bed = NULL, bidirectional = FALSE) {
+mr_on_tidyGWAS <- function(exposure_dir, outcome_dir, exposure_bed = NULL, bidirectional = FALSE,r2 = 0.01) {
 
   if(is.null(exposure_bed)) {
-    check_clumping(exposure_dir)
+    check_clumping(exposure_dir, r2 = r2)
   }
 
 
@@ -110,11 +111,11 @@ to_2smr <- function(exposure_dir, outcome_dir, exposure_bed = NULL, ...) {
   )
 }
 
-check_clumping <- function(parent_dir) {
+check_clumping <- function(parent_dir, r2 = 0.01) {
   exists <- fs::path(parent_dir, "analysis/clumping/merged_loci.bed") |> fs::file_exists()
   if(!exists) {
     cli::cli_alert_warning("Running clumping for {parent_dir}")
-    system(paste0("sh ", run_clumping(parent_dir)))
+    system(paste0("sh ", run_clumping(parent_dir, r2 = 0.01)))
   } else {
     message("Clumping already done for ", parent_dir)
   }

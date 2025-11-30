@@ -10,6 +10,8 @@ run_clumping(path, output_dir = NULL, ...)
 \item{path}{filepath to tidyGWAS folder}
 
 \item{output_dir}{directory to write clumping results}
+
+\item{...}{arguments to pass to the plink2 call}
 }
 \value{
 bed file with clumps

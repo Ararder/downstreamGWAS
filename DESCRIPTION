@@ -17,7 +17,6 @@ Imports:
     yaml,
     utils,
     readr,
-    magrittr,
     cli,
     rlang,
     purrr,
@@ -26,11 +25,12 @@ Suggests:
     testthat (>= 3.0.0),
     tictoc,
     tidyGWAS (>= 0.8.0),
+    TwoSampleMR,
     withr
 Config/testthat/edition: 3
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)
 Config/Needs/website: rmarkdown
 URL: http://arvidharder.com/downstreamGWAS/
-Remotes:  
+Remotes: 
     github::ararder/tidyGWAS

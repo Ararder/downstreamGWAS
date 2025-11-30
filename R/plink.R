@@ -5,7 +5,7 @@ utils::globalVariables(c("POS", "tmp", "chr", "start", "end", "N", "P", "SNP"))
 #'
 #' @param path filepath to tidyGWAS folder
 #' @param output_dir directory to write clumping results
-#'
+#' @param ... arguments to pass to the plink2 call
 #' @return bed file with clumps
 #' @export
 #'

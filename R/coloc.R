@@ -7,6 +7,7 @@ utils::globalVariables(c("snp", "position", "SNP.PP.H4", "POS_38", "ancestry", "
 #' @param chr chromosome
 #' @param start start of region
 #' @param end end of region
+#' @param min_pval minimum pval required to proceed with coloc in trait2
 #' @param trait_type1 quantitative or case-control?
 #' @param trait_type2 quantitative or case-control?
 #' @param p1 prior for colof.abf
@@ -20,7 +21,7 @@ utils::globalVariables(c("snp", "position", "SNP.PP.H4", "POS_38", "ancestry", "
 #' run_coloc("path/trait1", "path/trait2")
 #' }
 run_coloc <- function(
-    parent_dir, parent_dir2, chr,start,end,
+    parent_dir, parent_dir2, chr,start,end,min_pval=5e-08,
     trait_type1=c("guess","cc", "quant"), trait_type2=c("guess","cc", "quant"),
     p1=1e-4, p2=1e-4, p12 = 1e-5
 ) {
@@ -46,7 +47,9 @@ run_coloc <- function(
   t1 <- tidyGWAS_to_coloc(tidygwas = ds1, trait_type = trait_type1, chr = chr, start = start, end = end) |> dplyr::filter(!is.na(EAF))
   t2 <- tidyGWAS_to_coloc(tidygwas = ds2, trait_type = trait_type2, chr = chr, start = start, end = end) |> dplyr::filter(!is.na(EAF))
 
-
+  if(min(t2$P) > min_pval) {
+    return(NULL)
+  }
 
   RSID_union <- intersect(t1$RSID, t2$RSID)
   # inform about region

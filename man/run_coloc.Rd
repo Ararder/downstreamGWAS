@@ -10,6 +10,7 @@ run_coloc(
   chr,
   start,
   end,
+  min_pval = 5e-08,
   trait_type1 = c("guess", "cc", "quant"),
   trait_type2 = c("guess", "cc", "quant"),
   p1 = 1e-04,
@@ -27,6 +28,8 @@ run_coloc(
 \item{start}{start of region}
 
 \item{end}{end of region}
+
+\item{min_pval}{minimum pval required to proceed with coloc in trait2}
 
 \item{trait_type1}{quantitative or case-control?}
 

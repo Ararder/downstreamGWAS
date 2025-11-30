@@ -27,8 +27,8 @@ run_coloc <- function(
   trait_type1 <- rlang::arg_match(trait_type1)
   trait_type2 <- rlang::arg_match(trait_type2)
 
-  ds1 <- arrow::open_dataset(parent_dir)
-  ds2 <- arrow::open_dataset(parent_dir2)
+  ds1 <- arrow::open_dataset(fs::path(parent_dir, "tidyGWAS_hivestyle"))
+  ds2 <- arrow::open_dataset(fs::path(parent_dir2,"tidyGWAS_hivestyle"))
 
   if(trait_type1 == "guess") {
     trait_type1 <- ifelse("CaseN" %in% colnames(ds1), "cc", "quant")

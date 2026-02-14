@@ -173,19 +173,57 @@ dsg_check_sbayesrc_assets <- function(cfg, params) {
   dsg_assert(fs::file_exists(annot), paste0("Missing SBayesRC annotation file: ", annot))
 }
 
-dsg_prepare_clumping_inputs <- function(parent_dir, outdir) {
-  to_clumping(
-    hivestyle_path = fs::path(parent_dir, "tidyGWAS_hivestyle"),
-    output_dir = outdir
-  )
+dsg_input_cmd_clumping <- function(parent_dir, outdir) {
+  hivestyle <- fs::path(parent_dir, "tidyGWAS_hivestyle")
+  glue::glue("R -e {shQuote(glue::glue(\"downstreamGWAS::to_clumping('{hivestyle}', '{outdir}')\"))}")
 }
 
-dsg_prepare_sbayesrc_inputs <- function(parent_dir, outdir, use_effective_n) {
-  to_ma(
-    parent_folder = parent_dir,
-    out = fs::path(outdir, "sumstats.ma"),
-    use_effective_n = use_effective_n
+dsg_input_cmd_sbayesrc <- function(parent_dir, outdir, use_effective_n) {
+  ma_out <- fs::path(outdir, "sumstats.ma")
+  glue::glue("R -e {shQuote(glue::glue(\"downstreamGWAS::to_ma('{parent_dir}', out = '{ma_out}', use_effective_n = {use_effective_n})\"))}")
+}
+
+dsg_input_cmd_sbayess <- function(parent_dir, outdir, use_effective_n) {
+  ma_out <- fs::path(outdir, "sumstats.ma")
+  glue::glue("R -e {shQuote(glue::glue(\"downstreamGWAS::to_ma('{parent_dir}', out = '{ma_out}', use_effective_n = {use_effective_n})\"))}")
+}
+
+dsg_check_sbayess_assets <- function(cfg, params) {
+  container <- fs::path(cfg$container_dir, params$gctb$container)
+  ldm_info <- paste0(fs::path(cfg$reference_dir, params$gctb$ldm_s), ".info")
+  ldm_bin <- paste0(fs::path(cfg$reference_dir, params$gctb$ldm_s), ".bin")
+
+  dsg_assert(fs::file_exists(container), paste0("Missing GCTB container: ", container))
+  dsg_assert(fs::file_exists(ldm_info), paste0("Missing sparse LDM .info file: ", ldm_info))
+  dsg_assert(fs::file_exists(ldm_bin), paste0("Missing sparse LDM .bin file: ", ldm_bin))
+}
+
+dsg_finalize_pipeline <- function(script, outdir, script_name, write_script, execute, schedule) {
+  script_path <- NULL
+  if (isTRUE(write_script) || isTRUE(execute)) {
+    script_path <- dsg_write_script(script, outdir, script_name)
+  }
+
+  exit_code <- NULL
+  job_id <- NULL
+  submit_output <- NULL
+  if (isTRUE(execute)) {
+    ex <- dsg_execute_script(script_path, schedule = schedule)
+    exit_code <- ex$exit_code
+    job_id <- ex$job_id
+    submit_output <- ex$submit_output
+  }
+
+  res <- dsg_run_return(
+    script = script,
+    script_path = script_path,
+    output_dir = outdir,
+    executed = execute,
+    exit_code = exit_code
   )
+  res$job_id <- job_id
+  res$submit_output <- submit_output
+  res
 }
 
 dsg_slurm_header <- function(slurm_args = list(), default_output = NULL) {
@@ -298,8 +336,8 @@ dsg_execute_script <- function(script_path, schedule = NULL) {
 #' @param kb Passed to PLINK `--clump-kb`.
 #' @param schedule Optional schedule object (e.g. from `schedule_slurm()`).
 #'   If `NULL`, no scheduler header is written and local bash execution is used.
-#' @param prepare_inputs Should method input files be prepared in the current R
-#'   session before script execution/submission? Defaults to `execute`.
+#' @param prepare_inputs Should an input preparation step (e.g. `to_ma()`,
+#'   `to_clumping()`) be included in the generated script? Defaults to `execute`.
 #' @param check_paths Should required files and directories be validated before
 #'   execution/submission? Defaults to `TRUE`.
 #'
@@ -331,12 +369,8 @@ pipeline_clumping <- function(
   dsg_check_parent_dir(parent_dir)
   dsg_check_writable_dir(outdir)
 
-  if (isTRUE(check_paths) && (isTRUE(execute) || isTRUE(prepare_inputs))) {
+  if (isTRUE(check_paths) && isTRUE(execute)) {
     dsg_check_clumping_assets(cfg, params)
-  }
-
-  if (isTRUE(prepare_inputs)) {
-    dsg_prepare_clumping_inputs(parent_dir, outdir)
   }
 
   container <- fs::path(cfg$container_dir, params$plink$container)
@@ -376,40 +410,18 @@ pipeline_clumping <- function(
   )
 
   cleanup <- glue::glue("rm -f {shQuote(fs::path(outdir, 'sumstats.tsv'))}")
+
+  munge <- if (isTRUE(prepare_inputs)) dsg_input_cmd_clumping(parent_dir, outdir) else NULL
   script <- c(
     dsg_script_preamble(
       cfg = cfg,
       schedule = schedule,
       default_slurm_output = fs::path(outdir, "slurm-%j.out")
     ),
-    clump, to_bed, merge_cmd, cleanup
+    munge, clump, to_bed, merge_cmd, cleanup
   )
 
-  script_path <- NULL
-  if (isTRUE(write_script) || isTRUE(execute)) {
-    script_path <- dsg_write_script(script, outdir, "pipeline_clumping.sh")
-  }
-
-  exit_code <- NULL
-  job_id <- NULL
-  submit_output <- NULL
-  if (isTRUE(execute)) {
-    ex <- dsg_execute_script(script_path, schedule = schedule)
-    exit_code <- ex$exit_code
-    job_id <- ex$job_id
-    submit_output <- ex$submit_output
-  }
-
-  out <- dsg_run_return(
-    script = script,
-    script_path = script_path,
-    output_dir = outdir,
-    executed = execute,
-    exit_code = exit_code
-  )
-  out$job_id <- job_id
-  out$submit_output <- submit_output
-  out
+  dsg_finalize_pipeline(script, outdir, "pipeline_clumping.sh", write_script, execute, schedule)
 }
 
 
@@ -425,8 +437,8 @@ pipeline_clumping <- function(
 #' @param use_effective_n Passed to `to_ma()`.
 #' @param schedule Optional schedule object (e.g. from `schedule_slurm()`).
 #'   If `NULL`, no scheduler header is written and local bash execution is used.
-#' @param prepare_inputs Should method input files be prepared in the current R
-#'   session before script execution/submission? Defaults to `execute`.
+#' @param prepare_inputs Should an input preparation step (e.g. `to_ma()`,
+#'   `to_clumping()`) be included in the generated script? Defaults to `execute`.
 #' @param check_paths Should required files and directories be validated before
 #'   execution/submission? Defaults to `TRUE`.
 #'
@@ -457,12 +469,8 @@ pipeline_sbayesrc <- function(
   dsg_check_parent_dir(parent_dir)
   dsg_check_writable_dir(outdir)
 
-  if (isTRUE(check_paths) && (isTRUE(execute) || isTRUE(prepare_inputs))) {
+  if (isTRUE(check_paths) && isTRUE(execute)) {
     dsg_check_sbayesrc_assets(cfg, params)
-  }
-
-  if (isTRUE(prepare_inputs)) {
-    dsg_prepare_sbayesrc_inputs(parent_dir, outdir, use_effective_n = use_effective_n)
   }
 
   container <- fs::path(cfg$container_dir, params$sbayesrc$container)
@@ -495,38 +503,121 @@ pipeline_sbayesrc <- function(
   )
 
   gzip_cmd <- glue::glue("gzip -f {shQuote(fs::path(outdir, 'sbrc.txt'))}")
+  cleanup <- c(
+    glue::glue("rm -f {shQuote(outdir)}/*.rds"),
+    glue::glue("rm -f {shQuote(outdir)}/sumstats.ma*"),
+    glue::glue("rm -f {shQuote(outdir)}/sbrc_tune*"),
+    glue::glue("rm -f {shQuote(outdir)}/sbrc.mcmcsamples*")
+  )
+
+  munge <- if (isTRUE(prepare_inputs)) dsg_input_cmd_sbayesrc(parent_dir, outdir, use_effective_n) else NULL
   script <- c(
     dsg_script_preamble(
       cfg = cfg,
       schedule = schedule,
       default_slurm_output = fs::path(outdir, "slurm-%j.out")
     ),
-    tidy_cmd, impute_cmd, rc_cmd, gzip_cmd
+    munge, tidy_cmd, impute_cmd, rc_cmd, gzip_cmd, cleanup
   )
 
-  script_path <- NULL
-  if (isTRUE(write_script) || isTRUE(execute)) {
-    script_path <- dsg_write_script(script, outdir, "pipeline_sbayesrc.sh")
-  }
+  dsg_finalize_pipeline(script, outdir, "pipeline_sbayesrc.sh", write_script, execute, schedule)
+}
 
-  exit_code <- NULL
-  job_id <- NULL
-  submit_output <- NULL
-  if (isTRUE(execute)) {
-    ex <- dsg_execute_script(script_path, schedule = schedule)
-    exit_code <- ex$exit_code
-    job_id <- ex$job_id
-    submit_output <- ex$submit_output
-  }
 
-  res <- dsg_run_return(
-    script = script,
-    script_path = script_path,
-    output_dir = outdir,
-    executed = execute,
-    exit_code = exit_code
+#' Pipeline SBayesS
+#'
+#' @param parent_dir Path to `tidyGWAS::tidyGWAS()` output directory.
+#' @param output_dir Optional custom output directory. Defaults to
+#'   `<parent_dir>/analysis/sbayess`.
+#' @param write_script Should script be written to disk?
+#' @param execute Should generated script be executed via `system2("bash", ...)`?
+#' @param pi Passed to GCTB `--pi`.
+#' @param hsq Passed to GCTB `--hsq`.
+#' @param num_chains Passed to GCTB `--num-chains`.
+#' @param chain_length Passed to GCTB `--chain-length`.
+#' @param burn_in Passed to GCTB `--burn-in`.
+#' @param seed Passed to GCTB `--seed`.
+#' @param thread Passed to GCTB `--thread`.
+#' @param use_effective_n Passed to `to_ma()`.
+#' @param schedule Optional schedule object (e.g. from `schedule_slurm()`).
+#'   If `NULL`, no scheduler header is written and local bash execution is used.
+#' @param prepare_inputs Should an input preparation step (e.g. `to_ma()`,
+#'   `to_clumping()`) be included in the generated script? Defaults to `execute`.
+#' @param check_paths Should required files and directories be validated before
+#'   execution/submission? Defaults to `TRUE`.
+#'
+#' @return A list with script metadata.
+#' @export
+pipeline_sbayess <- function(
+    parent_dir,
+    output_dir = NULL,
+    write_script = TRUE,
+    execute = FALSE,
+    pi = "0.01",
+    hsq = "0.5",
+    num_chains = "4",
+    chain_length = "25000",
+    burn_in = "5000",
+    seed = "2023",
+    thread = "8",
+    use_effective_n = FALSE,
+    schedule = NULL,
+    prepare_inputs = execute,
+    check_paths = TRUE
+){
+  stopifnot(
+    rlang::is_bool(write_script),
+    rlang::is_bool(execute),
+    rlang::is_bool(prepare_inputs),
+    rlang::is_bool(check_paths)
   )
-  res$job_id <- job_id
-  res$submit_output <- submit_output
-  res
+
+  cfg <- dsg_get_config()
+  params <- parse_params()
+  outdir <- dsg_method_output_dir(parent_dir, "sbayess", output_dir)
+  dsg_check_parent_dir(parent_dir)
+  dsg_check_writable_dir(outdir)
+
+  if (isTRUE(check_paths) && isTRUE(execute)) {
+    dsg_check_sbayess_assets(cfg, params)
+  }
+
+  container <- fs::path(cfg$container_dir, params$gctb$container)
+  ldm <- fs::path("/src", params$gctb$ldm_s)
+  ma_file <- "/mnt/sumstats.ma"
+  out_prefix <- "/mnt/SbayesS"
+
+  gctb_cmd <- glue::glue(
+    "gctb --sbayes S ",
+    "--gwas-summary {ma_file} ",
+    "--ldm {ldm} ",
+    "--out {out_prefix} ",
+    "--pi {pi} ",
+    "--num-chains {num_chains} ",
+    "--hsq {hsq} ",
+    "--chain-length {chain_length} ",
+    "--burn-in {burn_in} ",
+    "--seed {seed} ",
+    "--thread {thread} ",
+    "--no-mcmc-bin"
+  )
+
+  sbayes <- dsg_build_apptainer_exec(
+    command = gctb_cmd,
+    workdir = outdir,
+    reference_dir = cfg$reference_dir,
+    container = container
+  )
+
+  munge <- if (isTRUE(prepare_inputs)) dsg_input_cmd_sbayess(parent_dir, outdir, use_effective_n) else NULL
+  script <- c(
+    dsg_script_preamble(
+      cfg = cfg,
+      schedule = schedule,
+      default_slurm_output = fs::path(outdir, "slurm-%j.out")
+    ),
+    munge, sbayes
+  )
+
+  dsg_finalize_pipeline(script, outdir, "pipeline_sbayess.sh", write_script, execute, schedule)
 }

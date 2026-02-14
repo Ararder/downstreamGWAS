@@ -36,8 +36,8 @@ pipeline_sbayesrc(
 \item{schedule}{Optional schedule object (e.g. from \code{schedule_slurm()}).
 If \code{NULL}, no scheduler header is written and local bash execution is used.}
 
-\item{prepare_inputs}{Should method input files be prepared in the current R
-session before script execution/submission? Defaults to \code{execute}.}
+\item{prepare_inputs}{Should an input preparation step (e.g. \code{to_ma()},
+\code{to_clumping()}) be included in the generated script? Defaults to \code{execute}.}
 
 \item{check_paths}{Should required files and directories be validated before
 execution/submission? Defaults to \code{TRUE}.}

@@ -2,7 +2,7 @@ test_that("setup_dsg writes config and storage dirs", {
   withr::local_envvar(c(HOME = tempdir()))
 
   storage_root <- fs::path(tempdir(), "dsg-local")
-  cfg_path <- setup_dsg(storage_root)
+  cfg_path <- setup_dsg(storage_root, force = TRUE)
 
   expect_true(fs::file_exists(cfg_path))
   expect_true(fs::dir_exists(fs::path(storage_root, "reference")))
@@ -118,4 +118,71 @@ test_that("pipeline controls slurm output path from output_dir", {
   expected_output_line <- paste0("#SBATCH --output=", fs::path_abs(outdir), "/slurm-%j.out")
   expect_true(expected_output_line %in% res$script)
   expect_false("#SBATCH --output=ignored.log" %in% res$script)
+})
+
+
+test_that("pipeline_sbayesrc includes cleanup commands", {
+  withr::local_envvar(c(HOME = tempdir()))
+  setup_dsg(fs::path(tempdir(), "dsg-local"), force = TRUE)
+
+  parent_dir <- fs::path(tempdir(), "trait_cleanup")
+  fs::dir_create(fs::path(parent_dir, "tidyGWAS_hivestyle"), recurse = TRUE)
+
+  res <- pipeline_sbayesrc(parent_dir, write_script = FALSE, execute = FALSE)
+  script <- paste(res$script, collapse = "\n")
+
+  expect_true(grepl("rm -f.*\\.rds", script))
+  expect_true(grepl("rm -f.*sumstats\\.ma", script))
+  expect_true(grepl("rm -f.*sbrc_tune", script))
+  expect_true(grepl("rm -f.*sbrc\\.mcmcsamples", script))
+})
+
+
+test_that("pipeline_sbayesrc includes to_ma in script when prepare_inputs is TRUE", {
+  withr::local_envvar(c(HOME = tempdir()))
+  setup_dsg(fs::path(tempdir(), "dsg-local"), force = TRUE)
+
+  parent_dir <- fs::path(tempdir(), "trait_munge")
+  fs::dir_create(fs::path(parent_dir, "tidyGWAS_hivestyle"), recurse = TRUE)
+
+  res <- pipeline_sbayesrc(parent_dir, write_script = FALSE, execute = FALSE, prepare_inputs = TRUE)
+  script <- paste(res$script, collapse = "\n")
+  expect_true(grepl("downstreamGWAS::to_ma", script))
+
+  res2 <- pipeline_sbayesrc(parent_dir, write_script = FALSE, execute = FALSE, prepare_inputs = FALSE)
+  script2 <- paste(res2$script, collapse = "\n")
+  expect_false(grepl("downstreamGWAS::to_ma", script2))
+})
+
+
+test_that("pipeline_sbayess returns script without execution", {
+  withr::local_envvar(c(HOME = tempdir()))
+  setup_dsg(fs::path(tempdir(), "dsg-local"), force = TRUE)
+
+  parent_dir <- fs::path(tempdir(), "trait_sbayess")
+  fs::dir_create(fs::path(parent_dir, "tidyGWAS_hivestyle"), recurse = TRUE)
+
+  res <- pipeline_sbayess(parent_dir, write_script = FALSE, execute = FALSE)
+
+  expect_type(res, "list")
+  expect_null(res$script_path)
+  expect_true(length(res$script) > 0)
+  expect_false(res$executed)
+  expect_true(fs::path_file(res$output_dir) == "sbayess")
+})
+
+
+test_that("pipeline_sbayess includes gctb sbayes S command", {
+  withr::local_envvar(c(HOME = tempdir()))
+  setup_dsg(fs::path(tempdir(), "dsg-local"), force = TRUE)
+
+  parent_dir <- fs::path(tempdir(), "trait_sbayess2")
+  fs::dir_create(fs::path(parent_dir, "tidyGWAS_hivestyle"), recurse = TRUE)
+
+  res <- pipeline_sbayess(parent_dir, write_script = FALSE, execute = FALSE, prepare_inputs = TRUE)
+  script <- paste(res$script, collapse = "\n")
+
+  expect_true(grepl("gctb --sbayes S", script))
+  expect_true(grepl("--no-mcmc-bin", script))
+  expect_true(grepl("downstreamGWAS::to_ma", script))
 })

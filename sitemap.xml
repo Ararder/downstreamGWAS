@@ -2,6 +2,7 @@
 <url><loc>http://arvidharder.com/downstreamGWAS/404.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/LICENSE-text.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/LICENSE.html</loc></url>
+<url><loc>http://arvidharder.com/downstreamGWAS/agents.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/articles/downstreamGWAS.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/articles/index.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/articles/meta-analysis.html</loc></url>
@@ -10,20 +11,29 @@
 <url><loc>http://arvidharder.com/downstreamGWAS/index.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/check_setup.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/downstreamGWAS-package.html</loc></url>
+<url><loc>http://arvidharder.com/downstreamGWAS/reference/dsg_method_output_dir.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/effective_n.html</loc></url>
+<url><loc>http://arvidharder.com/downstreamGWAS/reference/format_coloc.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/get_system_paths.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/index.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/liability_scale_h2.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/ls_sumstats.html</loc></url>
+<url><loc>http://arvidharder.com/downstreamGWAS/reference/mr_on_tidyGWAS.html</loc></url>
+<url><loc>http://arvidharder.com/downstreamGWAS/reference/pipeline_clumping.html</loc></url>
+<url><loc>http://arvidharder.com/downstreamGWAS/reference/pipeline_sbayesrc.html</loc></url>
+<url><loc>http://arvidharder.com/downstreamGWAS/reference/pipeline_sbayess.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/ranges_to_bed.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/read_gwas.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/read_ldsc_h2.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/run_clumping.html</loc></url>
+<url><loc>http://arvidharder.com/downstreamGWAS/reference/run_coloc.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/run_mbat_combo.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/run_sbayesrc.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/run_sbayess.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/run_sbayess_req.html</loc></url>
+<url><loc>http://arvidharder.com/downstreamGWAS/reference/schedule_slurm.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/setup.html</loc></url>
+<url><loc>http://arvidharder.com/downstreamGWAS/reference/setup_dsg.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/slurm_header.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/tidyGWAS_paths.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/to_clumping.html</loc></url>
@@ -31,5 +41,6 @@
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/to_ma.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/to_plink_clumping.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/with_container.html</loc></url>
+<url><loc>http://arvidharder.com/downstreamGWAS/roadmap.html</loc></url>
 </urlset>
 

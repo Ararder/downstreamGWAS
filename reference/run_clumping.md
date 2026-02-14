@@ -18,6 +18,10 @@ run_clumping(path, output_dir = NULL, ...)
 
   directory to write clumping results
 
+- ...:
+
+  arguments to pass to the plink2 call
+
 ## Value
 
 bed file with clumps

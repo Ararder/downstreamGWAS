@@ -38,8 +38,6 @@
   : Check if required files exist for Sbayes-S
 - [`schedule_slurm()`](http://arvidharder.com/downstreamGWAS/reference/schedule_slurm.md)
   : Construct a SLURM schedule object
-- [`setup()`](http://arvidharder.com/downstreamGWAS/reference/setup.md)
-  : Setup required filepaths for downstreamGWAS
 - [`setup_dsg()`](http://arvidharder.com/downstreamGWAS/reference/setup_dsg.md)
   : Setup downstreamGWAS config
 - [`slurm_header()`](http://arvidharder.com/downstreamGWAS/reference/slurm_header.md)

@@ -1,163 +1,168 @@
-utils::globalVariables(c("snp", "position", "SNP.PP.H4", "POS_38", "ancestry", ""))
+utils::globalVariables(c("snp", "position", "SNP.PP.H4", "POS_38", "ancestry"))
 
-#' Run coloc::coloc.abf on tidyGWAS data
+# run_coloc is not yet ready for export; the implementation is kept here
+# commented out until it is finished.
+# run_coloc <- function(
+#     parent_dir,
+#     parent_dir2,
+#     chrom,
+#     start,
+#     end,
+#     min_pval = 5e-08,
+#     trait_type1 = c("guess", "cc", "quant"),
+#     trait_type2 = c("guess", "cc", "quant"),
+#     p1 = 1e-4,
+#     p2 = 1e-4,
+#     p12 = 1e-5
+# ) {
+#   trait_type1 <- rlang::arg_match(trait_type1)
+#   trait_type2 <- rlang::arg_match(trait_type2)
+#   chrom <- as.character(chrom)
+#
+#   ds1 <- open_tidygwas(parent_dir)
+#   ds2 <- open_tidygwas(parent_dir2)
+#
+#   if (trait_type1 == "guess") {
+#     trait_type1 <- if ("CaseN" %in% names(ds1$schema)) "cc" else "quant"
+#   }
+#   if (trait_type2 == "guess") {
+#     trait_type2 <- if ("CaseN" %in% names(ds2$schema)) "cc" else "quant"
+#   }
+#
+#   cli::cli_alert_info("Trait type 1: {trait_type1}, Trait type 2: {trait_type2}")
+#
+#   t1 <- extract_coloc_region(ds1, trait_type = trait_type1, chrom = chrom, start = start, end = end)
+#   t2 <- extract_coloc_region(ds2, trait_type = trait_type2, chrom = chrom, start = start, end = end)
+#
+#   t1 <- dplyr::filter(t1, !is.na(EAF))
+#   t2 <- dplyr::filter(t2, !is.na(EAF))
+#
+#   if (nrow(t2) == 0 || min(t2$P) > min_pval) {
+#     return(NULL)
+#   }
+#
+#   shared_rsids <- intersect(t1$RSID, t2$RSID)
+#
+#   cli::cli_alert_info("Region: chr{chrom}:{start}-{end}")
+#   cli::cli_alert_info("Variants in dataset 1: {nrow(t1)}")
+#   cli::cli_alert_info("Variants in dataset 2: {nrow(t2)}")
+#   cli::cli_alert_info("Variants in common: {length(shared_rsids)}")
+#   cli::cli_alert_info("Min p-value in dataset 1: {min(t1$P)}")
+#   cli::cli_alert_info("Min p-value in dataset 2: {min(t2$P)}")
+#
+#   t1 <- dplyr::filter(t1, RSID %in% shared_rsids) |> as_coloc_dataset(trait_type = trait_type1)
+#   t2 <- dplyr::filter(t2, RSID %in% shared_rsids) |> as_coloc_dataset(trait_type = trait_type2)
+#
+#   coloc::check_dataset(t1)
+#   coloc::check_dataset(t2)
+#
+#   coloc::coloc.abf(t1, t2, p1 = p1, p2 = p2, p12 = p12)
+# }
+
+
+#' Format coloc::coloc.abf output into a tidy tibble
 #'
-#' @param parent_dir tidyGWAS directory of GWAS
-#' @param parent_dir2 tidyGWAS directory of GWAS
-#' @param chr chromosome
-#' @param start start of region
-#' @param end end of region
-#' @param min_pval minimum pval required to proceed with coloc in trait2
-#' @param trait_type1 quantitative or case-control?
-#' @param trait_type2 quantitative or case-control?
-#' @param p1 prior for colof.abf
-#' @param p2 prior for colof.abf
-#' @param p12 prior for colof.abf
+#' @param coloc_obj Output of [coloc::coloc.abf()].
+#' @param name Label for this coloc test (e.g. trait pair or locus name).
 #'
-#' @returns output of [coloc::coloc.abf()]
+#' @returns A [dplyr::tibble()] with columns: `name`, `n_snps`, `PP.H4`,
+#'   and `top_snps` (comma-separated RSIDs with highest PP.H4).
 #' @export
 #'
 #' @examples \dontrun{
-#' run_coloc("path/trait1", "path/trait2")
-#' }
-run_coloc <- function(
-    parent_dir, parent_dir2, chr,start,end,min_pval=5e-08,
-    trait_type1=c("guess","cc", "quant"), trait_type2=c("guess","cc", "quant"),
-    p1=1e-4, p2=1e-4, p12 = 1e-5
-) {
-  trait_type1 <- rlang::arg_match(trait_type1)
-  trait_type2 <- rlang::arg_match(trait_type2)
-
-  ds1 <- arrow::open_dataset(fs::path(parent_dir, "tidyGWAS_hivestyle"))
-  ds2 <- arrow::open_dataset(fs::path(parent_dir2,"tidyGWAS_hivestyle"))
-
-  if(trait_type1 == "guess") {
-    trait_type1 <- ifelse("CaseN" %in% colnames(ds1), "cc", "quant")
-  }
-
-  if(trait_type2 == "guess") {
-    trait_type2 <- ifelse("CaseN" %in% colnames(ds2), "cc", "quant")
-  }
-
-  cli::cli_alert_info("Trait type 1: {trait_type1}, Trait type 2: {trait_type2}")
-
-
-
-
-  t1 <- tidyGWAS_to_coloc(tidygwas = ds1, trait_type = trait_type1, chr = chr, start = start, end = end) |> dplyr::filter(!is.na(EAF))
-  t2 <- tidyGWAS_to_coloc(tidygwas = ds2, trait_type = trait_type2, chr = chr, start = start, end = end) |> dplyr::filter(!is.na(EAF))
-
-  if(min(t2$P) > min_pval) {
-    return(NULL)
-  }
-
-  RSID_union <- intersect(t1$RSID, t2$RSID)
-  # inform about region
-  cli::cli_alert_info("Region: chr {chr} : {start} - {end}")
-  # number of variants found in each dataset
-  cli::cli_alert_info("Number of variants in dataset 1: {nrow(t1)}")
-  cli::cli_alert_info("Number of variants in dataset 2: {nrow(t2)}")
-  # largest smallest and largest p-value
-  cli::cli_alert_info("Smallest p-value in dataset 1: {min(t1$P)}")
-  cli::cli_alert_info("Smallest p-value in dataset 2: {min(t2$P)}")
-  # number of variants in common
-  cli::cli_alert_info("Number of variants in common: {length(RSID_union)}")
-
-  t1 <- dplyr::filter(t1, RSID %in% RSID_union) |>
-    coloc_dataset(tidydf = _, trait_type = trait_type1)
-  t2 <- dplyr::filter(t2, RSID %in% RSID_union) |>
-    coloc_dataset(tidydf = _, trait_type = trait_type2)
-
-  coloc::check_dataset(t1)
-  coloc::check_dataset(t2)
-
-  coloc::coloc.abf(t1, t2, p1=p1, p2=p2, p12 = p12)
-}
-
-#' Format the output of [coloc::coloc.abf()]
-#'
-#' @param coloc_obj output of coloc call
-#' @param name name of trait
-#'
-#' @returns a [dplyr::tibble()]
-#' @export
-#'
-#' @examples \dontrun{
-#' format_coloc(ob, "test-run")
+#' format_coloc(result, "scz_vs_bip_chr7")
 #' }
 format_coloc <- function(coloc_obj, name) {
-  x <- coloc_obj$summary
-  names(x) <- NULL
+  s <- coloc_obj$summary
 
-
-  topsnps <-
-    coloc_obj[[2]] |>
+  top_snps <- coloc_obj$results |>
     dplyr::tibble() |>
-    dplyr::select(snp, position, SNP.PP.H4) |>
     dplyr::arrange(dplyr::desc(SNP.PP.H4)) |>
-    dplyr::slice(1:10) |>
+    dplyr::slice_head(n = 10) |>
     dplyr::pull(snp) |>
     stringr::str_flatten(collapse = ",")
 
-
   dplyr::tibble(
     name = name,
-    prob_coloc = x[6],
-    n_snps = x[1],
-    top_snps = topsnps,
+    n_snps = s[["nsnps"]],
+    PP.H4 = s[["PP.H4.abf"]],
+    top_snps = top_snps
   )
 }
 
 
-# helpers -----------------------------------------------------------------
+# internal helpers ---------------------------------------------------------
 
-
-# ----------------------------------------------------------------
-# COLOCiSATION
-
-coloc_dataset <- function(tidydf, sdY= NULL, trait_type = "quant") {
+as_coloc_dataset <- function(df, trait_type) {
   list(
-    beta     = tidydf$B,
-    varbeta  = tidydf$SE^2,
-    MAF      = ifelse(tidydf$EAF > 0.5, 1 - tidydf$EAF, tidydf$EAF),
-    N        = tidydf$N,
-    snp      = tidydf$RSID,
-    position = tidydf$POS_38,
+    beta     = df$B,
+    varbeta  = df$SE^2,
+    MAF      = ifelse(df$EAF > 0.5, 1 - df$EAF, df$EAF),
+    N        = df$N,
+    snp      = df$RSID,
+    position = df$POS_38,
     type     = trait_type
-    #    sdY      = sdY
-  )           # keep NULL for most GWAS
+  )
+}
+open_tidygwas <- function(path) {
+
 }
 
 
-tidyGWAS_to_coloc <- function(tidygwas, trait_type = "cc",chr,start, end) {
-  t1 <- dplyr::filter(tidygwas, CHR == chr) |>
+extract_coloc_region <- function(dataset, trait_type, chrom, start, end) {
+  df <- dataset |>
+    dplyr::filter(CHR == chrom) |>
     dplyr::filter(POS_38 >= start & POS_38 <= end) |>
     dplyr::filter(!is.na(RSID)) |>
     dplyr::filter(!multi_allelic) |>
-    dplyr::select(POS_38, RSID, B, SE, P, dplyr::any_of(c("EAF")), dplyr::any_of(c("EffectiveN", "N")), "EffectAllele", "OtherAllele") |>
+    dplyr::select(
+      POS_38, RSID, B, SE, P,
+      dplyr::any_of(c("EAF", "EffectiveN", "N")),
+      "EffectAllele", "OtherAllele"
+    ) |>
     dplyr::collect()
 
-  if(!"EAF" %in% colnames(t1)) {
-    freq <- arrow::open_dataset(fs::path(Sys.getenv("dbsnp"),"EAF_REF_1KG")) |>
-      dplyr::filter(ancestry == "EUR") |>
-      dplyr::filter(CHR == chr) |>
-      dplyr::select(-ancestry, -CHR) |>
-      dplyr::filter(POS >= start & POS <= end) |>
-      dplyr::collect()
-
-    t1 <- dplyr::bind_rows(
-      dplyr::inner_join(t1, freq, by = c("POS_38" = "POS", "EffectAllele", "OtherAllele")),
-      dplyr::inner_join(t1, freq, by = c("POS_38" = "POS", "EffectAllele" = "OtherAllele", "OtherAllele" = "EffectAllele")) |> dplyr::mutate(EAF = 1 - EAF)
-    )
-
-
-
-
+  if (!"EAF" %in% colnames(df)) {
+    df <- impute_eaf_from_1kg(df, chrom, start, end)
   }
 
-  if(trait_type == "cc" & "EffectiveN" %in% colnames(t1)) {
-    t1 <- dplyr::select(t1, dplyr::everything(), N = EffectiveN, -dplyr::any_of("N"))
+  if (trait_type == "cc" && "EffectiveN" %in% colnames(df)) {
+    df <- dplyr::mutate(df, N = EffectiveN) |>
+      dplyr::select(-EffectiveN)
   }
-  t1
 
+  df
+}
+
+
+impute_eaf_from_1kg <- function(df, chrom, start, end) {
+  cfg <- dsg_get_config()
+  params <- parse_params()
+  dbsnp_path <- fs::path(cfg$reference_dir, params$tidyGWAS$ref)
+
+  if (!fs::dir_exists(dbsnp_path)) {
+    cli::cli_warn("EAF is missing and dbSNP reference not found at {.path {dbsnp_path}}. Cannot impute EAF.")
+    df$EAF <- NA_real_
+    return(df)
+  }
+
+  freq <- arrow::open_dataset(fs::path(dbsnp_path, "EAF_REF_1KG")) |>
+    dplyr::filter(ancestry == "EUR") |>
+    dplyr::filter(CHR == chrom) |>
+    dplyr::select(-ancestry, -CHR) |>
+    dplyr::filter(POS >= start & POS <= end) |>
+    dplyr::collect()
+
+  matched_same <- dplyr::inner_join(
+    df, freq,
+    by = c("POS_38" = "POS", "EffectAllele", "OtherAllele")
+  )
+  matched_flip <- dplyr::inner_join(
+    df, freq,
+    by = c("POS_38" = "POS", "EffectAllele" = "OtherAllele", "OtherAllele" = "EffectAllele")
+  ) |>
+    dplyr::mutate(EAF = 1 - EAF)
+
+  dplyr::bind_rows(matched_same, matched_flip) |>
+    dplyr::distinct(RSID, .keep_all = TRUE)
 }

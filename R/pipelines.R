@@ -314,6 +314,13 @@ dsg_execute_script <- function(script_path, schedule = NULL) {
     job_id <- stringr::str_extract(paste(out, collapse = " "), "\\b[0-9]+\\b")
     return(list(exit_code = status, job_id = job_id, submit_output = out))
   }
+  if (interactive()) {
+    status <- system2("bash", args = script_path)
+    if (status != 0L) {
+      stop("Script execution failed with exit code ", status, call. = FALSE)
+    }
+    return(list(exit_code = status, job_id = NULL, submit_output = NULL))
+  }
   out <- system2("bash", args = script_path, stdout = TRUE, stderr = TRUE)
   status <- attr(out, "status", exact = TRUE) %||% 0L
   if (status != 0L) {

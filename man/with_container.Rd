@@ -37,11 +37,11 @@ a character vector of captured code
 Run arbitrary code inside a container
 }
 \examples{
-
+\dontrun{
 with_container(
  code = "echo hello",
  image = "R",
  workdir = tempdir()
  )
-
+}
 }

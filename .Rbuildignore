@@ -7,3 +7,7 @@
 ^pkgdown$
 ^\.github$
 ^data-raw$
+^\.claude$
+^CLAUDE\.md$
+^agents\.md$
+^roadmap\.md$

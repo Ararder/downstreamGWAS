@@ -1,4 +1,5 @@
 test_that("... can pass arguments to slurm", {
+  mock_setup()
   expect_no_error(
     code <- run_sbayess(
       parent_folder = tempdir(),

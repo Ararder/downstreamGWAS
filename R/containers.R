@@ -14,14 +14,13 @@
 #' @return a character vector of captured code
 #' @export
 #'
-#' @examples
-#'
+#' @examples \dontrun{
 #' with_container(
 #'  code = "echo hello",
 #'  image = "R",
 #'  workdir = tempdir()
 #'  )
-#'
+#' }
 with_container <- function(code, image, workdir, env = NULL, setup_exists=FALSE, R_code=FALSE) {
 
   #

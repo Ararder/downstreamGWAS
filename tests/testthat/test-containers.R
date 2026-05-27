@@ -1,4 +1,5 @@
 test_that("With_container works", {
+  mock_setup()
 
   expect_no_error(
     ls <- with_container(

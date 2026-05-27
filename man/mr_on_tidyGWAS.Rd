@@ -2,36 +2,40 @@
 % Please edit documentation in R/two-sample-mr.R
 \name{mr_on_tidyGWAS}
 \alias{mr_on_tidyGWAS}
-\title{Run two-sample mendelian randomisation using the TwoSampleMR package}
+\title{Run two-sample Mendelian randomisation on tidyGWAS data}
 \usage{
 mr_on_tidyGWAS(
   exposure_dir,
   outcome_dir,
   exposure_bed = NULL,
-  bidirectional = FALSE,
+  auto_clump = FALSE,
   r2 = 0.01
 )
 }
 \arguments{
-\item{exposure_dir}{path to tidyGWAS directory of the exposure}
+\item{exposure_dir}{Path to tidyGWAS directory for the exposure trait.}
 
-\item{outcome_dir}{path to tidyGWAS directory of the outcome}
+\item{outcome_dir}{Path to tidyGWAS directory for the outcome trait.}
 
-\item{exposure_bed}{Use a custom bed file to define lead SNPs? Default is NULL,
-and downstreamGWAS will run \code{\link[=run_clumping]{run_clumping()}} if no bed file exists.}
+\item{exposure_bed}{Path to a custom BED file defining lead SNPs. If \code{NULL}
+(default), uses \verb{<exposure_dir>/analysis/clumping/merged_loci.bed}.}
 
-\item{bidirectional}{run with outcome as exposure and exposure as outcome as well?}
+\item{auto_clump}{If \code{TRUE} and no clumping output exists, automatically run
+\code{pipeline_clumping()} with local execution. Default \code{FALSE}.}
 
-\item{r2}{r2 to pass to plink2 clumping}
+\item{r2}{Passed to \code{pipeline_clumping()} when \code{auto_clump = TRUE}.}
 }
 \value{
-a list
+A list with \code{results} (MR estimates), \code{outcome_data} (harmonised
+data), and \code{pleiotropy} (MR-Egger intercept test).
 }
 \description{
-Run two-sample mendelian randomisation using the TwoSampleMR package
+Uses the TwoSampleMR package to run MR with instruments derived from
+LD-clumped loci. Requires \code{pipeline_clumping()} to have been run on the
+exposure, or set \code{auto_clump = TRUE}.
 }
 \examples{
 \dontrun{
-mr_on_tidyGWAS("exp_dir/trait1", "outcomes/trait2")
+mr_on_tidyGWAS("exposure/trait1", "outcome/trait2")
 }
 }

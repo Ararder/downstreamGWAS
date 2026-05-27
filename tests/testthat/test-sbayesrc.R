@@ -1,11 +1,5 @@
 test_that("run_sbayesRC works", {
-  dsg_folder <- fs::path(tempdir(), "downstreamGWAS")
-  withr::with_envvar(
-    list("HOME" = tempdir()),
-    setup(
-      dsg_folder,
-    )
-  )
+  mock_setup()
 
   expect_no_error(
     test <- run_sbayesrc(

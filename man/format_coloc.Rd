@@ -2,23 +2,24 @@
 % Please edit documentation in R/coloc.R
 \name{format_coloc}
 \alias{format_coloc}
-\title{Format the output of \code{\link[coloc:coloc.abf]{coloc::coloc.abf()}}}
+\title{Format coloc::coloc.abf output into a tidy tibble}
 \usage{
 format_coloc(coloc_obj, name)
 }
 \arguments{
-\item{coloc_obj}{output of coloc call}
+\item{coloc_obj}{Output of \code{\link[coloc:coloc.abf]{coloc::coloc.abf()}}.}
 
-\item{name}{name of trait}
+\item{name}{Label for this coloc test (e.g. trait pair or locus name).}
 }
 \value{
-a \code{\link[dplyr:reexports]{dplyr::tibble()}}
+A \code{\link[dplyr:reexports]{dplyr::tibble()}} with columns: \code{name}, \code{n_snps}, \code{PP.H4},
+and \code{top_snps} (comma-separated RSIDs with highest PP.H4).
 }
 \description{
-Format the output of \code{\link[coloc:coloc.abf]{coloc::coloc.abf()}}
+Format coloc::coloc.abf output into a tidy tibble
 }
 \examples{
 \dontrun{
-format_coloc(ob, "test-run")
+format_coloc(result, "scz_vs_bip_chr7")
 }
 }

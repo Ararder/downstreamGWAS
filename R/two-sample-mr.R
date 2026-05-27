@@ -1,109 +1,86 @@
-utils::globalVariables(c("CHR", "X1", "X2","X3", "X4", "X5", "X6", "id"))
+utils::globalVariables(c("CHR", "locus_id", "lead_snp", "pval", "CHROM"))
 
-#' Run two-sample mendelian randomisation using the TwoSampleMR package
+#' Run two-sample Mendelian randomisation on tidyGWAS data
 #'
-#' @param exposure_dir path to tidyGWAS directory of the exposure
-#' @param outcome_dir path to tidyGWAS directory of the outcome
-#' @param exposure_bed Use a custom bed file to define lead SNPs? Default is NULL,
-#'  and downstreamGWAS will run [run_clumping()] if no bed file exists.
-#' @param bidirectional run with outcome as exposure and exposure as outcome as well?
-#' @param r2 r2 to pass to plink2 clumping
+#' Uses the TwoSampleMR package to run MR with instruments derived from
+#' LD-clumped loci. Requires `pipeline_clumping()` to have been run on the
+#' exposure, or set `auto_clump = TRUE`.
 #'
-#' @returns a list
+#' @param exposure_dir Path to tidyGWAS directory for the exposure trait.
+#' @param outcome_dir Path to tidyGWAS directory for the outcome trait.
+#' @param exposure_bed Path to a custom BED file defining lead SNPs. If `NULL`
+#'   (default), uses `<exposure_dir>/analysis/clumping/merged_loci.bed`.
+#' @param auto_clump If `TRUE` and no clumping output exists, automatically run
+#'   `pipeline_clumping()` with local execution. Default `FALSE`.
+#' @param r2 Passed to `pipeline_clumping()` when `auto_clump = TRUE`.
+#'
+#' @returns A list with `results` (MR estimates), `outcome_data` (harmonised
+#'   data), and `pleiotropy` (MR-Egger intercept test).
 #' @export
 #'
 #' @examples \dontrun{
-#' mr_on_tidyGWAS("exp_dir/trait1", "outcomes/trait2")
+#' mr_on_tidyGWAS("exposure/trait1", "outcome/trait2")
 #' }
-mr_on_tidyGWAS <- function(exposure_dir, outcome_dir, exposure_bed = NULL, bidirectional = FALSE,r2 = 0.01) {
+mr_on_tidyGWAS <- function(
+    exposure_dir,
+    outcome_dir,
+    exposure_bed = NULL,
+    auto_clump = FALSE,
+    r2 = 0.01
+) {
+  bed_path <- exposure_bed %||% fs::path(exposure_dir, "analysis", "clumping", "merged_loci.bed")
 
-  if(is.null(exposure_bed)) {
-    check_clumping(exposure_dir, r2 = r2)
+  if (!fs::file_exists(bed_path)) {
+    if (isTRUE(auto_clump)) {
+      cli::cli_alert_warning("No clumping output found. Running pipeline_clumping() for {.path {exposure_dir}}")
+      pipeline_clumping(exposure_dir, execute = TRUE, prepare_inputs = TRUE, r2 = r2)
+      bed_path <- fs::path(exposure_dir, "analysis", "clumping", "merged_loci.bed")
+    } else {
+      stop(
+        "No clumping output found at ", bed_path,
+        ". Run pipeline_clumping() first, or set auto_clump = TRUE.",
+        call. = FALSE
+      )
+    }
   }
 
+  outcome_data <- harmonise_tidygwas(exposure_dir, outcome_dir, bed_path)
 
-  outcome_data <- to_2smr(exposure_dir = exposure_dir, outcome_dir = outcome_dir,exposure_bed = exposure_bed)
-
-
-  results <- dplyr::mutate(
-    TwoSampleMR::mr(outcome_data),
-    exposure = fs::path_file(fs::path_file(exposure_dir)),
-    outcome = fs::path_file(fs::path_file(outcome_dir))
-  )
-
-  if(isTRUE(bidirectional)) {
-    as_exp <- TwoSampleMR::mr(to_2smr(
-      exposure_dir = outcome_dir,
-      outcome_dir = exposure_dir
-    )) |>
-      dplyr::mutate(exposure = fs::path_file(fs::path_file(outcome_dir)),outcome = fs::path_file(fs::path_file(exposure_dir)))
-
-    results <-dplyr::bind_rows(results, as_exp)
-
-  }
+  results <- TwoSampleMR::mr(outcome_data) |>
+    dplyr::mutate(
+      exposure = fs::path_file(exposure_dir),
+      outcome = fs::path_file(outcome_dir)
+    )
 
   pleiotropy <- TwoSampleMR::mr_pleiotropy_test(outcome_data)
-  list("results" = results, "outcome_data" = outcome_data, "pleiotropy" = pleiotropy)
 
+  list(results = results, outcome_data = outcome_data, pleiotropy = pleiotropy)
 }
 
-to_2smr <- function(exposure_dir, outcome_dir, exposure_bed = NULL, ...) {
-  if(!is.null(exposure_bed)) {
-    bed_path <- exposure_bed
-  } else {
-    bed_path <- fs::path(exposure_dir, "analysis/clumping/merged_loci.bed")
-  }
 
-  variants <- readr::read_table(bed_path, col_names = FALSE) |>
-    dplyr::mutate(id = paste0(X1, ":", X2, "-", X3)) |>
-    tidyr::separate_longer_delim(c(X5, X6), delim = ",") |>
-    dplyr::mutate(X5 = as.numeric(X5)) |>
-    dplyr::slice_min(X5, n = 1, by = id) |>
-    dplyr::select(X1, X6) |>
-    dplyr::mutate(X1 = stringr::str_remove(X1, "chr"))
+# internal helpers ---------------------------------------------------------
 
-  exposure_data <- purrr::imap(split(variants, variants$X1), \(x, CHROM) {
-    s <- arrow::open_dataset(fs::path(exposure_dir, "tidyGWAS_hivestyle"))$schema
-    s$CHR <- arrow::field("CHR", arrow::string())
+harmonise_tidygwas <- function(exposure_dir, outcome_dir, bed_path) {
+  loci <- readr::read_tsv(
+    bed_path,
+    col_names = c("chr", "start", "end", "n_snps", "pval", "lead_snp"),
+    col_types = "ciiccc",
+    show_col_types = FALSE
+  )
 
-    arrow::open_dataset(fs::path(exposure_dir, "tidyGWAS_hivestyle"), schema = s) |>
-      dplyr::filter(CHR == CHROM) |>
-      dplyr::filter(RSID %in% x$X6) |>
-      dplyr::select(
-        SNP = RSID,
-        beta = B,
-        se = SE,
-        effect_allele = EffectAllele,
-        other_allele = OtherAllele,
-        eaf = EAF,
-      ) |>
-      dplyr::collect()
-  }) |>
-    purrr::list_rbind() |>
-    TwoSampleMR::format_data(dat = _, type = "exposure")
+  # pick the most significant lead SNP per locus
+  instruments <- loci |>
+    dplyr::mutate(locus_id = paste0(chr, ":", start, "-", end)) |>
+    tidyr::separate_longer_delim(c(pval, lead_snp), delim = ",") |>
+    dplyr::mutate(pval = as.numeric(pval)) |>
+    dplyr::slice_min(pval, n = 1, by = locus_id) |>
+    dplyr::mutate(chr = stringr::str_remove(chr, "chr"))
 
+  exposure_data <- extract_instruments_from_tidygwas(exposure_dir, instruments) |>
+    TwoSampleMR::format_data(type = "exposure")
 
-  outcome_data <- purrr::imap(split(variants, variants$X1), \(x, CHROM) {
-    s <- arrow::open_dataset(fs::path(outcome_dir, "tidyGWAS_hivestyle"))$schema
-    s$CHR <- arrow::field("CHR", arrow::string())
-
-
-    arrow::open_dataset(fs::path(outcome_dir, "tidyGWAS_hivestyle"), schema = s) |>
-      dplyr::filter(CHR == CHROM) |>
-      dplyr::filter(RSID %in% x$X6) |>
-      dplyr::select(
-        SNP = RSID,
-        beta = B,
-        se = SE,
-        effect_allele = EffectAllele,
-        other_allele = OtherAllele,
-        eaf = EAF,
-
-      ) |>
-      dplyr::collect()
-  }) |>
-    purrr::list_rbind() |>
-    TwoSampleMR::format_data(dat = _, type = "outcome")
+  outcome_data <- extract_instruments_from_tidygwas(outcome_dir, instruments) |>
+    TwoSampleMR::format_data(type = "outcome")
 
   TwoSampleMR::harmonise_data(
     exposure_dat = exposure_data,
@@ -111,15 +88,23 @@ to_2smr <- function(exposure_dir, outcome_dir, exposure_bed = NULL, ...) {
   )
 }
 
-check_clumping <- function(parent_dir, r2 = 0.01) {
-  exists <- fs::path(parent_dir, "analysis/clumping/merged_loci.bed") |> fs::file_exists()
-  if(!exists) {
-    cli::cli_alert_warning("Running clumping for {parent_dir}")
-    system(paste0("sh ", run_clumping(parent_dir, r2 = 0.01)))
-  } else {
-    message("Clumping already done for ", parent_dir)
-  }
+
+extract_instruments_from_tidygwas <- function(parent_dir, instruments) {
+  ds <- arrow::open_dataset(fs::path(parent_dir, "tidyGWAS_hivestyle"))
+
+  purrr::imap(split(instruments, instruments$chr), \(x, chrom) {
+    ds |>
+      dplyr::filter(CHR == chrom) |>
+      dplyr::filter(RSID %in% x$lead_snp) |>
+      dplyr::select(
+        SNP = RSID,
+        beta = B,
+        se = SE,
+        effect_allele = EffectAllele,
+        other_allele = OtherAllele,
+        eaf = EAF
+      ) |>
+      dplyr::collect()
+  }) |>
+    purrr::list_rbind()
 }
-
-
-

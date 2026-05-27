@@ -1,88 +1,140 @@
 ---
-title: "downstreamGWAS"
+title: "Getting started with downstreamGWAS"
 ---
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  eval = FALSE
 )
 ```
 
-# Introduction
+# What is downstreamGWAS?
 
-```{r setup}
+downstreamGWAS automates downstream analysis of GWAS summary statistics on HPC
+systems. Given the output of
+[tidyGWAS](https://arvidharder.com/tidyGWAS), it generates ready-to-run
+bash scripts for methods like SBayesRC, SBayesS, LD-clumping, and more —
+handling input conversion, container execution, and SLURM scheduling.
+
+## The problem
+
+Running a method like SBayesRC on summary statistics typically requires:
+
+1. **Munging** — reformatting columns, filtering variants, computing effective N
+2. **Reference data** — LD matrices, annotation files, gene lists
+3. **Software** — installing tools that may conflict with your HPC environment
+4. **Scheduling** — writing SLURM scripts with correct paths and resource requests
+
+Each step is error-prone and rarely reusable across methods or datasets.
+
+## How downstreamGWAS solves it
+
+downstreamGWAS assumes your summary statistics have already been cleaned by
+`tidyGWAS::tidyGWAS()`. From that standardized starting point, every
+`pipeline_*()` function:
+
+- **Converts** the tidyGWAS dataset to the method's required format (`.ma`,
+  `.tsv`, etc.) inside the generated script, so it runs on the compute node
+- **Resolves** paths to containers and reference data from a single config file
+- **Generates** a self-contained bash script with optional SLURM headers
+- **Optionally executes** the script locally or submits it via `sbatch`
+
+All external software runs inside
+[Apptainer](https://apptainer.org) containers, so you never need to install
+PLINK, GCTB, LDSC, or R packages on your cluster.
+
+# Setup
+
+## 1. Install the package
+
+```{r}
+remotes::install_github("ararder/downstreamGWAS")
+```
+
+## 2. Configure paths
+
+Tell downstreamGWAS where your reference data and containers live. This only
+needs to be done once per machine:
+
+```{r}
 library(downstreamGWAS)
-library(fs)
-library(tidyGWAS)
 
+setup_dsg(
+  storage_root = "/projappl/my_project/downstreamGWAS",
+  container_dependency = "ml apptainer"
+)
 ```
 
-downstreamGWAS has to ambition make standardized pipelines for downstream analysis that has genome-wide summary statistics as ***primary input***. Examples of these types of analysis are: gene-based tests (with magma or GCTA), or heritability enrichment (with S-LDSC). The required input for these analyses can typically be put into one of three categories:
+This creates `~/.config/downstreamGWAS/config.yml` and the directory structure:
 
-(1) summary statistics
+```
+/projappl/my_project/downstreamGWAS/
+├── reference/    # LD matrices, annotations, gene lists
+└── containers/   # .sif container images
+```
 
-(2) reference data
+## 3. Place reference data and containers
 
-(3) software dependencies
+Download the required `.sif` files and reference data into the directories
+created above. The specific files needed depend on which pipelines you want to
+run (see each pipeline's documentation for details).
 
-downstreamGWAS is aimed at making this painless and reproducible. Each part is tackled in the following way:
+# Usage
 
-### (1) Summary statistics
+Every `pipeline_*()` function follows the same interface:
 
-downstreamGWAS relies on summary statistics first being cleaned by `tidyGWAS::tidyGWAS()`, and assumes that `output_format="hivestyle"` (the default argument), and that no changes has been made to the resulting folder structure.
+```{r}
+result <- pipeline_sbayesrc(
+  parent_dir   = "/path/to/tidyGWAS_output",
+  write_script = TRUE,    # write the bash script to disk
+  execute      = FALSE    # don't run yet — just generate
+)
 
-With standardized column names and data formats, the functionality to prepare the summary statistics for the downstream analysis can be continously reused. For example, the [GCTB](https://cnsgenomics.com/software/gctb/#Overview) suite of genetic analysis uses the .ma format, and downstreamGWAS has defined method for converting tidyGWAS to .ma in `downstreamGWAS::to_ma()`. No need to write new code each time!
+# Inspect the generated script
+cat(result$script, sep = "\n")
+```
 
-A common (and very time consuming step) is to first munge summary statistics, and prepare them with correct filters, column names and data-types. downstreamGWAS uses the standardized tidyGWAS output to automate this munging step, for example `downstreamGWAS::to_ma()` or `downstreamGWAS::to_ldsc()`.
+## Running with SLURM
 
-### (2) Reference data
+Pass a `schedule_slurm()` object to add SLURM headers and submit via `sbatch`:
 
-Another common issue is acquiring and using the same reference data for analysis. downstreamGWAS uses [Zenodo](https://zenodo.org) to host and share reference data where it is possible. This makes it easy to reproduce your results across computational clusters and research groups. See for example the reference files for running stratified LDscore regression [here](https://zenodo.org/records/8367200).
-
-### (3) Software dependencies
-
-Software can be difficult to install properly, especially when you are working on high performance clusters where you might not have enough permissions. To handle this, downstreamGWAS makes use of the software container [apptainer](https://apptainer.org). Apptainer can use [Docker](https://www.docker.com) images to produce a virtual environment, where sudo privileges are not required. For the downstream analysis implemented in downstreamGWAS, we have created docker images for each.
-
-This virtualization also serves as another important factor in reproductibility, making sure analysis is conducted using the same underlying software.
-
-## Setting up downstreamGWAS
-
-To illustrate the results, we first create an toy example of a cleaned tidyGWAS sumstat.
-
-```{r, eval = FALSE}
-sumstats <- tidyGWAS::test_file
-outdir <- tempdir()
-cleaned <- tidyGWAS(
-  # Here we input the summary statistics as a data.frame already in R memory
-  tbl = sumstats, 
-  # provide the filepath to the refence files you downloaded.
-  dbsnp_path = path(fs::path_package("tidyGWAS"), "extdata/dbSNP155"),
-  output_dir = path(outdir, "example_gwas")
+```{r}
+result <- pipeline_sbayesrc(
+  parent_dir     = "/path/to/tidyGWAS_output",
+  execute        = TRUE,
+  prepare_inputs = TRUE,
+  thread_rc      = 16,
+  thread_imp     = 8,
+  use_effective_n = TRUE,
+  schedule = schedule_slurm(
+    account  = "my-project-id",
+    mem      = "100gb",
+    partition = "shared",
+    cpus_per_task = 16
   )
+)
+
+# SLURM job ID
+result$job_id
 ```
 
-Using only the filepath to output_folder, downstreamGWAS can generate a slurm script to run the specific downstream analysis. Here for example, a script to run [SbayesRC](https://github.com/zhilizheng/SBayesRC) is created, ready to run.
+## Available pipelines
 
-### Running SbayesRC
+| Function | Method | Container |
+|----------|--------|-----------|
+| `pipeline_clumping()` | LD clumping (PLINK) + locus merging (bedtools) | `genetics_latest.sif` |
+| `pipeline_sbayesrc()` | SBayesRC polygenic scoring | `sbayesrc_latest.sif` |
+| `pipeline_sbayess()` | SBayesS (selection/polygenicity) | `genetics_latest.sif` |
 
-```{r,eval = FALSE}
-# downstreamGWAS uses the "HOME" variable to store data on where you keep the reference files between sessions. 
-withr::local_envvar(list("HOME" = tempdir()))
-dsg_folder <- fs::path(tempdir(), "downstreamGWAS_folder")
-# use setup to tell downstreamGWAS where the reference data and containers are kept
-# only has to be done once
-setup(dsg_folder)
-run_sbayesrc(fs::path(outdir, "example_gwas"),  write_script = FALSE)
+## Output
 
-```
+Each pipeline writes its results to `<parent_dir>/analysis/<method>/` by
+default (override with `output_dir`). The return value is a list with:
 
-### cell-type analysis using S-LDSC
-
-```{r,eval = FALSE}
-run_sldsc_cts(fs::path(outdir, "example_gwas"),cts_file = "toy.cts", write_script = FALSE)
-```
-
-# Setting up downstreamGWAS
-
-WORK IN PROGRESS
+- `script` — the generated bash script as a character vector
+- `script_path` — path to the written `.sh` file
+- `output_dir` — where results will be written
+- `executed` — whether the script was run
+- `job_id` — SLURM job ID (if submitted via sbatch)

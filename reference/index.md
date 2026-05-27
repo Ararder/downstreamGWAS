@@ -3,7 +3,7 @@
 ## All functions
 
 - [`check_setup()`](http://arvidharder.com/downstreamGWAS/reference/check_setup.md)
-  : Check that the configuration file has been correctly set up
+  : Check that downstreamGWAS is set up and reference data is in place
 - [`dsg_method_output_dir()`](http://arvidharder.com/downstreamGWAS/reference/dsg_method_output_dir.md)
   : Resolve downstreamGWAS pipeline output directory
 - [`effective_n()`](http://arvidharder.com/downstreamGWAS/reference/effective_n.md)

@@ -1,55 +1,74 @@
-#' Check that the configuration file has been correctly set up
+#' Check that downstreamGWAS is set up and reference data is in place
 #'
-#' @return text to terminal
+#' Verifies that the config file exists, the storage directories
+#' (`reference_dir`, `container_dir`) exist, and that the reference/container
+#' assets each pipeline needs are present at the paths declared in `params.yml`.
+#' Use this to confirm downloaded reference data has been placed correctly.
+#'
+#' @param method Optional method to check: one of `"sbayesrc"`, `"sbayess"`,
+#'   or `"clumping"`. When `NULL` (default), all methods are checked.
+#'
+#' @return Invisibly, `TRUE` if everything checked is present, otherwise `FALSE`.
 #' @export
 #'
 #' @examples \dontrun{
-#' check_setup()
+#' check_setup()             # check everything
+#' check_setup("sbayesrc")   # only the SBayesRC reference data
 #' }
-check_setup <- function() {
-  outpath <- fs::path(Sys.getenv("HOME"), ".config/downstreamGWAS/config.yml")
+check_setup <- function(method = NULL) {
+  cfg_path <- fs::path(Sys.getenv("HOME"), ".config/downstreamGWAS/config.yml")
 
-  cli::cli_alert("Checking setup...")
+  cli::cli_alert_info("Checking downstreamGWAS setup...")
 
-  if(!file.exists(outpath)) {
-    cli::cli_alert_warning("The downstreamGWAS config file does not exist. Please run setup_dsg() first")
-    return(FALSE)
+  if (!fs::file_exists(cfg_path)) {
+    cli::cli_alert_danger("Config file not found at {.path {cfg_path}}. Run {.code setup_dsg()} first.")
+    return(invisible(FALSE))
+  }
+  cli::cli_alert_success("Config file: {.path {cfg_path}}")
+
+  cfg <- dsg_get_config()
+  params <- parse_params()
+  ok <- TRUE
+
+  cli::cli_h2("Storage directories")
+  dirs <- list("reference dir" = cfg$reference_dir, "containers dir" = cfg$container_dir)
+  for (nm in names(dirs)) {
+    if (fs::dir_exists(dirs[[nm]])) {
+      cli::cli_alert_success("{nm}: {.path {dirs[[nm]]}}")
+    } else {
+      cli::cli_alert_danger("{nm} missing: {.path {dirs[[nm]]}}")
+      ok <- FALSE
+    }
   }
 
+  registry <- dsg_asset_registry(cfg, params)
+  methods <- method %||% names(registry)
+  unknown <- setdiff(methods, names(registry))
+  if (length(unknown) > 0) {
+    cli::cli_abort(c(
+      "Unknown method: {.val {unknown}}",
+      "i" = "Available methods: {.val {names(registry)}}"
+    ))
+  }
 
-  p <- get_system_paths()
+  for (m in methods) {
+    cli::cli_h2("{m} reference data")
+    for (asset in registry[[m]]) {
+      if (dsg_asset_present(asset)) {
+        cli::cli_alert_success("{asset$label}: {.path {asset$path}}")
+      } else {
+        cli::cli_alert_danger("{asset$label} missing: {.path {asset$path}}")
+        ok <- FALSE
+      }
+    }
+  }
 
-
-  cli::cli_h1("Checking obligatory fields in the config file...")
-  if(rlang::is_empty(p$reference)) {
-
-    cli::cli_alert_danger("The 'reference' field in the config file is empty. Please fill in the path to folder containing the reference data")
-    return(FALSE)
-
-  } else if(!fs::dir_exists(p$reference)) {
-    cli::cli_alert_danger("The {.code reference} field in the config file points to {.path {p$reference}}, which is not an existing directory. Please fill in the path to folder containing the reference data")
-    return(FALSE)
+  if (ok) {
+    cli::cli_alert_success("All checked assets are present.")
   } else {
-    cli::cli_alert_success("The reference data folder is set to {.path {p$reference}} and exists")
+    cli::cli_alert_warning("Some assets are missing (see above).")
   }
-
-  if(rlang::is_empty(p$containers)) {
-    cli::cli_alert_danger("The 'containers' field in the config file is empty. Please fill in the path to folder containing the containers")
-    return(FALSE)
-
-  } else if(
-    !fs::dir_exists(p$containers)) {
-    cli::cli_alert_danger("The {.code containers} field in the config file points to {.path {p$containers}}, which is not an existing directory. Please fill in the path to folder containing the containers")
-    return(FALSE)
-  } else {
-    cli::cli_alert_success("The containers folder is set to {.path {p$containers}} and exists")
-  }
-
-  cli::cli_alert_success("Looks all good!")
-
-  cli::cli_h2("Checking optional fields in the config file...")
-
-
+  invisible(ok)
 }
 
 

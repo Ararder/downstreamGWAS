@@ -2,18 +2,26 @@
 % Please edit documentation in R/paths.R
 \name{check_setup}
 \alias{check_setup}
-\title{Check that the configuration file has been correctly set up}
+\title{Check that downstreamGWAS is set up and reference data is in place}
 \usage{
-check_setup()
+check_setup(method = NULL)
+}
+\arguments{
+\item{method}{Optional method to check: one of \code{"sbayesrc"}, \code{"sbayess"},
+or \code{"clumping"}. When \code{NULL} (default), all methods are checked.}
 }
 \value{
-text to terminal
+Invisibly, \code{TRUE} if everything checked is present, otherwise \code{FALSE}.
 }
 \description{
-Check that the configuration file has been correctly set up
+Verifies that the config file exists, the storage directories
+(\code{reference_dir}, \code{container_dir}) exist, and that the reference/container
+assets each pipeline needs are present at the paths declared in \code{params.yml}.
+Use this to confirm downloaded reference data has been placed correctly.
 }
 \examples{
 \dontrun{
-check_setup()
+check_setup()             # check everything
+check_setup("sbayesrc")   # only the SBayesRC reference data
 }
 }

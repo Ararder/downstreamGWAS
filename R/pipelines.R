@@ -151,27 +151,51 @@ dsg_check_writable_dir <- function(path) {
   dsg_assert(ok, paste0("Output directory is not writable: ", path))
 }
 
-dsg_check_clumping_assets <- function(cfg, params) {
-  container <- fs::path(cfg$container_dir, params$plink$container)
-  base <- fs::path(cfg$reference_dir, params$genome_refs$deep_1kg)
-  gene_ref <- fs::path(cfg$reference_dir, params$plink$gene_ref)
+# Single source of truth for the reference/container files each method needs.
+# Each asset has a human label, an absolute path, and a `mode`: "file" (must be
+# a file) or "any" (file or directory, e.g. multi-file LD matrices).
+dsg_asset_registry <- function(cfg, params) {
+  ref <- cfg$reference_dir
+  con <- cfg$container_dir
+  deep <- fs::path(ref, params$genome_refs$deep_1kg)
+  ldm_s <- fs::path(ref, params$gctb$ldm_s)
 
-  dsg_assert(fs::file_exists(container), paste0("Missing PLINK container: ", container))
-  dsg_assert(fs::file_exists(gene_ref), paste0("Missing PLINK clumping gene reference: ", gene_ref))
-  dsg_assert(fs::file_exists(paste0(base, ".bed")), paste0("Missing PLINK .bed file: ", paste0(base, ".bed")))
-  dsg_assert(fs::file_exists(paste0(base, ".bim")), paste0("Missing PLINK .bim file: ", paste0(base, ".bim")))
-  dsg_assert(fs::file_exists(paste0(base, ".fam")), paste0("Missing PLINK .fam file: ", paste0(base, ".fam")))
+  list(
+    clumping = list(
+      list(label = "PLINK container", path = fs::path(con, params$plink$container), mode = "file"),
+      list(label = "PLINK clumping gene reference", path = fs::path(ref, params$plink$gene_ref), mode = "file"),
+      list(label = "PLINK .bed file", path = paste0(deep, ".bed"), mode = "file"),
+      list(label = "PLINK .bim file", path = paste0(deep, ".bim"), mode = "file"),
+      list(label = "PLINK .fam file", path = paste0(deep, ".fam"), mode = "file")
+    ),
+    sbayesrc = list(
+      list(label = "SBayesRC container", path = fs::path(con, params$sbayesrc$container), mode = "file"),
+      list(label = "SBayesRC LD matrix", path = fs::path(ref, params$sbayesrc$ldm), mode = "any"),
+      list(label = "SBayesRC annotation file", path = fs::path(ref, params$sbayesrc$annot), mode = "file")
+    ),
+    sbayess = list(
+      list(label = "GCTB container", path = fs::path(con, params$gctb$container), mode = "file"),
+      list(label = "GCTB sparse LDM .info file", path = paste0(ldm_s, ".info"), mode = "file"),
+      list(label = "GCTB sparse LDM .bin file", path = paste0(ldm_s, ".bin"), mode = "file")
+    )
+  )
 }
 
-dsg_check_sbayesrc_assets <- function(cfg, params) {
-  container <- fs::path(cfg$container_dir, params$sbayesrc$container)
-  ldm <- fs::path(cfg$reference_dir, params$sbayesrc$ldm)
-  annot <- fs::path(cfg$reference_dir, params$sbayesrc$annot)
-
-  dsg_assert(fs::file_exists(container), paste0("Missing SBayesRC container: ", container))
-  dsg_assert(dsg_file_or_dir_exists(ldm), paste0("Missing SBayesRC LD matrix path: ", ldm))
-  dsg_assert(fs::file_exists(annot), paste0("Missing SBayesRC annotation file: ", annot))
+dsg_asset_present <- function(asset) {
+  if (identical(asset$mode, "any")) dsg_file_or_dir_exists(asset$path) else fs::file_exists(asset$path)
 }
+
+# Hard-fail check used by pipelines: stop on the first missing asset.
+dsg_check_assets <- function(cfg, params, method) {
+  for (asset in dsg_asset_registry(cfg, params)[[method]]) {
+    dsg_assert(dsg_asset_present(asset), paste0("Missing ", asset$label, ": ", asset$path))
+  }
+  invisible(TRUE)
+}
+
+dsg_check_clumping_assets <- function(cfg, params) dsg_check_assets(cfg, params, "clumping")
+
+dsg_check_sbayesrc_assets <- function(cfg, params) dsg_check_assets(cfg, params, "sbayesrc")
 
 dsg_input_cmd_clumping <- function(parent_dir, outdir) {
   hivestyle <- fs::path(parent_dir, "tidyGWAS_hivestyle")
@@ -188,15 +212,7 @@ dsg_input_cmd_sbayess <- function(parent_dir, outdir, use_effective_n) {
   glue::glue("R -e {shQuote(glue::glue(\"downstreamGWAS::to_ma('{parent_dir}', out = '{ma_out}', use_effective_n = {use_effective_n})\"))}")
 }
 
-dsg_check_sbayess_assets <- function(cfg, params) {
-  container <- fs::path(cfg$container_dir, params$gctb$container)
-  ldm_info <- paste0(fs::path(cfg$reference_dir, params$gctb$ldm_s), ".info")
-  ldm_bin <- paste0(fs::path(cfg$reference_dir, params$gctb$ldm_s), ".bin")
-
-  dsg_assert(fs::file_exists(container), paste0("Missing GCTB container: ", container))
-  dsg_assert(fs::file_exists(ldm_info), paste0("Missing sparse LDM .info file: ", ldm_info))
-  dsg_assert(fs::file_exists(ldm_bin), paste0("Missing sparse LDM .bin file: ", ldm_bin))
-}
+dsg_check_sbayess_assets <- function(cfg, params) dsg_check_assets(cfg, params, "sbayess")
 
 dsg_finalize_pipeline <- function(script, outdir, script_name, write_script, execute, schedule) {
   script_path <- NULL

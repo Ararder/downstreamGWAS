@@ -1,0 +1,196 @@
+# Colocalisation analysis with run_coloc()
+
+## Overview
+
+Colocalisation tests whether two traits share a causal variant at a
+genomic locus. downstreamGWAS wraps
+[`coloc::coloc.abf()`](https://rdrr.io/pkg/coloc/man/coloc.abf.html)
+with `run_coloc()`, which takes two tidyGWAS directories and a genomic
+region and handles the data extraction, formatting, and trait-type
+detection automatically.
+
+The typical workflow is:
+
+1.  **Clump** one trait to identify genome-wide significant loci
+2.  **Run coloc** at each locus, testing against a second trait
+
+``` r
+
+library(downstreamGWAS)
+```
+
+## Step 1: Identify loci by clumping
+
+Before running colocalisation, you need regions to test.
+[`pipeline_clumping()`](http://arvidharder.com/downstreamGWAS/reference/pipeline_clumping.md)
+produces a `merged_loci.bed` file — each row is a merged LD-independent
+locus with genomic coordinates.
+
+``` r
+
+pipeline_clumping(
+  parent_dir = "/path/to/trait1",
+  execute = TRUE,
+  prepare_inputs = TRUE,
+  schedule = schedule_slurm(account = "my-project", mem = "8gb")
+)
+
+# Read the resulting loci
+loci <- readr::read_tsv(
+  "/path/to/trait1/analysis/clumping/merged_loci.bed",
+  col_names = c("chr", "start", "end", "n_snps", "pvals", "lead_snps")
+)
+loci
+```
+
+## Step 2: Run coloc at a single locus
+
+`run_coloc()` takes two tidyGWAS directories, a chromosome, and
+start/end coordinates. It extracts the variants in the region from both
+datasets, intersects them, and runs
+[`coloc::coloc.abf()`](https://rdrr.io/pkg/coloc/man/coloc.abf.html).
+
+``` r
+
+result <- run_coloc(
+  parent_dir  = "/path/to/trait1",
+  parent_dir2 = "/path/to/trait2",
+  chrom = "7",
+  start = 1788081,
+  end   = 2289862
+)
+
+result$summary
+```
+
+The output is the standard `coloc.abf()` return object. The key value is
+`PP.H4.abf` — the posterior probability that both traits share a single
+causal variant.
+
+### Formatting the result
+
+[`format_coloc()`](http://arvidharder.com/downstreamGWAS/reference/format_coloc.md)
+extracts the key numbers into a tidy tibble:
+
+``` r
+
+format_coloc(result, name = "trait1_vs_trait2_chr7")
+```
+
+## Step 3: Loop over all loci
+
+To test all clumped loci against a second trait:
+
+``` r
+
+results <- purrr::pmap(loci, function(chr, start, end, ...) {
+  run_coloc(
+    parent_dir  = "/path/to/trait1",
+    parent_dir2 = "/path/to/trait2",
+    chrom = chr,
+    start = start,
+    end   = end
+  )
+})
+
+# Remove loci where trait2 had no signal (returns NULL)
+results <- purrr::compact(results)
+
+# Format into a single table
+purrr::imap_dfr(results, function(res, i) {
+  format_coloc(res, name = paste0("locus_", i))
+})
+```
+
+## Parameters and when to change them
+
+### `min_pval` (default: `5e-08`)
+
+Controls the minimum p-value required in **trait 2** at the locus before
+running coloc. If no variant in trait 2 reaches this threshold,
+`run_coloc()` returns `NULL` early. This saves compute time by skipping
+loci where the second trait has no signal at all.
+
+**When to change it:** Relax to `1e-05` or `1e-04` if you want to test
+colocalisation even at loci where trait 2 has only suggestive
+significance. This is common when testing against eQTL datasets, where
+sample sizes may be smaller. Be aware that coloc results at loci without
+clear association in both traits are harder to interpret.
+
+``` r
+
+# More permissive — test even with weak signal
+run_coloc(..., min_pval = 1e-4)
+```
+
+### `trait_type1` / `trait_type2` (default: `"guess"`)
+
+Tells coloc whether each trait is case-control (`"cc"`) or quantitative
+(`"quant"`). By default, `run_coloc()` guesses by checking whether
+`CaseN` exists in the dataset — if it does, it assumes case-control.
+
+**When to change it:** Override the guess when you know it is wrong. For
+example, a dataset might carry `CaseN` from its original source but you
+want to treat it as quantitative for the purpose of coloc. For
+case-control traits, `EffectiveN` is used as `N` when available.
+
+``` r
+
+# Explicitly set trait types
+run_coloc(..., trait_type1 = "cc", trait_type2 = "quant")
+```
+
+### Priors: `p1`, `p2`, `p12`
+
+These are the prior probabilities that a SNP is associated with trait 1
+only (`p1`), trait 2 only (`p2`), or both traits (`p12`). The defaults
+(`p1 = 1e-4`, `p2 = 1e-4`, `p12 = 1e-5`) are from the coloc package and
+are reasonable for most GWAS-vs-GWAS comparisons.
+
+**When to change them:** The ratio `p12 / p1` (equivalently `p12 / p2`)
+encodes your prior belief about how likely two traits are to share a
+causal variant, given that at least one is associated. The default ratio
+is 0.1 — i.e., if a SNP is causal for trait 1, there is a 10% prior
+chance it is also causal for trait 2.
+
+- For traits you expect to share biology (e.g. two psychiatric
+  disorders), increase `p12` toward `1e-4` (ratio ~1).
+- For traits with little expected overlap (e.g. a metabolite vs. a
+  behavioural trait), the defaults are fine or you could decrease `p12`
+  to `1e-6`.
+- [`coloc::sensitivity()`](https://rdrr.io/pkg/coloc/man/sensitivity.html)
+  can be used to check how sensitive your results are to the choice of
+  priors.
+
+``` r
+
+# Stronger prior for shared causality
+result <- run_coloc(..., p12 = 5e-5)
+
+# Check sensitivity to prior choice
+coloc::sensitivity(result, rule = "H4 > 0.8")
+```
+
+## Missing EAF
+
+coloc requires allele frequencies. If `EAF` is missing from a dataset,
+`run_coloc()` attempts to impute it from a 1000 Genomes EUR reference
+panel (looked up via the `dbsnp` environment variable). This works for
+common variants but may not cover all SNPs. If EAF cannot be resolved,
+those variants are dropped from the analysis — check the log output for
+how many variants remain after filtering.
+
+## Interpreting results
+
+| Hypothesis | Meaning                                               |
+|------------|-------------------------------------------------------|
+| H0         | No association with either trait                      |
+| H1         | Association with trait 1 only                         |
+| H2         | Association with trait 2 only                         |
+| H3         | Both traits associated, but different causal variants |
+| H4         | Both traits share a single causal variant             |
+
+A high `PP.H4` (e.g. \> 0.8) provides evidence for colocalisation. A
+high `PP.H3` suggests both traits have signal at the locus but driven by
+different variants — this distinction is important and often confused
+with colocalisation in naive overlap analyses.

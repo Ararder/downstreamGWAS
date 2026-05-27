@@ -1,7 +1,6 @@
-# Format the output of [`coloc::coloc.abf()`](https://rdrr.io/pkg/coloc/man/coloc.abf.html)
+# Format coloc::coloc.abf output into a tidy tibble
 
-Format the output of
-[`coloc::coloc.abf()`](https://rdrr.io/pkg/coloc/man/coloc.abf.html)
+Format coloc::coloc.abf output into a tidy tibble
 
 ## Usage
 
@@ -13,21 +12,24 @@ format_coloc(coloc_obj, name)
 
 - coloc_obj:
 
-  output of coloc call
+  Output of
+  [`coloc::coloc.abf()`](https://rdrr.io/pkg/coloc/man/coloc.abf.html).
 
 - name:
 
-  name of trait
+  Label for this coloc test (e.g. trait pair or locus name).
 
 ## Value
 
-a
+A
 [`dplyr::tibble()`](https://dplyr.tidyverse.org/reference/reexports.html)
+with columns: `name`, `n_snps`, `PP.H4`, and `top_snps` (comma-separated
+RSIDs with highest PP.H4).
 
 ## Examples
 
 ``` r
 if (FALSE) { # \dontrun{
-format_coloc(ob, "test-run")
+format_coloc(result, "scz_vs_bip_chr7")
 } # }
 ```

@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>downstreamGWAS • downstreamGWAS</title>
+<title>Getting started with downstreamGWAS • downstreamGWAS</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="downstreamGWAS">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Getting started with downstreamGWAS">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -34,8 +34,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/meta-analysis.html">meta-analysis</a></li>
-    <li><a class="dropdown-item" href="../articles/multi-file-datasets.html">multi-file datasets</a></li>
+<li><a class="dropdown-item" href="../articles/colocalisation.html">Colocalisation analysis with run_coloc()</a></li>
   </ul>
 </li>
       </ul>
@@ -56,7 +55,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>downstreamGWAS</h1>
+      <h1>Getting started with downstreamGWAS</h1>
             
       
 
@@ -66,113 +65,190 @@
     
     
 <div class="section level2">
-<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+<h2 id="what-is-downstreamgwas">What is downstreamGWAS?<a class="anchor" aria-label="anchor" href="#what-is-downstreamgwas"></a>
 </h2>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://arvidharder.com/downstreamGWAS/">downstreamGWAS</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://fs.r-lib.org" class="external-link">fs</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ararder.github.io/tidyGWAS/" class="external-link">tidyGWAS</a></span><span class="op">)</span></span></code></pre></div>
-<p>downstreamGWAS has to ambition make standardized pipelines for
-downstream analysis that has genome-wide summary statistics as
-<strong><em>primary input</em></strong>. Examples of these types of
-analysis are: gene-based tests (with magma or GCTA), or heritability
-enrichment (with S-LDSC). The required input for these analyses can
-typically be put into one of three categories:</p>
+<p>downstreamGWAS automates downstream analysis of GWAS summary
+statistics on HPC systems. Given the output of <a href="https://arvidharder.com/tidyGWAS" class="external-link">tidyGWAS</a>, it generates
+ready-to-run bash scripts for methods like SBayesRC, SBayesS,
+LD-clumping, and more — handling input conversion, container execution,
+and SLURM scheduling.</p>
+<div class="section level3">
+<h3 id="the-problem">The problem<a class="anchor" aria-label="anchor" href="#the-problem"></a>
+</h3>
+<p>Running a method like SBayesRC on summary statistics typically
+requires:</p>
 <ol style="list-style-type: decimal">
-<li><p>summary statistics</p></li>
-<li><p>reference data</p></li>
-<li><p>software dependencies</p></li>
+<li>
+<strong>Munging</strong> — reformatting columns, filtering variants,
+computing effective N</li>
+<li>
+<strong>Reference data</strong> — LD matrices, annotation files,
+gene lists</li>
+<li>
+<strong>Software</strong> — installing tools that may conflict with
+your HPC environment</li>
+<li>
+<strong>Scheduling</strong> — writing SLURM scripts with correct
+paths and resource requests</li>
 </ol>
-<p>downstreamGWAS is aimed at making this painless and reproducible.
-Each part is tackled in the following way:</p>
-<div class="section level4">
-<h4 id="summary-statistics">(1) Summary statistics<a class="anchor" aria-label="anchor" href="#summary-statistics"></a>
-</h4>
-<p>downstreamGWAS relies on summary statistics first being cleaned by
-<code><a href="https://ararder.github.io/tidyGWAS/reference/tidyGWAS.html" class="external-link">tidyGWAS::tidyGWAS()</a></code>, and assumes that
-<code>output_format="hivestyle"</code> (the default argument), and that
-no changes has been made to the resulting folder structure.</p>
-<p>With standardized column names and data formats, the functionality to
-prepare the summary statistics for the downstream analysis can be
-continously reused. For example, the <a href="https://cnsgenomics.com/software/gctb/#Overview" class="external-link">GCTB</a> suite of
-genetic analysis uses the .ma format, and downstreamGWAS has defined
-method for converting tidyGWAS to .ma in
-<code><a href="../reference/to_ma.html">downstreamGWAS::to_ma()</a></code>. No need to write new code each
-time!</p>
-<p>A common (and very time consuming step) is to first munge summary
-statistics, and prepare them with correct filters, column names and
-data-types. downstreamGWAS uses the standardized tidyGWAS output to
-automate this munging step, for example
-<code><a href="../reference/to_ma.html">downstreamGWAS::to_ma()</a></code> or
-<code><a href="../reference/to_ldsc.html">downstreamGWAS::to_ldsc()</a></code>.</p>
-</div>
-<div class="section level4">
-<h4 id="reference-data">(2) Reference data<a class="anchor" aria-label="anchor" href="#reference-data"></a>
-</h4>
-<p>Another common issue is acquiring and using the same reference data
-for analysis. downstreamGWAS uses <a href="https://zenodo.org" class="external-link">Zenodo</a> to host and share reference data
-where it is possible. This makes it easy to reproduce your results
-across computational clusters and research groups. See for example the
-reference files for running stratified LDscore regression <a href="https://zenodo.org/records/8367200" class="external-link">here</a>.</p>
-</div>
-<div class="section level4">
-<h4 id="software-dependencies">(3) Software dependencies<a class="anchor" aria-label="anchor" href="#software-dependencies"></a>
-</h4>
-<p>Software can be difficult to install properly, especially when you
-are working on high performance clusters where you might not have enough
-permissions. To handle this, downstreamGWAS makes use of the software
-container <a href="https://apptainer.org" class="external-link">apptainer</a>. Apptainer can
-use <a href="https://www.docker.com" class="external-link">Docker</a> images to produce a
-virtual environment, where sudo privileges are not required. For the
-downstream analysis implemented in downstreamGWAS, we have created
-docker images for each.</p>
-<p>This virtualization also serves as another important factor in
-reproductibility, making sure analysis is conducted using the same
-underlying software.</p>
+<p>Each step is error-prone and rarely reusable across methods or
+datasets.</p>
 </div>
 <div class="section level3">
-<h3 id="setting-up-downstreamgwas">Setting up downstreamGWAS<a class="anchor" aria-label="anchor" href="#setting-up-downstreamgwas"></a>
+<h3 id="how-downstreamgwas-solves-it">How downstreamGWAS solves it<a class="anchor" aria-label="anchor" href="#how-downstreamgwas-solves-it"></a>
 </h3>
-<p>To illustrate the results, we first create an toy example of a
-cleaned tidyGWAS sumstat.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sumstats</span> <span class="op">&lt;-</span> <span class="fu">tidyGWAS</span><span class="fu">::</span><span class="va">test_file</span></span>
-<span><span class="va">outdir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">cleaned</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ararder.github.io/tidyGWAS/reference/tidyGWAS.html" class="external-link">tidyGWAS</a></span><span class="op">(</span></span>
-<span>  <span class="co"># Here we input the summary statistics as a data.frame already in R memory</span></span>
-<span>  tbl <span class="op">=</span> <span class="va">sumstats</span>, </span>
-<span>  <span class="co"># provide the filepath to the refence files you downloaded.</span></span>
-<span>  dbsnp_path <span class="op">=</span> <span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path_package.html" class="external-link">path_package</a></span><span class="op">(</span><span class="st">"tidyGWAS"</span><span class="op">)</span>, <span class="st">"extdata/dbSNP155"</span><span class="op">)</span>,</span>
-<span>  output_dir <span class="op">=</span> <span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"example_gwas"</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
-<p>Using only the filepath to output_folder, downstreamGWAS can generate
-a slurm script to run the specific downstream analysis. Here for
-example, a script to run <a href="https://github.com/zhilizheng/SBayesRC" class="external-link">SbayesRC</a> is created,
-ready to run.</p>
-<div class="section level4">
-<h4 id="running-sbayesrc">Running SbayesRC<a class="anchor" aria-label="anchor" href="#running-sbayesrc"></a>
-</h4>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># downstreamGWAS uses the "HOME" variable to store data on where you keep the reference files between sessions. </span></span>
-<span><span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_envvar.html" class="external-link">local_envvar</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"HOME"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">dsg_folder</span> <span class="op">&lt;-</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"downstreamGWAS_folder"</span><span class="op">)</span></span>
-<span><span class="co"># use setup to tell downstreamGWAS where the reference data and containers are kept</span></span>
-<span><span class="co"># only has to be done once</span></span>
-<span><span class="fu"><a href="../reference/setup.html">setup</a></span><span class="op">(</span><span class="va">dsg_folder</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/run_sbayesrc.html">run_sbayesrc</a></span><span class="op">(</span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"example_gwas"</span><span class="op">)</span>,  write_script <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level4">
-<h4 id="cell-type-analysis-using-s-ldsc">cell-type analysis using S-LDSC<a class="anchor" aria-label="anchor" href="#cell-type-analysis-using-s-ldsc"></a>
-</h4>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">run_sldsc_cts</span><span class="op">(</span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"example_gwas"</span><span class="op">)</span>,cts_file <span class="op">=</span> <span class="st">"toy.cts"</span>, write_script <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-</div>
+<p>downstreamGWAS assumes your summary statistics have already been
+cleaned by <code><a href="https://ararder.github.io/tidyGWAS/reference/tidyGWAS.html" class="external-link">tidyGWAS::tidyGWAS()</a></code>. From that standardized
+starting point, every <code>pipeline_*()</code> function:</p>
+<ul>
+<li>
+<strong>Converts</strong> the tidyGWAS dataset to the method’s
+required format (<code>.ma</code>, <code>.tsv</code>, etc.) inside the
+generated script, so it runs on the compute node</li>
+<li>
+<strong>Resolves</strong> paths to containers and reference data
+from a single config file</li>
+<li>
+<strong>Generates</strong> a self-contained bash script with
+optional SLURM headers</li>
+<li>
+<strong>Optionally executes</strong> the script locally or submits
+it via <code>sbatch</code>
+</li>
+</ul>
+<p>All external software runs inside <a href="https://apptainer.org" class="external-link">Apptainer</a> containers, so you never need
+to install PLINK, GCTB, LDSC, or R packages on your cluster.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="setting-up-downstreamgwas-1">Setting up downstreamGWAS<a class="anchor" aria-label="anchor" href="#setting-up-downstreamgwas-1"></a>
+<h2 id="setup">Setup<a class="anchor" aria-label="anchor" href="#setup"></a>
 </h2>
-<p>WORK IN PROGRESS</p>
+<div class="section level3">
+<h3 id="install-the-package">1. Install the package<a class="anchor" aria-label="anchor" href="#install-the-package"></a>
+</h3>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"ararder/downstreamGWAS"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="configure-paths">2. Configure paths<a class="anchor" aria-label="anchor" href="#configure-paths"></a>
+</h3>
+<p>Tell downstreamGWAS where your reference data and containers live.
+This only needs to be done once per machine:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://arvidharder.com/downstreamGWAS/">downstreamGWAS</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/setup_dsg.html">setup_dsg</a></span><span class="op">(</span></span>
+<span>  storage_root <span class="op">=</span> <span class="st">"/projappl/my_project/downstreamGWAS"</span>,</span>
+<span>  container_dependency <span class="op">=</span> <span class="st">"ml apptainer"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>This creates <code>~/.config/downstreamGWAS/config.yml</code> and the
+directory structure:</p>
+<pre><code>/projappl/my_project/downstreamGWAS/
+├── reference/    # LD matrices, annotations, gene lists
+└── containers/   # .sif container images</code></pre>
+</div>
+<div class="section level3">
+<h3 id="place-reference-data-and-containers">3. Place reference data and containers<a class="anchor" aria-label="anchor" href="#place-reference-data-and-containers"></a>
+</h3>
+<p>Download the required <code>.sif</code> files and reference data into
+the directories created above. The specific files needed depend on which
+pipelines you want to run (see each pipeline’s documentation for
+details).</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
+</h2>
+<p>Every <code>pipeline_*()</code> function follows the same
+interface:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pipeline_sbayesrc.html">pipeline_sbayesrc</a></span><span class="op">(</span></span>
+<span>  parent_dir   <span class="op">=</span> <span class="st">"/path/to/tidyGWAS_output"</span>,</span>
+<span>  write_script <span class="op">=</span> <span class="cn">TRUE</span>,    <span class="co"># write the bash script to disk</span></span>
+<span>  execute      <span class="op">=</span> <span class="cn">FALSE</span>    <span class="co"># don't run yet — just generate</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Inspect the generated script</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">script</span>, sep <span class="op">=</span> <span class="st">"\n"</span><span class="op">)</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="running-with-slurm">Running with SLURM<a class="anchor" aria-label="anchor" href="#running-with-slurm"></a>
+</h3>
+<p>Pass a <code><a href="../reference/schedule_slurm.html">schedule_slurm()</a></code> object to add SLURM headers and
+submit via <code>sbatch</code>:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pipeline_sbayesrc.html">pipeline_sbayesrc</a></span><span class="op">(</span></span>
+<span>  parent_dir     <span class="op">=</span> <span class="st">"/path/to/tidyGWAS_output"</span>,</span>
+<span>  execute        <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  prepare_inputs <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  thread_rc      <span class="op">=</span> <span class="fl">16</span>,</span>
+<span>  thread_imp     <span class="op">=</span> <span class="fl">8</span>,</span>
+<span>  use_effective_n <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  schedule <span class="op">=</span> <span class="fu"><a href="../reference/schedule_slurm.html">schedule_slurm</a></span><span class="op">(</span></span>
+<span>    account  <span class="op">=</span> <span class="st">"my-project-id"</span>,</span>
+<span>    mem      <span class="op">=</span> <span class="st">"100gb"</span>,</span>
+<span>    partition <span class="op">=</span> <span class="st">"shared"</span>,</span>
+<span>    cpus_per_task <span class="op">=</span> <span class="fl">16</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># SLURM job ID</span></span>
+<span><span class="va">result</span><span class="op">$</span><span class="va">job_id</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="available-pipelines">Available pipelines<a class="anchor" aria-label="anchor" href="#available-pipelines"></a>
+</h3>
+<table class="table">
+<colgroup>
+<col width="34%">
+<col width="27%">
+<col width="37%">
+</colgroup>
+<thead><tr class="header">
+<th>Function</th>
+<th>Method</th>
+<th>Container</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code><a href="../reference/pipeline_clumping.html">pipeline_clumping()</a></code></td>
+<td>LD clumping (PLINK) + locus merging (bedtools)</td>
+<td><code>genetics_latest.sif</code></td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/pipeline_sbayesrc.html">pipeline_sbayesrc()</a></code></td>
+<td>SBayesRC polygenic scoring</td>
+<td><code>sbayesrc_latest.sif</code></td>
+</tr>
+<tr class="odd">
+<td><code><a href="../reference/pipeline_sbayess.html">pipeline_sbayess()</a></code></td>
+<td>SBayesS (selection/polygenicity)</td>
+<td><code>genetics_latest.sif</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level3">
+<h3 id="output">Output<a class="anchor" aria-label="anchor" href="#output"></a>
+</h3>
+<p>Each pipeline writes its results to
+<code>&lt;parent_dir&gt;/analysis/&lt;method&gt;/</code> by default
+(override with <code>output_dir</code>). The return value is a list
+with:</p>
+<ul>
+<li>
+<code>script</code> — the generated bash script as a character
+vector</li>
+<li>
+<code>script_path</code> — path to the written <code>.sh</code>
+file</li>
+<li>
+<code>output_dir</code> — where results will be written</li>
+<li>
+<code>executed</code> — whether the script was run</li>
+<li>
+<code>job_id</code> — SLURM job ID (if submitted via sbatch)</li>
+</ul>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

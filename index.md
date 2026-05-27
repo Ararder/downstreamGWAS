@@ -1,37 +1,65 @@
 # downstreamGWAS
 
-downstreamGWAS is a companion package to
-[tidyGWAS](http://arvidharder.com/downstreamGWAS/www.arvidharder.com/tidyGWAS).
-downstreamGWAS provides functions to run standardize genetic pipelines
-using summary statistics as input. External software is packaged through
-docker files available at
-[dockerhub](https://hub.docker.com/repository/docker/arvhar/genetics/general).
+downstreamGWAS automates downstream analysis of GWAS summary statistics
+on HPC systems. Given the output of
+[tidyGWAS](https://arvidharder.com/tidyGWAS), it generates ready-to-run
+bash scripts for methods like SBayesRC, SBayesS, LD-clumping, and more —
+handling input conversion, container execution, and SLURM scheduling.
 
-In addition to this, reference files needed for pipelines bundled into
-the containers are available through zenodo. Link TBD.
+## How it works
 
-DownstreamGWAS utilises three factors to make genetic analysis much
-simplified: 1. Harmonized GWAS format through
-[tidyGWAS](http://arvidharder.com/downstreamGWAS/www.arvidharder.com/tidyGWAS)
-2. External software packaged into docker images, that can be run on
-HPCs with singularity/apptainer 3. References files collected and
-available for download, with harmonized filepaths
+1.  Clean your summary statistics with
+    [`tidyGWAS::tidyGWAS()`](https://ararder.github.io/tidyGWAS/reference/tidyGWAS.html)
+2.  Point a `pipeline_*()` function at the output directory
+3.  Get a self-contained bash script that converts the data, runs the
+    method inside an [Apptainer](https://apptainer.org) container, and
+    cleans up
+
+All external software (PLINK, GCTB, LDSC, SBayesRC) runs inside
+containers — nothing needs to be installed on your cluster beyond
+Apptainer itself.
 
 ## Installation
 
 ``` r
+
 remotes::install_github("ararder/downstreamGWAS")
-devtools::install_github("ararder/downstreamGWAS")
 ```
 
-downstreamGWAS requires a filepaths.yml file to be created, and for you
-to add some information to it.
+## Quick start
 
-\`\`\`{r} dir_to_store_yaml_in =
-“/nas/depts/007/sullilab/shared/gwas_sumstats”
-setup_filepaths_yml(dir_to_store_yaml_in) \# get script to download
-singularity images sif_script()
+``` r
 
-\`\`\`
+library(downstreamGWAS)
 
-## Download singularity images
+# One-time setup: tell downstreamGWAS where reference data and containers live
+setup_dsg(
+  storage_root = "/projappl/my_project/downstreamGWAS",
+  container_dependency = "ml apptainer"
+)
+
+# Generate and submit an SBayesRC job
+pipeline_sbayesrc(
+  parent_dir = "/path/to/tidyGWAS_output",
+  execute = TRUE,
+  prepare_inputs = TRUE,
+  schedule = schedule_slurm(
+    account = "my-project-id",
+    mem = "100gb",
+    partition = "shared",
+    cpus_per_task = 16
+  )
+)
+```
+
+## Available pipelines
+
+| Function | Method | Container |
+|----|----|----|
+| [`pipeline_clumping()`](http://arvidharder.com/downstreamGWAS/reference/pipeline_clumping.md) | LD clumping (PLINK) + locus merging (bedtools) | `genetics_latest.sif` |
+| [`pipeline_sbayesrc()`](http://arvidharder.com/downstreamGWAS/reference/pipeline_sbayesrc.md) | SBayesRC polygenic scoring | `sbayesrc_latest.sif` |
+| [`pipeline_sbayess()`](http://arvidharder.com/downstreamGWAS/reference/pipeline_sbayess.md) | SBayesS (selection/polygenicity) | `genetics_latest.sif` |
+
+See the [getting started
+guide](https://arvidharder.com/downstreamGWAS/articles/downstreamGWAS.html)
+for full documentation.

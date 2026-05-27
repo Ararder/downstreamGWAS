@@ -54,11 +54,11 @@ a character vector of captured code
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 with_container(
  code = "echo hello",
  image = "R",
  workdir = tempdir()
  )
-#> Warning: cannot open file '/home/runner/.config/downstreamGWAS/config.yml': No such file or directory
-#> Error in file(file, "rt", encoding = fileEncoding): cannot open the connection
+} # }
 ```

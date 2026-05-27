@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Standardized downstream pipelines for GWAS • downstreamGWAS</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Standardized downstream pipelines for GWAS">
 <meta name="description" content="Standardized analysis for genome-wide summary statistics.">
@@ -36,8 +36,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/meta-analysis.html">meta-analysis</a></li>
-    <li><a class="dropdown-item" href="articles/multi-file-datasets.html">multi-file datasets</a></li>
+<li><a class="dropdown-item" href="articles/colocalisation.html">Colocalisation analysis with run_coloc()</a></li>
   </ul>
 </li>
       </ul>
@@ -57,22 +56,82 @@
 </h1></div>
 <!-- badges: start -->
 <!-- badges: end -->
-<p>downstreamGWAS is a companion package to <a href="www.arvidharder.com/tidyGWAS">tidyGWAS</a>. downstreamGWAS provides functions to run standardize genetic pipelines using summary statistics as input. External software is packaged through docker files available at <a href="https://hub.docker.com/repository/docker/arvhar/genetics/general" class="external-link">dockerhub</a>.</p>
-<p>In addition to this, reference files needed for pipelines bundled into the containers are available through zenodo. Link TBD.</p>
-<p>DownstreamGWAS utilises three factors to make genetic analysis much simplified: 1. Harmonized GWAS format through <a href="www.arvidharder.com/tidyGWAS">tidyGWAS</a> 2. External software packaged into docker images, that can be run on HPCs with singularity/apptainer 3. References files collected and available for download, with harmonized filepaths</p>
+<p>downstreamGWAS automates downstream analysis of GWAS summary statistics on HPC systems. Given the output of <a href="https://arvidharder.com/tidyGWAS" class="external-link">tidyGWAS</a>, it generates ready-to-run bash scripts for methods like SBayesRC, SBayesS, LD-clumping, and more — handling input conversion, container execution, and SLURM scheduling.</p>
+<div class="section level2">
+<h2 id="how-it-works">How it works<a class="anchor" aria-label="anchor" href="#how-it-works"></a>
+</h2>
+<ol style="list-style-type: decimal">
+<li>Clean your summary statistics with <code><a href="https://ararder.github.io/tidyGWAS/reference/tidyGWAS.html" class="external-link">tidyGWAS::tidyGWAS()</a></code>
+</li>
+<li>Point a <code>pipeline_*()</code> function at the output directory</li>
+<li>Get a self-contained bash script that converts the data, runs the method inside an <a href="https://apptainer.org" class="external-link">Apptainer</a> container, and cleans up</li>
+</ol>
+<p>All external software (PLINK, GCTB, LDSC, SBayesRC) runs inside containers — nothing needs to be installed on your cluster beyond Apptainer itself.</p>
+</div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"ararder/downstreamGWAS"</span><span class="op">)</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"ararder/downstreamGWAS"</span><span class="op">)</span></span></code></pre></div>
-<p>downstreamGWAS requires a filepaths.yml file to be created, and for you to add some information to it.</p>
-<p>```{r} dir_to_store_yaml_in = “/nas/depts/007/sullilab/shared/gwas_sumstats” setup_filepaths_yml(dir_to_store_yaml_in) # get script to download singularity images sif_script()</p>
-<p>```</p>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"ararder/downstreamGWAS"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="download-singularity-images">Download singularity images<a class="anchor" aria-label="anchor" href="#download-singularity-images"></a>
+<h2 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h2>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://arvidharder.com/downstreamGWAS/">downstreamGWAS</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># One-time setup: tell downstreamGWAS where reference data and containers live</span></span>
+<span><span class="fu"><a href="reference/setup_dsg.html">setup_dsg</a></span><span class="op">(</span></span>
+<span>  storage_root <span class="op">=</span> <span class="st">"/projappl/my_project/downstreamGWAS"</span>,</span>
+<span>  container_dependency <span class="op">=</span> <span class="st">"ml apptainer"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Generate and submit an SBayesRC job</span></span>
+<span><span class="fu"><a href="reference/pipeline_sbayesrc.html">pipeline_sbayesrc</a></span><span class="op">(</span></span>
+<span>  parent_dir <span class="op">=</span> <span class="st">"/path/to/tidyGWAS_output"</span>,</span>
+<span>  execute <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  prepare_inputs <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  schedule <span class="op">=</span> <span class="fu"><a href="reference/schedule_slurm.html">schedule_slurm</a></span><span class="op">(</span></span>
+<span>    account <span class="op">=</span> <span class="st">"my-project-id"</span>,</span>
+<span>    mem <span class="op">=</span> <span class="st">"100gb"</span>,</span>
+<span>    partition <span class="op">=</span> <span class="st">"shared"</span>,</span>
+<span>    cpus_per_task <span class="op">=</span> <span class="fl">16</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="available-pipelines">Available pipelines<a class="anchor" aria-label="anchor" href="#available-pipelines"></a>
+</h2>
+<table class="table">
+<colgroup>
+<col width="34%">
+<col width="27%">
+<col width="37%">
+</colgroup>
+<thead><tr>
+<th>Function</th>
+<th>Method</th>
+<th>Container</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code><a href="reference/pipeline_clumping.html">pipeline_clumping()</a></code></td>
+<td>LD clumping (PLINK) + locus merging (bedtools)</td>
+<td><code>genetics_latest.sif</code></td>
+</tr>
+<tr>
+<td><code><a href="reference/pipeline_sbayesrc.html">pipeline_sbayesrc()</a></code></td>
+<td>SBayesRC polygenic scoring</td>
+<td><code>sbayesrc_latest.sif</code></td>
+</tr>
+<tr>
+<td><code><a href="reference/pipeline_sbayess.html">pipeline_sbayess()</a></code></td>
+<td>SBayesS (selection/polygenicity)</td>
+<td><code>genetics_latest.sif</code></td>
+</tr>
+</tbody>
+</table>
+<p>See the <a href="https://arvidharder.com/downstreamGWAS/articles/downstreamGWAS.html" class="external-link">getting started guide</a> for full documentation.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="license">

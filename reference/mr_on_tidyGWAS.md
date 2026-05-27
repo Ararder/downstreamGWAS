@@ -1,6 +1,9 @@
-# Run two-sample mendelian randomisation using the TwoSampleMR package
+# Run two-sample Mendelian randomisation on tidyGWAS data
 
-Run two-sample mendelian randomisation using the TwoSampleMR package
+Uses the TwoSampleMR package to run MR with instruments derived from
+LD-clumped loci. Requires
+[`pipeline_clumping()`](http://arvidharder.com/downstreamGWAS/reference/pipeline_clumping.md)
+to have been run on the exposure, or set `auto_clump = TRUE`.
 
 ## Usage
 
@@ -9,7 +12,7 @@ mr_on_tidyGWAS(
   exposure_dir,
   outcome_dir,
   exposure_bed = NULL,
-  bidirectional = FALSE,
+  auto_clump = FALSE,
   r2 = 0.01
 )
 ```
@@ -18,35 +21,38 @@ mr_on_tidyGWAS(
 
 - exposure_dir:
 
-  path to tidyGWAS directory of the exposure
+  Path to tidyGWAS directory for the exposure trait.
 
 - outcome_dir:
 
-  path to tidyGWAS directory of the outcome
+  Path to tidyGWAS directory for the outcome trait.
 
 - exposure_bed:
 
-  Use a custom bed file to define lead SNPs? Default is NULL, and
-  downstreamGWAS will run
-  [`run_clumping()`](http://arvidharder.com/downstreamGWAS/reference/run_clumping.md)
-  if no bed file exists.
+  Path to a custom BED file defining lead SNPs. If `NULL` (default),
+  uses `<exposure_dir>/analysis/clumping/merged_loci.bed`.
 
-- bidirectional:
+- auto_clump:
 
-  run with outcome as exposure and exposure as outcome as well?
+  If `TRUE` and no clumping output exists, automatically run
+  [`pipeline_clumping()`](http://arvidharder.com/downstreamGWAS/reference/pipeline_clumping.md)
+  with local execution. Default `FALSE`.
 
 - r2:
 
-  r2 to pass to plink2 clumping
+  Passed to
+  [`pipeline_clumping()`](http://arvidharder.com/downstreamGWAS/reference/pipeline_clumping.md)
+  when `auto_clump = TRUE`.
 
 ## Value
 
-a list
+A list with `results` (MR estimates), `outcome_data` (harmonised data),
+and `pleiotropy` (MR-Egger intercept test).
 
 ## Examples
 
 ``` r
 if (FALSE) { # \dontrun{
-mr_on_tidyGWAS("exp_dir/trait1", "outcomes/trait2")
+mr_on_tidyGWAS("exposure/trait1", "outcome/trait2")
 } # }
 ```

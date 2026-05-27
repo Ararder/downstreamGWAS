@@ -32,6 +32,7 @@ manually). 3. `devtools::test()` - To verify unit tests pass.
 **Unit tests** (always run):
 
 ``` r
+
 test_that("basic validation works", {
   result <- some_function(data, dbsnp_path = dbsnp_path)  # uses fixture
   expect_equal(...)
@@ -45,7 +46,5 @@ test_that("basic validation works", {
 - Ensure tests cover edge cases and typical use cases.
 - Tests should be in `tests/testthat/` and named `test-<function>.R`.
 - Run tests with `devtools::test()` before committing changes.
-- Use `skip_if_no_full_dbsnp()` for tests that require the full
-  reference data.
 - Never use unconditional `skip()` - always provide a condition and
   reason.

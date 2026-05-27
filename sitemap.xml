@@ -1,12 +1,12 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>http://arvidharder.com/downstreamGWAS/404.html</loc></url>
+<url><loc>http://arvidharder.com/downstreamGWAS/CLAUDE.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/LICENSE-text.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/LICENSE.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/agents.html</loc></url>
+<url><loc>http://arvidharder.com/downstreamGWAS/articles/colocalisation.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/articles/downstreamGWAS.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/articles/index.html</loc></url>
-<url><loc>http://arvidharder.com/downstreamGWAS/articles/meta-analysis.html</loc></url>
-<url><loc>http://arvidharder.com/downstreamGWAS/articles/multi-file-datasets.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/authors.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/index.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/check_setup.html</loc></url>
@@ -17,16 +17,12 @@
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/get_system_paths.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/index.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/liability_scale_h2.html</loc></url>
-<url><loc>http://arvidharder.com/downstreamGWAS/reference/ls_sumstats.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/mr_on_tidyGWAS.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/pipeline_clumping.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/pipeline_sbayesrc.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/pipeline_sbayess.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/ranges_to_bed.html</loc></url>
-<url><loc>http://arvidharder.com/downstreamGWAS/reference/read_gwas.html</loc></url>
-<url><loc>http://arvidharder.com/downstreamGWAS/reference/read_ldsc_h2.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/run_clumping.html</loc></url>
-<url><loc>http://arvidharder.com/downstreamGWAS/reference/run_coloc.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/run_mbat_combo.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/run_sbayesrc.html</loc></url>
 <url><loc>http://arvidharder.com/downstreamGWAS/reference/run_sbayess.html</loc></url>

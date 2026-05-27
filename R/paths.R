@@ -1,65 +1,3 @@
-#' Setup required filepaths for downstreamGWAS
-#'
-#' @param downstreamGWAS_folder Local filepath to where the downstreamGWAS data is stored
-#' @param container_dependency Do you need to load singularity/apptainer on your HPC?
-#' For example: "ml apptainer"
-#' @param container_software Which container software do you use? "apptainer" or "singularity"
-#'
-#' @return NULL
-#' @export
-#'
-#' @examples \dontrun{
-#' setup()
-#' }
-setup <- function(
-    downstreamGWAS_folder,
-    container_dependency = "",
-    container_software = c("apptainer", "singularity")
-) {
-
-  rlang::check_required(downstreamGWAS_folder)
-  container_software <- rlang::arg_match(container_software)
-  stopifnot(
-    "downstreamGWAS_folder should be a character vector of length 1" = is.character(downstreamGWAS_folder) & length(downstreamGWAS_folder) == 1
-  )
-
-  # read in dummy yaml from package
-  yml <- yaml::read_yaml(fs::path(fs::path_package("downstreamGWAS"), "extdata/filepaths.yml"))
-
-  yml$downstreamGWAS_folder <- downstreamGWAS_folder
-  yml$container_dependency <- container_dependency
-  yml$container_software <- container_software
-
-  # Save the config file in $HOME/.config
-  outpath <- fs::path(Sys.getenv("HOME"), ".config/downstreamGWAS/config.yml")
-
-
-  if(file.exists(outpath)) {
-    cli::cli_alert_warning("the downstreamGWAS config file already exists: {.file {outpath}}")
-    cli::cli_alert_info("If you want to reset the config file, please delete it first: {.code file.remove(\"{outpath}\")}")
-    return(NULL)
-  }
-
-
-  # make sure directory exists
-  fs::dir_create(fs::path_dir(outpath), recurse = TRUE)
-  newdir <- fs::dir_create(yml$downstreamGWAS_folder, recurse = TRUE)
-  fs::dir_create(fs::path(newdir, "reference"))
-  fs::dir_create(fs::path(newdir, "containers"))
-
-
-  yaml::write_yaml(yml, outpath)
-  cli::cli_alert_success("Wrote the downstreamGWAS config file to {.file {outpath}}")
-  cli::cli_alert_info("Using {.path {fs::path(yml$downstreamGWAS_folder)}} to store downstreamGWAS data")
-  cli::cli_alert_info("Reference data required for downstreamGWAS should be stored in {.path {fs::path(yml$downstreamGWAS_folder, 'reference')}}")
-  cli::cli_alert_info("Containers required for downstreamGWAS should be stored in {.path {fs::path(yml$downstreamGWAS_folder, 'containers')}}")
-
-
-
-
-}
-
-
 #' Check that the configuration file has been correctly set up
 #'
 #' @return text to terminal
@@ -74,7 +12,7 @@ check_setup <- function() {
   cli::cli_alert("Checking setup...")
 
   if(!file.exists(outpath)) {
-    cli::cli_alert_warning("The downstreamGWAS config file does not exist. Please run setup() first")
+    cli::cli_alert_warning("The downstreamGWAS config file does not exist. Please run setup_dsg() first")
     return(FALSE)
   }
 

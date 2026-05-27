@@ -1,9 +1,9 @@
-test_that("multiplication works", {
+test_that("setup_dsg creates reference and containers dirs", {
   dsg_folder <- fs::path(tempdir(), "downstreamGWAS")
 
   withr::with_envvar(
     list("HOME" = tempdir()),
-    setup(dsg_folder)
+    setup_dsg(dsg_folder, force = TRUE)
     )
 
   expect_true(all(c(c("reference", "containers") %in% fs::path_file(fs::dir_ls(dsg_folder)))))

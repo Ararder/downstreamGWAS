@@ -16,9 +16,7 @@ mock_setup <- function() {
     .local_envir = parent.frame()
   )
   dsg_folder <- fs::path(tempdir(), "downstreamGWAS")
-  setup(dsg_folder)
-  fs::dir_create(fs::path(dsg_folder, "reference"))
-  fs::dir_create(fs::path(dsg_folder, "containers"))
+  setup_dsg(dsg_folder, force = TRUE)
 }
 
 
